@@ -1,60 +1,63 @@
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import pyqtSlot, Qt
-import tab1
 
-class App(QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-        self.title = 'BEAT: Beahavioral Extraction Tool'
-        self.left = 200
-        self.top = 500
-        self.width = 800
-        self.height = 800
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
-        self.table_widget = MyTableWidget(self)
-        self.setCentralWidget(self.table_widget)
-
-        self.show()
-
-class MyTableWidget(QWidget):
-
-    def __init__(self, parent):
-        super(QWidget, self).__init__(parent)
-        self.layout = QVBoxLayout(self)
-
-        self.tabs = QTabWidget()
-        self.tab1 = QWidget()
-        self.tab2 = QWidget()
-        self.tab3 = QWidget()
-        self.tab4 = QWidget()
-        self.tab5 = QWidget()
-        self.tabs.resize(800, 800)
-
-        self.tabs.addTab(self.tab1, "Project")
-        self.tabs.addTab(self.tab2, "Analysis")
-        self.tabs.addTab(self.tab3, "Plugin Management")
-        self.tabs.addTab(self.tab4, "Points of Interest")
-        self.tabs.addTab(self.tab5, "Documentation")
+from PyQt5 import QtCore, QtGui, QtWidgets
+import tab1, tab2, tab3, tab4, tab5
 
 
-        self.tab1.setLayout(tab1.fillTab1(self.tab1, parent))
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(804, 615)
 
-        self.layout.addWidget(self.tabs)
-        self.setLayout(self.layout)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 801, 571))
+        self.tabWidget.setObjectName("tabWidget")
 
-    @pyqtSlot()
-    def on_click(self):
-        print("\n")
-        for currentQTableWidgetItem in self.tableWidget.selectedItems():
-            print(currentQTableWidgetItem.row(), currentQTableWidgetItem.column(), currentQTableWidgetItem.text())
+        self.ProjectTab = tab1.fillTab1()
+        self.tabWidget.addTab(self.ProjectTab, "")
+
+        self.analysisTab = tab2.fillTab2()
+        self.tabWidget.addTab(self.analysisTab, "")
+
+        self.pluginTab = QtWidgets.QWidget()
+        self.pluginTab.setObjectName("pluginTab")
+        self.tabWidget.addTab(self.pluginTab, "")
+        self.pointsOfInterestTab = QtWidgets.QWidget()
+        self.pointsOfInterestTab.setObjectName("pointsOfInterestTab")
+        self.tabWidget.addTab(self.pointsOfInterestTab, "")
+        self.documentationTab = QtWidgets.QWidget()
+        self.documentationTab.setObjectName("documentationTab")
+        self.tabWidget.addTab(self.documentationTab, "")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 804, 22))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+
+        self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(1)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.ProjectTab), _translate("MainWindow", "Project"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.analysisTab), _translate("MainWindow", "Analysis"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.pluginTab), _translate("MainWindow", "Plugin"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.pointsOfInterestTab), _translate("MainWindow", "Points of Interest"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.documentationTab), _translate("MainWindow", "Documentation"))
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = App()
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
     sys.exit(app.exec_())
