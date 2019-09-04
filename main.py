@@ -11,7 +11,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 801, 571))
+        self.tabWidget.setGeometry(QtCore.QRect(5, 5, 791, 605))
         self.tabWidget.setObjectName("tabWidget")
 
         self.ProjectTab = tab1.fillTab1()
@@ -30,13 +30,7 @@ class Ui_MainWindow(object):
         self.documentationTab.setObjectName("documentationTab")
         self.tabWidget.addTab(self.documentationTab, "")
         MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 804, 22))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
+
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
