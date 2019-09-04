@@ -52,6 +52,7 @@ def fillTab2():
     search_bar_lineEdit = QtWidgets.QLineEdit(analysis_tab)
     search_bar_lineEdit.setFrame(True)
     search_bar_lineEdit.setObjectName("search_bar_lineEdit")
+    search_bar_lineEdit.addAction(QtGui.QIcon("resources/search.png"), QtWidgets.QLineEdit.LeadingPosition)
     horizontalLayout.addWidget(search_bar_lineEdit)
     search_image_lable = QtWidgets.QLabel(analysis_tab)
     search_image_lable.setObjectName("search_image_lable")
