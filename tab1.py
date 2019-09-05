@@ -28,6 +28,7 @@ def fillTab1():
     pushButton_7 = QtWidgets.QPushButton(verticalLayoutWidget_2)
     pushButton_7.setObjectName("pushButton_7")
     verticalLayout_2.addWidget(pushButton_7)
+
     groupBox_4 = QtWidgets.QGroupBox(ProjectTab)
     groupBox_4.setGeometry(QtCore.QRect(200, 10, 581, 550))
     groupBox_4.setAlignment(QtCore.Qt.AlignCenter)
