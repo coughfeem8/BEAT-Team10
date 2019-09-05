@@ -1,4 +1,3 @@
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
 
@@ -11,7 +10,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
-        self.tabWidget.setGeometry(QtCore.QRect(5, 5, 791, 605))
+        self.tabWidget.setGeometry(QtCore.QRect(5, 5, 794, 605))
         self.tabWidget.setObjectName("tabWidget")
 
         self.ProjectTab = tab1.fillTab1(self.centralwidget)
