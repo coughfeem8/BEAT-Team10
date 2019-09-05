@@ -1,5 +1,6 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.Qt import *
 import tab1, tab2, tab3, tab4, tab5
 
 
@@ -7,7 +8,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(804, 615)
-
+        MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -21,7 +22,6 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.analysisTab, "")
 
         self.pluginTab = tab3.fillTab3()
-        self.pluginTab.setObjectName("pluginTab")
         self.tabWidget.addTab(self.pluginTab, "")
 
         self.pointsOfInterestTab = QtWidgets.QWidget()
@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
 
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
