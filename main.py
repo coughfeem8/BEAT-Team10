@@ -1,6 +1,5 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.Qt import *
 import tab1, tab2, tab3, tab4, tab5
 
 
@@ -24,9 +23,9 @@ class Ui_MainWindow(object):
         self.pluginTab = tab3.fillTab3()
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = QtWidgets.QWidget()
-        self.pointsOfInterestTab.setObjectName("pointsOfInterestTab")
+        self.pointsOfInterestTab = tab4.fillTab4()
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
+
         self.documentationTab = QtWidgets.QWidget()
         self.documentationTab.setObjectName("documentationTab")
         self.tabWidget.addTab(self.documentationTab, "")

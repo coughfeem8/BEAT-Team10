@@ -33,7 +33,7 @@ def fillTab1():
     groupBox_4.setAlignment(QtCore.Qt.AlignCenter)
     groupBox_4.setObjectName("groupBox_4")
     gridLayoutWidget_2 = QtWidgets.QWidget(groupBox_4)
-    gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 30, 561, 471))
+    gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 30, 561, 510))
     gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
     gridLayout_2 = QtWidgets.QGridLayout(gridLayoutWidget_2)
     gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -42,13 +42,9 @@ def fillTab1():
     label_8 = QtWidgets.QLabel(gridLayoutWidget_2)
     label_8.setObjectName("label_8")
     gridLayout_2.addWidget(label_8, 1, 0, 1, 1)
-    tableWidget = QtWidgets.QTableWidget(gridLayoutWidget_2)
-    tableWidget.setObjectName("tableWidget")
-    tableWidget.setColumnCount(2)
-    tableWidget.setRowCount(8)
-    tableWidget.horizontalHeader().hide()
-    tableWidget.verticalHeader().hide()
-    #tableWidget.setItem(0,0,QtGui.QTableWidgetItem("Hola"))
+
+    tableWidget = fillBnryProp()
+
     gridLayout_2.addWidget(tableWidget, 3, 1, 1, 1)
     pushButton_8 = QtWidgets.QPushButton(gridLayoutWidget_2)
     pushButton_8.setObjectName("pushButton_8")
@@ -92,3 +88,24 @@ def fillTab1():
     pushButton_10.setText(_translate("MainWindow", "Save"))
     
     return ProjectTab
+
+
+def fillBnryProp():
+    properties = ["OS", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto"]
+
+    tableWidget = QtWidgets.QTableWidget()
+    tableWidget.setObjectName("tableWidget")
+    tableWidget.setColumnCount(2)
+    tableWidget.setRowCount(8)
+    tableWidget.horizontalHeader().hide()
+    tableWidget.verticalHeader().hide()
+    tableWidget.horizontalHeader().setStretchLastSection(True)
+
+    bolds = QtGui.QFont()
+    QtGui.QFont.setBold(bolds, True)
+    for x in range(len(properties)):
+        item = QtWidgets.QTableWidgetItem(properties[x])
+        item.setFont(bolds)
+        tableWidget.setItem(x, 0, item)
+
+    return tableWidget
