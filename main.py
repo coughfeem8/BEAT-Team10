@@ -20,9 +20,10 @@ class Ui_MainWindow(object):
         self.analysisTab = tab2.fillTab2()
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = QtWidgets.QWidget()
+        self.pluginTab = tab3.fillTab3()
         self.pluginTab.setObjectName("pluginTab")
         self.tabWidget.addTab(self.pluginTab, "")
+
         self.pointsOfInterestTab = QtWidgets.QWidget()
         self.pointsOfInterestTab.setObjectName("pointsOfInterestTab")
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
