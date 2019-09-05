@@ -14,7 +14,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 791, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        self.ProjectTab = tab1.fillTab1()
+        self.ProjectTab = tab1.fillTab1(self.centralwidget)
         self.tabWidget.addTab(self.ProjectTab, "")
 
         self.analysisTab = tab2.fillTab2()

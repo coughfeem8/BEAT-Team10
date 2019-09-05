@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-def fillTab1():
+def fillTab1(self):
     ProjectTab = QtWidgets.QWidget()
     ProjectTab.setObjectName("ProjectTab")
     groupBox_3 = QtWidgets.QGroupBox(ProjectTab)
@@ -49,6 +49,7 @@ def fillTab1():
     gridLayout_2.addWidget(tableWidget, 3, 1, 1, 1)
     pushButton_8 = QtWidgets.QPushButton(gridLayoutWidget_2)
     pushButton_8.setObjectName("pushButton_8")
+    pushButton_8.clicked.connect(openFileNameDialog(self))
     gridLayout_2.addWidget(pushButton_8, 2, 2, 1, 1)
     textEdit_2 = QtWidgets.QTextEdit(gridLayoutWidget_2)
     textEdit_2.setObjectName("textEdit_2")
@@ -110,3 +111,11 @@ def fillBnryProp():
         tableWidget.setItem(x, 0, item)
 
     return tableWidget
+
+@QtCore.pyqtSlot()
+def openFileNameDialog(self):
+    options = QtWidgets.QFileDialog.Options()
+    options |= QtWidgets.QFileDialog.DontUseNativeDialog
+    fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
+    if fileName:
+        print(fileName)
