@@ -94,12 +94,13 @@ def fillTab1(self):
 
 
 def fillBnryProp():
-    properties = ["OS", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto"]
+    properties = ["OS", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic", "Relocs"
+                  ,"Relro", "Stripped"]
 
     tableWidget = QtWidgets.QTableWidget()
     tableWidget.setObjectName("tableWidget")
     tableWidget.setColumnCount(2)
-    tableWidget.setRowCount(8)
+    tableWidget.setRowCount(13)
     tableWidget.horizontalHeader().hide()
     tableWidget.verticalHeader().hide()
     tableWidget.horizontalHeader().setStretchLastSection(True)

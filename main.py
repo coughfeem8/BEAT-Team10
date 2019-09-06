@@ -26,12 +26,10 @@ class Ui_MainWindow(object):
         self.pointsOfInterestTab = tab4.fillTab4()
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = QtWidgets.QWidget()
-        self.documentationTab.setObjectName("documentationTab")
+        self.documentationTab = tab5.fillTab5()
         self.tabWidget.addTab(self.documentationTab, "")
+
         MainWindow.setCentralWidget(self.centralwidget)
-
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
