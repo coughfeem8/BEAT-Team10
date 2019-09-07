@@ -1,10 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-def fillTab1():
+def fillTab1(self):
     ProjectTab = QtWidgets.QWidget()
     ProjectTab.setObjectName("ProjectTab")
+
     groupBox_3 = QtWidgets.QGroupBox(ProjectTab)
-    groupBox_3.setGeometry(QtCore.QRect(10, 10, 181, 511))
+    groupBox_3.setGeometry(QtCore.QRect(10, 10, 181, 550))
     groupBox_3.setAlignment(QtCore.Qt.AlignCenter)
     groupBox_3.setObjectName("groupBox_3")
     verticalLayoutWidget_2 = QtWidgets.QWidget(groupBox_3)
@@ -28,12 +29,13 @@ def fillTab1():
     pushButton_7 = QtWidgets.QPushButton(verticalLayoutWidget_2)
     pushButton_7.setObjectName("pushButton_7")
     verticalLayout_2.addWidget(pushButton_7)
+
     groupBox_4 = QtWidgets.QGroupBox(ProjectTab)
-    groupBox_4.setGeometry(QtCore.QRect(200, 10, 581, 511))
+    groupBox_4.setGeometry(QtCore.QRect(200, 10, 581, 550))
     groupBox_4.setAlignment(QtCore.Qt.AlignCenter)
     groupBox_4.setObjectName("groupBox_4")
     gridLayoutWidget_2 = QtWidgets.QWidget(groupBox_4)
-    gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 30, 561, 471))
+    gridLayoutWidget_2.setGeometry(QtCore.QRect(10, 30, 561, 510))
     gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
     gridLayout_2 = QtWidgets.QGridLayout(gridLayoutWidget_2)
     gridLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -42,16 +44,13 @@ def fillTab1():
     label_8 = QtWidgets.QLabel(gridLayoutWidget_2)
     label_8.setObjectName("label_8")
     gridLayout_2.addWidget(label_8, 1, 0, 1, 1)
-    tableWidget = QtWidgets.QTableWidget(gridLayoutWidget_2)
-    tableWidget.setObjectName("tableWidget")
-    tableWidget.setColumnCount(2)
-    tableWidget.setRowCount(8)
-    tableWidget.horizontalHeader().hide()
-    tableWidget.verticalHeader().hide()
-    #tableWidget.setItem(0,0,QtGui.QTableWidgetItem("Hola"))
+
+    tableWidget = fillBnryProp()
+
     gridLayout_2.addWidget(tableWidget, 3, 1, 1, 1)
     pushButton_8 = QtWidgets.QPushButton(gridLayoutWidget_2)
     pushButton_8.setObjectName("pushButton_8")
+    #pushButton_8.clicked.connect(openFileNameDialog(self))
     gridLayout_2.addWidget(pushButton_8, 2, 2, 1, 1)
     textEdit_2 = QtWidgets.QTextEdit(gridLayoutWidget_2)
     textEdit_2.setObjectName("textEdit_2")
@@ -92,3 +91,33 @@ def fillTab1():
     pushButton_10.setText(_translate("MainWindow", "Save"))
     
     return ProjectTab
+
+
+def fillBnryProp():
+    properties = ["OS", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic", "Relocs"
+                  ,"Relro", "Stripped"]
+
+    tableWidget = QtWidgets.QTableWidget()
+    tableWidget.setObjectName("tableWidget")
+    tableWidget.setColumnCount(2)
+    tableWidget.setRowCount(13)
+    tableWidget.horizontalHeader().hide()
+    tableWidget.verticalHeader().hide()
+    tableWidget.horizontalHeader().setStretchLastSection(True)
+
+    bolds = QtGui.QFont()
+    QtGui.QFont.setBold(bolds, True)
+    for x in range(len(properties)):
+        item = QtWidgets.QTableWidgetItem(properties[x])
+        item.setFont(bolds)
+        tableWidget.setItem(x, 0, item)
+
+    return tableWidget
+
+@QtCore.pyqtSlot()
+def openFileNameDialog(self):
+    options = QtWidgets.QFileDialog.Options()
+    options |= QtWidgets.QFileDialog.DontUseNativeDialog
+    fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self,"QFileDialog.getOpenFileName()", "","All Files (*);;Python Files (*.py)", options=options)
+    if fileName:
+        print(fileName)

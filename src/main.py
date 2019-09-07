@@ -1,5 +1,5 @@
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+    from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
 
 
@@ -7,14 +7,14 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(804, 615)
-
+        MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 791, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        self.ProjectTab = tab1.fillTab1()
+        self.ProjectTab = tab1.fillTab1(self.centralwidget)
         self.tabWidget.addTab(self.ProjectTab, "")
 
         self.analysisTab = tab2.fillTab2()
@@ -23,15 +23,13 @@ class Ui_MainWindow(object):
         self.pluginTab = tab3.fillTab3()
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = QtWidgets.QWidget()
-        self.pointsOfInterestTab.setObjectName("pointsOfInterestTab")
+        self.pointsOfInterestTab = tab4.fillTab4()
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
-        self.documentationTab = QtWidgets.QWidget()
-        self.documentationTab.setObjectName("documentationTab")
+
+        self.documentationTab = tab5.fillTab5()
         self.tabWidget.addTab(self.documentationTab, "")
+
         MainWindow.setCentralWidget(self.centralwidget)
-
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
