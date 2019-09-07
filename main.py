@@ -21,7 +21,6 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.analysisTab, "")
 
         self.pluginTab = tab3.fillTab3()
-        self.pluginTab.setObjectName("pluginTab")
         self.tabWidget.addTab(self.pluginTab, "")
 
         self.pointsOfInterestTab = QtWidgets.QWidget()
@@ -34,7 +33,7 @@ class Ui_MainWindow(object):
 
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
