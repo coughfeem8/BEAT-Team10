@@ -1,9 +1,9 @@
 
-    from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(804, 615)
@@ -14,7 +14,8 @@ class Ui_MainWindow(object):
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 791, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        self.ProjectTab = tab1.fillTab1(self.centralwidget)
+        #tab1.fillTab1(self)
+        self.ProjectTab = tab1.Tab1(self, self)
         self.tabWidget.addTab(self.ProjectTab, "")
 
         self.analysisTab = tab2.fillTab2()
@@ -26,8 +27,8 @@ class Ui_MainWindow(object):
         self.pointsOfInterestTab = tab4.fillTab4()
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = tab5.fillTab5()
-        self.tabWidget.addTab(self.documentationTab, "")
+        #self.documentationTab = tab5.fillTab5()
+        #self.tabWidget.addTab(self.documentationTab, "")
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
@@ -42,7 +43,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.analysisTab), _translate("MainWindow", "Analysis"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.pluginTab), _translate("MainWindow", "Plugin"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.pointsOfInterestTab), _translate("MainWindow", "Points of Interest"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.documentationTab), _translate("MainWindow", "Documentation"))
+        #self.tabWidget.setTabText(self.tabWidget.indexOf(self.documentationTab), _translate("MainWindow", "Documentation"))
 
 
 if __name__ == "__main__":
