@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import os
+import pop
 
 class Tab1(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -59,7 +60,7 @@ class Tab1(QtWidgets.QWidget):
         gridLayout_2.addWidget(tableWidget, 3, 1, 1, 1)
         self.pushButton_8 = QtWidgets.QPushButton(gridLayoutWidget_2)
         self.pushButton_8.setObjectName("pushButton_8")
-        self.pushButton_8.clicked.connect(self.BrowseBnryFiles)
+        self.pushButton_8.clicked.connect(self.openComment)
 
         gridLayout_2.addWidget(self.pushButton_8, 2, 2, 1, 1)
         self.textEdit_2 = QtWidgets.QTextEdit(gridLayoutWidget_2)
@@ -167,7 +168,7 @@ class Tab1(QtWidgets.QWidget):
                 if i == 0:
                     self.lineEdit_2.setText(line)
                 elif i == 2:
-                    self.textEdit_2.setText(line)
+                    self.textEdit_2.setPlainText(line)
                 elif i == 1:
                     self.lineEdit_3.setText(line)
                 i=+1
@@ -197,3 +198,7 @@ class Tab1(QtWidgets.QWidget):
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+
+    def openComment(self):
+        popUp = pop.commentDialog(self)
+        popUp.exec_()
