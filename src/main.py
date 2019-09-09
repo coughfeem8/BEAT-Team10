@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
 
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(804, 615)
@@ -13,24 +13,23 @@ class Ui_MainWindow(object):
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 794, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        self.ProjectTab = tab1.fillTab1(self.centralwidget)
+        #tab1.fillTab1(self)
+        self.ProjectTab = tab1.Tab1(self, self)
         self.tabWidget.addTab(self.ProjectTab, "")
 
-        self.analysisTab = tab2.fillTab2()
+        self.analysisTab = tab2.Tab2(self, self)
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = tab3.fillTab3()
+        self.pluginTab = tab3.Tab3(self, self)
         self.tabWidget.addTab(self.pluginTab, "")
 
         self.pointsOfInterestTab = tab4.fillTab4()
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = QtWidgets.QWidget()
-        self.documentationTab.setObjectName("documentationTab")
+        self.documentationTab = tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
+
         MainWindow.setCentralWidget(self.centralwidget)
-
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
