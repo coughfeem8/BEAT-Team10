@@ -18,17 +18,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.ProjectTab = tab1.Tab1(self, self)
         self.tabWidget.addTab(self.ProjectTab, "")
 
-        self.analysisTab = tab2.fillTab2()
+        self.analysisTab = tab2.Tab2(self, self)
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = tab3.fillTab3()
+        self.pluginTab = tab3.Tab3(self, self)
         self.tabWidget.addTab(self.pluginTab, "")
 
         self.pointsOfInterestTab = tab4.fillTab4()
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        #self.documentationTab = tab5.fillTab5()
-        #self.tabWidget.addTab(self.documentationTab, "")
+        self.documentationTab = tab5.Tab5(self, self)
+        self.tabWidget.addTab(self.documentationTab, "")
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
@@ -43,7 +43,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.analysisTab), _translate("MainWindow", "Analysis"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.pluginTab), _translate("MainWindow", "Plugin"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.pointsOfInterestTab), _translate("MainWindow", "Points of Interest"))
-        #self.tabWidget.setTabText(self.tabWidget.indexOf(self.documentationTab), _translate("MainWindow", "Documentation"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.documentationTab), _translate("MainWindow", "Documentation"))
 
 
 if __name__ == "__main__":

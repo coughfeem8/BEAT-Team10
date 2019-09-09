@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import os
-import pop
+
 
 class Tab1(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -72,6 +72,7 @@ class Tab1(QtWidgets.QWidget):
         self.lineEdit_3 = QtWidgets.QLineEdit(gridLayoutWidget_2)
         self.lineEdit_3.setReadOnly(True)
         self.lineEdit_3.setObjectName("lineEdit_3")
+
         gridLayout_2.addWidget(self.lineEdit_3, 2, 1, 1, 1)
         label_10 = QtWidgets.QLabel(gridLayoutWidget_2)
         label_10.setObjectName("label_10")
@@ -201,4 +202,5 @@ class Tab1(QtWidgets.QWidget):
 
     def openComment(self):
         popUp = pop.commentDialog(self)
-        popUp.exec_()
+        text = popUp.exec_()
+        print(text)
