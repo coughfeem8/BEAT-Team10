@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import os
 
+from src import pop
 
 class Tab1(QtWidgets.QWidget):
     def __init__(self, parent, main):
