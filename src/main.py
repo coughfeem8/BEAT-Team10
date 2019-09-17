@@ -5,16 +5,20 @@ import tab1, tab2, tab3, tab4, tab5
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        self.activeProj = "BEAT"
+        MainWindow.setObjectName(self.activeProj)
         MainWindow.resize(804, 615)
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
+
+        MainWindow.setWindowTitle(self.activeProj)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 791, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        #tab1.fillTab1(self)
+
         self.ProjectTab = tab1.Tab1(self, self)
         self.tabWidget.addTab(self.ProjectTab, "")
 
@@ -37,7 +41,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+
 
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ProjectTab), _translate("MainWindow", "Project"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.analysisTab), _translate("MainWindow", "Analysis"))

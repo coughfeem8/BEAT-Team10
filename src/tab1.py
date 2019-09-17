@@ -1,5 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import os
+import r2pipe
+import pymongo
 
 from src import pop
 
@@ -56,12 +58,12 @@ class Tab1(QtWidgets.QWidget):
         label_8.setObjectName("label_8")
         gridLayout_2.addWidget(label_8, 1, 0, 1, 1)
 
-        tableWidget = self.fillBnryProp()
+        self.tableWidget = self.fillBnryProp()
 
-        gridLayout_2.addWidget(tableWidget, 3, 1, 1, 1)
+        gridLayout_2.addWidget(self.tableWidget, 3, 1, 1, 1)
         self.pushButton_8 = QtWidgets.QPushButton(gridLayoutWidget_2)
         self.pushButton_8.setObjectName("pushButton_8")
-        self.pushButton_8.clicked.connect(self.openComment)
+        self.pushButton_8.clicked.connect(self.BrowseBnryFiles)
 
         gridLayout_2.addWidget(self.pushButton_8, 2, 2, 1, 1)
         self.textEdit_2 = QtWidgets.QTextEdit(gridLayoutWidget_2)
@@ -108,14 +110,13 @@ class Tab1(QtWidgets.QWidget):
         pushButton_10.setText(_translate("MainWindow", "Save"))
 
     def fillBnryProp(self):
-        properties = ["OS", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic",
-                      "Relocs"
-            , "Relro", "Stripped"]
+        properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic",
+                      "Endian"]
 
         tableWidget = QtWidgets.QTableWidget()
         tableWidget.setObjectName("tableWidget")
         tableWidget.setColumnCount(2)
-        tableWidget.setRowCount(13)
+        tableWidget.setRowCount(12)
         tableWidget.horizontalHeader().hide()
         tableWidget.verticalHeader().hide()
         tableWidget.horizontalHeader().setStretchLastSection(True)
@@ -135,14 +136,52 @@ class Tab1(QtWidgets.QWidget):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
                                                   "All Files (*);;Binary Files (*.exe,*.elf)", options=options)
         if fileName:
+
+            global r2BinInfo
             self.lineEdit_3.setText(fileName)
+            rlocal = r2pipe.open(fileName)
+            r2BinInfo = rlocal.cmdj("ij")
+
+            if r2BinInfo["core"]["format"] == "any":
+                print("Unsupported format")
+                return
+
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
+            self.tableWidget.setItem(0, 1, item)
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
+            self.tableWidget.setItem(1, 1, item)
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
+            self.tableWidget.setItem(2, 1, item)
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
+            self.tableWidget.setItem(3, 1, item)
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
+            self.tableWidget.setItem(4, 1, item)
+            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
+            self.tableWidget.setItem(5, 1, item)
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
+            self.tableWidget.setItem(6, 1, item)
+            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
+            self.tableWidget.setItem(7, 1, item)
+            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
+            self.tableWidget.setItem(8, 1, item)
+            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
+            self.tableWidget.setItem(9, 1, item)
+            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
+            self.tableWidget.setItem(10, 1, item)
+            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
+            self.tableWidget.setItem(11, 1, item)
 
     def SaveProject(self):
-        file = open("projectsTest/"+self.nameProject+".txt", 'w')
-        file.write(self.lineEdit_2.text()+"\n")
-        file.write(self.textEdit_2.toPlainText()+"\n")
-        file.write(self.lineEdit_3.text()+"\n")
-        file.close()
+
+        projectDb = mongoClient[self.nameProject]
+        projInfo = projectDb["projectInfo"]
+        info = {"ProjectName" : self.lineEdit_2.text(), "ProjectDescription" : self.textEdit_2.toPlainText(),
+                "BnyFilePath" : self.lineEdit_3.text()}
+        insertInfo = projInfo.insert(info, check_keys=False)
+        binInfo = projectDb["binaryInfo"]
+        insertObj = binInfo.insert(r2BinInfo, check_keys=False)
+
+
 
     def createProject(self):
         text, okPressed = QtWidgets.QInputDialog.getText(self, "Create New Project", "Name of Project:",
@@ -151,18 +190,21 @@ class Tab1(QtWidgets.QWidget):
             self.lineEdit_2.setText("")
             self.textEdit_2.setText("")
             self.lineEdit_3.setText("")
-            file = open("projectsTest/"+text+".txt", 'w')
+
+
+            #self.parent.activeProj = text
             self.nameProject = text
             self.listWidget.addItem(text)
             item = self.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.listWidget.setCurrentItem(item[0])
-            file.close()
 
     def itemActivated_event(self):
         project = self.listWidget.selectedItems()
         projectName = [item.text().encode("ascii") for item in project]
         self.nameProject = str(projectName[0], 'utf-8')
         try:
+
+
             file = open("projectsTest/"+self.nameProject+".txt", 'r')
             i=0
             for line in file:
@@ -178,19 +220,24 @@ class Tab1(QtWidgets.QWidget):
             print(e)
 
     def searchProjects(self):
-        for file in os.listdir("./projectsTest"):
-            if file.endswith(".txt"):
-                self.listWidget.addItem(file[:-4])
+        global mongoClient
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        cursor = mongoClient.list_database_names()
+        for db in cursor:
+            if db not in ['admin', 'local', 'config']:
+                self.listWidget.addItem(db)
 
     def deleteProject(self):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setWindowTitle("Delete Project")
         if self.nameProject != "":
-            buttonReply = QtWidgets.QMessageBox.question(self, 'PyQt5 message', "Do you like PyQt5?",
+            buttonReply = QtWidgets.QMessageBox.question(self, 'PyQt5 message', "Do you like to erase Project %s ?" % self.nameProject,
                                                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
             if buttonReply == QtWidgets.QMessageBox.Yes:
-                os.remove("./projectsTest/"+self.nameProject+".txt")
+
+                mongoClient.drop_database(self.nameProject)
+
                 self.lineEdit_2.setText("")
                 self.textEdit_2.setText("")
                 self.lineEdit_3.setText("")
