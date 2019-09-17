@@ -105,6 +105,8 @@ class analysisResultDialog(QtWidgets.QDialog):
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
         self.label_7.setObjectName("label_7")
 
+        self.returnVal = ""
+
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "Analysis Result View"))
         self.label.setText(_translate("Dialog", "Analysis Result Area"))
@@ -165,6 +167,8 @@ class outputFieldDialog(QtWidgets.QDialog):
         self.label_3.setGeometry(QtCore.QRect(50, 220, 67, 17))
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
+
+        self.returnVal = ""
 
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "Output Field View"))
