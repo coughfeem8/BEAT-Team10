@@ -199,30 +199,33 @@ class Tab1(QtWidgets.QWidget):
             self.listWidget.setCurrentItem(item[0])
 
     def itemActivated_event(self):
-        project = self.listWidget.selectedItems()
-        projectName = [item.text().encode("ascii") for item in project]
-        self.nameProject = str(projectName[0], 'utf-8')
-        try:
+        if self.listWidget.count() != 0:
+            project = self.listWidget.selectedItems()
+            projectName = [item.text().encode("ascii") for item in project]
+            self.nameProject = str(projectName[0], 'utf-8')
+            #print(projectName)
+            try:
 
+                projectDb = mongoClient[self.nameProject]
+                projInfo = projectDb["projectInfo"]
+                binInfo = projectDb["binaryInfo"]
+                cursor = projInfo.find()
+                #print([])
+                for db in cursor:
+                    self.textEdit_2.setPlainText(db['ProjectDescription'])
+                    self.lineEdit_2.setText(db['ProjectName'])
+                    self.lineEdit_3.setText(db['BnyFilePath'])
 
-            file = open("projectsTest/"+self.nameProject+".txt", 'r')
-            i=0
-            for line in file:
-                #print(line)
-                if i == 0:
-                    self.lineEdit_2.setText(line)
-                elif i == 2:
-                    self.textEdit_2.setPlainText(line)
-                elif i == 1:
-                    self.lineEdit_3.setText(line)
-                i=+1
-        except Exception as e:
-            print(e)
+                #print(binInfo.find())
+
+            except Exception as e:
+                print(e)
 
     def searchProjects(self):
         global mongoClient
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         cursor = mongoClient.list_database_names()
+        self.listWidget.clear()
         for db in cursor:
             if db not in ['admin', 'local', 'config']:
                 self.listWidget.addItem(db)
@@ -241,8 +244,9 @@ class Tab1(QtWidgets.QWidget):
                 self.lineEdit_2.setText("")
                 self.textEdit_2.setText("")
                 self.lineEdit_3.setText("")
-                item = self.listWidget.findItems(self.nameProject,QtCore.Qt.MatchExactly)
-                self.listWidget.removeItemWidget(item[0])
+                #item = self.listWidget.findItems(self.nameProject,QtCore.Qt.MatchExactly)
+                #self.listWidget.removeItemWidget(item[0])
+                self.searchProjects()
         else:
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
