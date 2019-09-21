@@ -1,5 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-import os
+from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
 import pymongo
 
@@ -58,7 +57,8 @@ class Tab1(QtWidgets.QWidget):
         label_8.setObjectName("label_8")
         gridLayout_2.addWidget(label_8, 1, 0, 1, 1)
 
-        self.tableWidget = self.fillBnryProp()
+        self.tableWidget = QtWidgets.QTableWidget()
+        self.fillBnryPropEmpty()
 
         gridLayout_2.addWidget(self.tableWidget, 3, 1, 1, 1)
         self.pushButton_8 = QtWidgets.QPushButton(gridLayoutWidget_2)
@@ -109,32 +109,59 @@ class Tab1(QtWidgets.QWidget):
         pushButton_9.setText(_translate("MainWindow", "Delete"))
         pushButton_10.setText(_translate("MainWindow", "Save"))
 
-    def fillBnryProp(self):
+    def fillBnryPropEmpty(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic",
                       "Endian"]
 
-        tableWidget = QtWidgets.QTableWidget()
-        tableWidget.setObjectName("tableWidget")
-        tableWidget.setColumnCount(2)
-        tableWidget.setRowCount(12)
-        tableWidget.horizontalHeader().hide()
-        tableWidget.verticalHeader().hide()
-        tableWidget.horizontalHeader().setStretchLastSection(True)
+
+        self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.setRowCount(12)
+        self.tableWidget.horizontalHeader().hide()
+        self.tableWidget.verticalHeader().hide()
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
 
         bolds = QtGui.QFont()
         QtGui.QFont.setBold(bolds, True)
         for x in range(len(properties)):
             item = QtWidgets.QTableWidgetItem(properties[x])
+            empty = QtWidgets.QTableWidgetItem("")
             item.setFont(bolds)
-            tableWidget.setItem(x, 0, item)
+            self.tableWidget.setItem(x, 0, item)
+            self.tableWidget.setItem(x, 1, empty)
 
-        return tableWidget
+    def fillBnryProp(self, r2BinInfo):
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
+        self.tableWidget.setItem(0, 1, item)
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
+        self.tableWidget.setItem(1, 1, item)
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
+        self.tableWidget.setItem(2, 1, item)
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
+        self.tableWidget.setItem(3, 1, item)
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
+        self.tableWidget.setItem(4, 1, item)
+        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
+        self.tableWidget.setItem(5, 1, item)
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
+        self.tableWidget.setItem(6, 1, item)
+        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
+        self.tableWidget.setItem(7, 1, item)
+        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
+        self.tableWidget.setItem(8, 1, item)
+        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
+        self.tableWidget.setItem(9, 1, item)
+        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
+        self.tableWidget.setItem(10, 1, item)
+        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
+        self.tableWidget.setItem(11, 1, item)
+
 
     def BrowseBnryFiles(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
-                                                  "All Files (*);;Binary Files (*.exe,*.elf)", options=options)
+                                                  "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
         if fileName:
 
             global r2BinInfo
@@ -143,44 +170,33 @@ class Tab1(QtWidgets.QWidget):
             r2BinInfo = rlocal.cmdj("ij")
 
             if r2BinInfo["core"]["format"] == "any":
-                print("Unsupported format")
+                msg = QtWidgets.QMessageBox()
+                msg.setText("Error")
                 return
 
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
-            self.tableWidget.setItem(0, 1, item)
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
-            self.tableWidget.setItem(1, 1, item)
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
-            self.tableWidget.setItem(2, 1, item)
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
-            self.tableWidget.setItem(3, 1, item)
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
-            self.tableWidget.setItem(4, 1, item)
-            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
-            self.tableWidget.setItem(5, 1, item)
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
-            self.tableWidget.setItem(6, 1, item)
-            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
-            self.tableWidget.setItem(7, 1, item)
-            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
-            self.tableWidget.setItem(8, 1, item)
-            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
-            self.tableWidget.setItem(9, 1, item)
-            item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
-            self.tableWidget.setItem(10, 1, item)
-            item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
-            self.tableWidget.setItem(11, 1, item)
+            self.fillBnryProp(r2BinInfo)
+
 
     def SaveProject(self):
-
-        projectDb = mongoClient[self.nameProject]
-        projInfo = projectDb["projectInfo"]
-        info = {"ProjectName" : self.lineEdit_2.text(), "ProjectDescription" : self.textEdit_2.toPlainText(),
-                "BnyFilePath" : self.lineEdit_3.text()}
-        insertInfo = projInfo.insert(info, check_keys=False)
-        binInfo = projectDb["binaryInfo"]
-        insertObj = binInfo.insert(r2BinInfo, check_keys=False)
-
+        if self.lineEdit_3.text() != "":
+            projectDb = mongoClient[self.nameProject]
+            projInfo = projectDb["projectInfo"]
+            info = {"ProjectName" : self.lineEdit_2.text(), "ProjectDescription" : self.textEdit_2.toPlainText(),
+                    "BnyFilePath" : self.lineEdit_3.text()}
+            insertInfo = projInfo.insert(info, check_keys=False)
+            binInfo = projectDb["binaryInfo"]
+            insertObj = binInfo.insert(r2BinInfo, check_keys=False)
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Information)
+            msg.setWindowTitle("Save Project")
+            msg.setText("Project Saved")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            retval = msg.exec_()
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setText("Please select a Binary File")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            retval = msg.exec_()
 
 
     def createProject(self):
@@ -190,36 +206,38 @@ class Tab1(QtWidgets.QWidget):
             self.lineEdit_2.setText("")
             self.textEdit_2.setText("")
             self.lineEdit_3.setText("")
-
-
+            self.fillBnryPropEmpty()
             #self.parent.activeProj = text
             self.nameProject = text
             self.listWidget.addItem(text)
             item = self.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.listWidget.setCurrentItem(item[0])
+            self.setWindowTitle('new title')
 
     def itemActivated_event(self):
         if self.listWidget.count() != 0:
             project = self.listWidget.selectedItems()
             projectName = [item.text().encode("ascii") for item in project]
-            self.nameProject = str(projectName[0], 'utf-8')
-            #print(projectName)
-            try:
+            if projectName:
+                self.nameProject = str(projectName[0], 'utf-8')
+                try:
 
-                projectDb = mongoClient[self.nameProject]
-                projInfo = projectDb["projectInfo"]
-                binInfo = projectDb["binaryInfo"]
-                cursor = projInfo.find()
-                #print([])
-                for db in cursor:
-                    self.textEdit_2.setPlainText(db['ProjectDescription'])
-                    self.lineEdit_2.setText(db['ProjectName'])
-                    self.lineEdit_3.setText(db['BnyFilePath'])
+                    projectDb = mongoClient[self.nameProject]
+                    projInfo = projectDb["projectInfo"]
+                    binInfo = projectDb["binaryInfo"]
+                    cursor = projInfo.find()
+                    for db in cursor:
+                        self.textEdit_2.setPlainText(db['ProjectDescription'])
+                        self.lineEdit_2.setText(db['ProjectName'])
+                        self.lineEdit_3.setText(db['BnyFilePath'])
 
-                #print(binInfo.find())
+                    cursorBin = binInfo.find()
+                    for db in cursorBin:
+                        self.fillBnryPropEmpty()
+                        self.fillBnryProp(db)
 
-            except Exception as e:
-                print(e)
+                except Exception as e:
+                    print(e)
 
     def searchProjects(self):
         global mongoClient
@@ -244,15 +262,15 @@ class Tab1(QtWidgets.QWidget):
                 self.lineEdit_2.setText("")
                 self.textEdit_2.setText("")
                 self.lineEdit_3.setText("")
-                #item = self.listWidget.findItems(self.nameProject,QtCore.Qt.MatchExactly)
-                #self.listWidget.removeItemWidget(item[0])
-                self.searchProjects()
+                self.fillBnryPropEmpty()
+                listItems = self.listWidget.selectedItems()
+                if not listItems: return
+                for item in listItems:
+                    self.listWidget.takeItem(self.listWidget.row(item))
+                #self.listWidget.itemActivated(item)
+                #self.searchProjects()
         else:
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
 
-    def openComment(self):
-        popUp = pop.commentDialog(self)
-        text = popUp.exec_()
-        print(text)
