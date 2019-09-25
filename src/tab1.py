@@ -163,18 +163,23 @@ class Tab1(QtWidgets.QWidget):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
                                                   "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
         if fileName:
+            try:
+                global r2BinInfo
+                self.lineEdit_3.setText(fileName)
+                rlocal = r2pipe.open(fileName)
+                r2BinInfo = rlocal.cmdj("ij")
 
-            global r2BinInfo
-            self.lineEdit_3.setText(fileName)
-            rlocal = r2pipe.open(fileName)
-            r2BinInfo = rlocal.cmdj("ij")
+                if r2BinInfo["core"]["format"] == "any":
+                    msg = QtWidgets.QMessageBox()
+                    msg.setText("Error")
+                    return
 
-            if r2BinInfo["core"]["format"] == "any":
+                self.fillBnryProp(r2BinInfo)
+            except Exception as e:
                 msg = QtWidgets.QMessageBox()
-                msg.setText("Error")
-                return
-
-            self.fillBnryProp(r2BinInfo)
+                msg.setText(str(e))
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                retval = msg.exec_()
 
 
     def SaveProject(self):
