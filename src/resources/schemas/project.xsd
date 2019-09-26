@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+ <xs:element name="project">
+     <xs:complexType>
+         <xs:sequence>
+             <xs:element name="name" type="xs:string"/>
+             <xs:element ref="project_description"/>
+             <xs:element name="binary_path" type="xs:string"/>
+             <xs:element ref="comment"/>
+             <xs:element ref="breakpoint"/>
+             <xs:element ref="watchpoint"/>
+         </xs:sequence>
+     </xs:complexType>
+
+ </xs:element>
+    <xs:element name="project_description">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="os"  type="xs:string" maxOccurs="1"/>
+                <xs:element name="architecture"/>
+                <xs:element name="machine" type="xs:string"/>
+                <xs:element name="bits" type="xs:string"/>
+                <xs:element name="language" type="xs:string"/>
+                <xs:element name="canary" type="xs:string"/>
+                <xs:element name="crypto" type="xs:string"/>
+                <xs:element name="Nx" type="xs:string"/>
+                <xs:element name="pic" type="xs:string"/>
+                <xs:element name="relro" type="xs:string"/>
+                <xs:element name="stripped" type="xs:string"/>
+                <xs:element name="endian" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="comment" >
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="point_of_interest_reference" type="xs:nonNegativeInteger"/>
+                <xs:element name="content" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="breakpoint">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="address" type="xs:nonNegativeInteger"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="watchpoint">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="target" type="xs:nonNegativeInteger"/>
+                <xs:element name="target_address" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

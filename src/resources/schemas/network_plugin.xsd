@@ -1,0 +1,175 @@
+<?xml version = "1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexType name="plugin">
+        <xs:sequence>
+            <xs:element name="name">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="Network Plugin"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element ref="point_of_interest"/>
+            <xs:element ref="output"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="point_of_interest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="attribute">
+                    <xs:complexType>
+                    <xs:choice>
+                        <xs:element ref="variable"/>
+                        <xs:element  ref="string"/>
+                        <xs:element  ref="dll"/>
+                        <xs:element  ref="packet_protocol"/>
+                        <xs:element  ref="function"/>
+                        <xs:element  ref="struct"/>
+                    </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="variable">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="attribute_type" >
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="Variable"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="value" type="xs:string"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="size" type="xs:int"/>
+                <xs:element name="from_address" type="xs:positiveInteger"/>
+                <xs:element name="value_data_type" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="string">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="attribute_type" >
+                     <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="String"/>
+                        </xs:restriction>
+                     </xs:simpleType>
+                </xs:element>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="value" type="xs:string"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="size" type="xs:int"/>
+                <xs:element name="from_address" type="xs:positiveInteger"/>
+                <xs:element name="to_address" type="xs:positiveInteger"/>
+                <xs:element name="data_type" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="dll">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="attribute_type" >
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="DLL"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="library_name" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="packet_protocol">
+         <xs:complexType>
+            <xs:sequence>
+                <xs:element name="attribute_type">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="Packet Procotol"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="field_name" type="xs:string"/>
+                <xs:element name="field_value" type="xs:string"/>
+                <xs:element name="from_address" type="xs:positiveInteger"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="function">
+         <xs:complexType>
+            <xs:sequence>
+                <xs:element name="attribute_type">
+                     <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="Function"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element ref="parameters" maxOccurs="unbounded" minOccurs="0">
+                </xs:element>
+                <xs:element name="return_type" type="xs:string"/>
+                <xs:element name="return_value" type="xs:string"/>
+                <xs:element name="from_address" type="xs:positiveInteger"/>
+                <xs:element name="to_address" type="xs:positiveInteger"/>
+                <xs:element name="python_translation" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="parameters">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="position" type="xs:positiveInteger"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="value" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="struct">
+         <xs:complexType>
+            <xs:sequence>
+                <xs:element name="attribute_type">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:pattern value="Function"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="value" type="xs:string"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name="size" type="xs:int"/>
+                <xs:element name="from_address" type="xs:positiveInteger"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="output">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="function_name" type="xs:string"/>
+                <xs:element name="function_source" type="xs:string"/>
+                <xs:element name="script_path" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
+
