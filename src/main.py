@@ -27,7 +27,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.pluginTab = tab3.Tab3(self, self)
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = tab4.fillTab4()
+        self.pointsOfInterestTab = tab4.Tab4(self,self)
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
         self.documentationTab = tab5.Tab5(self, self)
