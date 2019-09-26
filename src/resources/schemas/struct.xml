@@ -1,0 +1,13 @@
+<point_of_interest>
+    <name>Poi D</name>
+    <attribute>
+        <struct>
+            <attribute_type>Struct</attribute_type>
+            <name>struct_1</name>
+            <value>2000</value>
+            <type>pointer</type>
+            <size>4</size>
+            <from_address>900000</from_address>
+        </struct>
+    </attribute>
+</point_of_interest>

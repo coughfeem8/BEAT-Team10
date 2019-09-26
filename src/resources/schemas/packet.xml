@@ -1,0 +1,12 @@
+<point_of_interest>
+    <name>Poi F</name>
+    <attribute>
+        <packet_protocol>
+            <attribute_type>Packet Protocol</attribute_type>
+            <name>string</name>
+            <field_name>string</field_name>
+            <field_value>string</field_value>
+            <from_address>201</from_address>
+        </packet_protocol>
+    </attribute>
+</point_of_interest>

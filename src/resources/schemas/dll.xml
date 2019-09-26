@@ -1,0 +1,9 @@
+<point_of_interest>
+    <name>Poi E</name>
+    <attribute>
+        <dll>
+            <attribute_type>DLL</attribute_type>
+            <library_name>my_library</library_name>
+        </dll>
+    </attribute>
+</point_of_interest>

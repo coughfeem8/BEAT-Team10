@@ -21,14 +21,14 @@
                 <xs:element name="name" type="xs:string"/>
                 <xs:element name="attribute">
                     <xs:complexType>
-                    <xs:choice>
-                        <xs:element ref="variable"/>
-                        <xs:element  ref="string"/>
-                        <xs:element  ref="dll"/>
-                        <xs:element  ref="packet_protocol"/>
-                        <xs:element  ref="function"/>
-                        <xs:element  ref="struct"/>
-                    </xs:choice>
+                        <xs:choice>
+                            <xs:element ref="variable"/>
+                            <xs:element ref="string"/>
+                            <xs:element ref="dll"/>
+                            <xs:element ref="packet_protocol"/>
+                            <xs:element ref="function"/>
+                            <xs:element ref="struct"/>
+                        </xs:choice>
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
@@ -38,7 +38,7 @@
     <xs:element name="variable">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="attribute_type" >
+                <xs:element name="attribute_type">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:pattern value="Variable"/>
@@ -58,12 +58,12 @@
     <xs:element name="string">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="attribute_type" >
-                     <xs:simpleType>
+                <xs:element name="attribute_type">
+                    <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:pattern value="String"/>
                         </xs:restriction>
-                     </xs:simpleType>
+                    </xs:simpleType>
                 </xs:element>
                 <xs:element name="name" type="xs:string"/>
                 <xs:element name="value" type="xs:string"/>
@@ -79,7 +79,7 @@
     <xs:element name="dll">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="attribute_type" >
+                <xs:element name="attribute_type">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:pattern value="DLL"/>
@@ -92,12 +92,12 @@
     </xs:element>
 
     <xs:element name="packet_protocol">
-         <xs:complexType>
+        <xs:complexType>
             <xs:sequence>
                 <xs:element name="attribute_type">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:pattern value="Packet Procotol"/>
+                            <xs:pattern value="Packet Protocol"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
@@ -110,17 +110,17 @@
     </xs:element>
 
     <xs:element name="function">
-         <xs:complexType>
+        <xs:complexType>
             <xs:sequence>
                 <xs:element name="attribute_type">
-                     <xs:simpleType>
+                    <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:pattern value="Function"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
                 <xs:element name="name" type="xs:string"/>
-                <xs:element ref="parameters" maxOccurs="unbounded" minOccurs="0">
+                <xs:element ref="parameter" maxOccurs="unbounded" minOccurs="0">
                 </xs:element>
                 <xs:element name="return_type" type="xs:string"/>
                 <xs:element name="return_value" type="xs:string"/>
@@ -131,10 +131,10 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="parameters">
+    <xs:element name="parameter">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="position" type="xs:positiveInteger"/>
+                <xs:element name="position" type="xs:nonNegativeInteger"/>
                 <xs:element name="type" type="xs:string"/>
                 <xs:element name="value" type="xs:string"/>
             </xs:sequence>
@@ -142,12 +142,12 @@
     </xs:element>
 
     <xs:element name="struct">
-         <xs:complexType>
+        <xs:complexType>
             <xs:sequence>
                 <xs:element name="attribute_type">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
-                            <xs:pattern value="Function"/>
+                            <xs:pattern value="Struct"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>

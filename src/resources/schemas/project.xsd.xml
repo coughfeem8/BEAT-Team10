@@ -1,0 +1,30 @@
+<project>
+  <name>string</name>
+  <project_description>
+    <os>string</os>
+    <architecture>anyType</architecture>
+    <machine>string</machine>
+    <bits>string</bits>
+    <language>string</language>
+    <canary>string</canary>
+    <crypto>string</crypto>
+    <Nx>string</Nx>
+    <pic>string</pic>
+    <relro>string</relro>
+    <stripped>string</stripped>
+    <endian>string</endian>
+  </project_description>
+  <binary_path>string</binary_path>
+  <comment>
+    <point_of_interest_reference>200</point_of_interest_reference>
+    <content>string</content>
+  </comment>
+  <breakpoint>
+    <name>string</name>
+    <address>200</address>
+  </breakpoint>
+  <watchpoint>
+    <target>200</target>
+    <target_address>string</target_address>
+  </watchpoint>
+</project>

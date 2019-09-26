@@ -1,0 +1,32 @@
+<point_of_interest>
+    <name>Poi C</name>
+    <attribute>
+        <function>
+            <attribute_type>Function</attribute_type>
+            <name>sub_1234</name>
+            <!--Zero or more repetitions:-->
+            <parameter>
+                <position>0</position>
+                <type>int</type>
+                <value>10</value>
+            </parameter>
+            <parameter>
+                <position>1</position>
+                <type>"some flag value"</type>
+                <value>string</value>
+            </parameter>
+            <parameter>
+                <position>2</position>
+                <type>boolean</type>
+                <value>True</value>
+            </parameter>
+            <return_type>string</return_type>
+            <return_value>"The result is 10"</return_value>
+            <from_address>20000</from_address>
+            <to_address>200000</to_address>
+            <python_translation>def print_res(res, mess, debug): return '{} {}'.format(mess,res)</python_translation>
+        </function>
+
+
+    </attribute>
+</point_of_interest>

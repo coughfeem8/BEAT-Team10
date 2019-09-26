@@ -1,0 +1,15 @@
+<point_of_interest>
+    <name>Poi B</name>
+    <attribute>
+        <string>
+            <attribute_type>String</attribute_type>
+            <name>str_234</name>
+            <value>"Hello, World!</value>
+            <type>string</type>
+            <size>14</size>
+            <from_address>201</from_address>
+            <to_address>201</to_address>
+            <data_type>string</data_type>
+        </string>
+    </attribute>
+</point_of_interest>

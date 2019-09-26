@@ -1,0 +1,14 @@
+<point_of_interest>
+  <name>Poi a</name>
+  <attribute>
+    <variable>
+      <attribute_type>Variable</attribute_type>
+      <name>var_1</name>
+      <value>10</value>
+      <type>integer</type>
+      <size>4</size>
+      <from_address>2000</from_address>
+      <value_data_type>integer</value_data_type>
+    </variable>
+  </attribute>
+</point_of_interest>
