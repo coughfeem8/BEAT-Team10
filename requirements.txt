@@ -3,3 +3,5 @@ PyQt5==5.13.0
 PyQt5-sip==4.19.18
 PyQt5-stubs==5.13.0.1
 r2pipe==1.4.1
+xmlschema==1.0.14
+
