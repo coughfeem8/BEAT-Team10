@@ -1,106 +1,58 @@
+# Also known as tbe Point of Interest Tab
 from PyQt5 import QtCore, QtGui, QtWidgets
+import xmlschema
+import pprint
+import ui.poi
 
-def fillTab4():
-    pointsOfInterestTab = QtWidgets.QWidget()
-    pointsOfInterestTab.setObjectName("pointsOfInterestTab")
 
-    groupBox_3 = QtWidgets.QGroupBox(pointsOfInterestTab)
-    groupBox_3.setGeometry(QtCore.QRect(10, 10, 181, 550))
-    groupBox_3.setAlignment(QtCore.Qt.AlignCenter)
-    groupBox_3.setObjectName("groupBox_3")
-    verticalLayoutWidget_2 = QtWidgets.QWidget(groupBox_3)
-    verticalLayoutWidget_2.setGeometry(QtCore.QRect(10, 30, 161, 471))
-    verticalLayoutWidget_2.setObjectName("verticalLayoutWidget_2")
-    verticalLayout_2 = QtWidgets.QVBoxLayout(verticalLayoutWidget_2)
-    verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-    verticalLayout_2.setSpacing(20)
-    verticalLayout_2.setObjectName("verticalLayout_2")
-    lineEdit = QtWidgets.QLineEdit(verticalLayoutWidget_2)
-    lineEdit.setObjectName("lineEdit")
-    lineEdit.addAction(QtGui.QIcon("resources/search.png"), QtWidgets.QLineEdit.LeadingPosition)
-    verticalLayout_2.addWidget(lineEdit)
-    listWidget = QtWidgets.QListWidget(verticalLayoutWidget_2)
-    listWidget.setObjectName("listWidget")
-    listWidget.addItem("Points of Interest A")
-    listWidget.addItem("Points of Interest B")
-    listWidget.addItem("Points of Interest C")
-    listWidget.addItem("Points of Interest D")
-    verticalLayout_2.addWidget(listWidget)
-    pushButton_7 = QtWidgets.QPushButton(verticalLayoutWidget_2)
-    pushButton_7.setObjectName("pushButton_7")
-    verticalLayout_2.addWidget(pushButton_7)
+class Tab4(ui.poi.Ui_POI_tab):
+    def __init__(self, main, parent=None):
+        super(Tab4, self).__init__(parent)
+        self.setupUi(self)
 
-    frame_2 = QtWidgets.QFrame(pointsOfInterestTab)
-    frame_2.setGeometry(QtCore.QRect(219, 19, 551, 540))
-    frame_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
-    frame_2.setFrameShadow(QtWidgets.QFrame.Raised)
-    frame_2.setObjectName("frame_2")
-    gridLayoutWidget_3 = QtWidgets.QWidget(frame_2)
-    gridLayoutWidget_3.setGeometry(QtCore.QRect(9, 9, 531, 481))
-    gridLayoutWidget_3.setObjectName("gridLayoutWidget_3")
-    gridLayout_3 = QtWidgets.QGridLayout(gridLayoutWidget_3)
-    gridLayout_3.setContentsMargins(0, 0, 0, 0)
-    gridLayout_3.setObjectName("gridLayout_3")
-    pushButton_2 = QtWidgets.QPushButton(gridLayoutWidget_3)
-    pushButton_2.setObjectName("pushButton_2")
-    gridLayout_3.addWidget(pushButton_2, 3, 0, 1, 1, QtCore.Qt.AlignLeft)
-    pushButton_3 = QtWidgets.QPushButton(gridLayoutWidget_3)
-    pushButton_3.setObjectName("pushButton_3")
-    gridLayout_3.addWidget(pushButton_3, 3, 1, 1, 1, QtCore.Qt.AlignRight)
-    frame_3 = QtWidgets.QFrame(gridLayoutWidget_3)
-    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
-    sizePolicy.setHorizontalStretch(0)
-    sizePolicy.setVerticalStretch(0)
-    sizePolicy.setHeightForWidth(frame_3.sizePolicy().hasHeightForWidth())
-    frame_3.setSizePolicy(sizePolicy)
-    frame_3.setFrameShape(QtWidgets.QFrame.StyledPanel)
-    frame_3.setFrameShadow(QtWidgets.QFrame.Raised)
-    frame_3.setObjectName("frame_3")
-    label_11 = QtWidgets.QLabel(frame_3)
-    label_11.setGeometry(QtCore.QRect(160, 180, 211, 17))
-    label_11.setObjectName("label_11")
-    gridLayout_3.addWidget(frame_3, 2, 0, 1, 2)
-    label_6 = QtWidgets.QLabel(gridLayoutWidget_3)
-    sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
-    sizePolicy.setHorizontalStretch(0)
-    sizePolicy.setVerticalStretch(0)
-    sizePolicy.setHeightForWidth(label_6.sizePolicy().hasHeightForWidth())
-    label_6.setSizePolicy(sizePolicy)
-    label_6.setAlignment(QtCore.Qt.AlignCenter)
-    label_6.setObjectName("label_6")
-    gridLayout_3.addWidget(label_6, 0, 0, 1, 2, QtCore.Qt.AlignTop)
-    gridLayout_4 = QtWidgets.QGridLayout()
-    gridLayout_4.setObjectName("gridLayout_4")
-    label_12 = QtWidgets.QLabel(gridLayoutWidget_3)
-    label_12.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-    label_12.setObjectName("label_12")
-    gridLayout_4.addWidget(label_12, 0, 0, 1, 1)
-    label_13 = QtWidgets.QLabel(gridLayoutWidget_3)
-    label_13.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-    label_13.setObjectName("label_13")
-    gridLayout_4.addWidget(label_13, 1, 0, 1, 1)
-    comboBox = QtWidgets.QComboBox(gridLayoutWidget_3)
-    comboBox.setCurrentText("")
-    comboBox.setObjectName("comboBox")
-    comboBox.addItems(["Plugin A", "Plugin B", "Plugin C"])
-    gridLayout_4.addWidget(comboBox, 0, 1, 1, 1)
-    comboBox_2 = QtWidgets.QComboBox(gridLayoutWidget_3)
-    comboBox_2.setCurrentText("")
-    comboBox_2.setObjectName("comboBox_2")
-    comboBox_2.addItems(["Type A", 'Type B', "Type C"])
-    gridLayout_4.addWidget(comboBox_2, 1, 1, 1, 1)
-    gridLayout_3.addLayout(gridLayout_4, 1, 0, 1, 2)
+        self.my_schema = xmlschema.XMLSchema('resources/schemas/network_plugin.xsd')
+        self.pois = []
+        self.pois = self.dump_xml()
+        # pois = self.create_pois(self.pois)
+        self.pois_btns = [self.POI, self.POI_2, self.POI_3, self.POI_4, self.POI_5]
+        # self.setup_poi_data(pois)
+        #self.setup_poi_data(self.pois_btns, self.pois)
+        self.POI.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[0])))
+        self.POI_2.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[1])))
+        self.POI_3.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[2])))
+        self.POI_4.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[3])))
+        self.POI_5.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[4])))
 
-    _translate = QtCore.QCoreApplication.translate
 
-    pushButton_2.setText(_translate("MainWindow", "Delete"))
-    pushButton_3.setText(_translate("MainWindow", "Save"))
-    label_11.setText(_translate("MainWindow", "Point Of Interest Content Area"))
-    label_6.setText(_translate("MainWindow", "Detail Point of Interest View"))
-    label_12.setText(_translate("MainWindow", "Plugin"))
-    label_13.setText(_translate("MainWindow", "Point of Interest Type"))
+    def dump_xml(self, dataset=None):
+        # should require to get them from somewhere not straight xml.
+        xmls = ['variable', 'string', 'dll', 'packet', 'function', 'struct']
+        xml_d = []
+        for f in xmls:
+            print(self.my_schema.is_valid('resources/schemas/{}.xml'.format(f)))
+            xml_d.append(self.my_schema.to_dict('resources/schemas/{}.xml'.format(f)))
+        return xml_d
 
-    groupBox_3.setTitle(_translate("MainWindow", "Points Of Interest View"))
-    pushButton_7.setText(_translate("MainWindow", "New"))
-    
-    return pointsOfInterestTab
+    def setup_poi_data(self, buttons, pois):
+        '''fix this part to make it work better'''
+        for item, data in zip(buttons,pois):
+            print(item)
+            item.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(data)))
+
+
+    def display_editor_text(self, text):
+        self.POI_content_area.setText(text)
+
+
+    def create_pois(self, pois):
+        buttns = []
+        for poi in pois:
+            pprint.pprint(poi)
+            butn = QtWidgets.QPushButton(self.POI_list_view)
+            butn.setFlat(True)
+            butn.setObjectName(poi['name'])
+            self.verticalLayout.addWidget(butn)
+            self.POI_frame.addWidget(self.POI_list_view)
+            butn.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(poi)))
+            buttns.append(butn)
+        return buttns
