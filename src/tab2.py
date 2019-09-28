@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from src import pop
+import r2pipe
 
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -176,4 +177,6 @@ class Tab2(QtWidgets.QWidget):
         text = popUp.exec_()
         print(text)
 
+    def runDynamicAnalysis(self):
+        r2 = r2pipe.open("./main.exe")
 

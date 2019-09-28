@@ -272,8 +272,7 @@ class Tab1(QtWidgets.QWidget):
                 if not listItems: return
                 for item in listItems:
                     self.listWidget.takeItem(self.listWidget.row(item))
-                #self.listWidget.itemActivated(item)
-                #self.searchProjects()
+
         else:
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
