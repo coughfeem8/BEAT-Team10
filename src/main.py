@@ -2,14 +2,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
 
 
+
+
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
-        self.activeProj = "BEAT"
-        MainWindow.setObjectName(self.activeProj)
+
+        MainWindow.setObjectName("BEAT")
         MainWindow.resize(804, 615)
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
 
-        MainWindow.setWindowTitle(self.activeProj)
+        MainWindow.setWindowTitle("BEAT")
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -18,7 +20,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setObjectName("tabWidget")
 
 
-        self.ProjectTab = tab1.Tab1(self, self)
+        self.ProjectTab = tab1.Tab1(self, MainWindow)
         self.tabWidget.addTab(self.ProjectTab, "")
 
         self.analysisTab = tab2.Tab2(self, self)
@@ -32,6 +34,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.documentationTab = tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
+
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)

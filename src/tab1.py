@@ -2,12 +2,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
 import pymongo
 
-from src import pop
+
 
 class Tab1(QtWidgets.QWidget):
-    def __init__(self, parent, main):
+    def __init__(self, parent, mainA):
         QtWidgets.QWidget.__init__(self, parent)
-
+        global mainWin
+        mainWin = mainA
+        global activeProject
+        global saved
+        saved = False
         self.nameProject = ""
 
         mainLayout = QtWidgets.QHBoxLayout()
@@ -184,6 +188,7 @@ class Tab1(QtWidgets.QWidget):
 
     def SaveProject(self):
         if self.lineEdit_3.text() != "":
+            saved = False
             projectDb = mongoClient[self.nameProject]
             projInfo = projectDb["projectInfo"]
             info = {"ProjectName" : self.lineEdit_2.text(), "ProjectDescription" : self.textEdit_2.toPlainText(),
@@ -208,6 +213,7 @@ class Tab1(QtWidgets.QWidget):
         text, okPressed = QtWidgets.QInputDialog.getText(self, "Create New Project", "Name of Project:",
                                                          QtWidgets.QLineEdit.Normal, "")
         if okPressed and text != '':
+            activeProject = text
             self.lineEdit_2.setText("")
             self.textEdit_2.setText("")
             self.lineEdit_3.setText("")
@@ -217,7 +223,8 @@ class Tab1(QtWidgets.QWidget):
             self.listWidget.addItem(text)
             item = self.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.listWidget.setCurrentItem(item[0])
-            self.setWindowTitle('new title')
+            self.setWindowTitle('Create Project')
+            saved = True
 
     def itemActivated_event(self):
         if self.listWidget.count() != 0:
@@ -240,9 +247,15 @@ class Tab1(QtWidgets.QWidget):
                     for db in cursorBin:
                         self.fillBnryPropEmpty()
                         self.fillBnryProp(db)
+                    if(saved):
+                        mainWin.setWindowTitle("* "+self.nameProject)
+                    else:
+                        mainWin.setWindowTitle(self.nameProject)
+                    activeProject = self.nameProject
 
                 except Exception as e:
-                    print(e)
+                    #print(e)
+                    print(1)
 
     def searchProjects(self):
         global mongoClient
@@ -278,3 +291,5 @@ class Tab1(QtWidgets.QWidget):
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
 
+def getProject():
+    return activeProject

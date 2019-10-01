@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from src import pop
 import r2pipe
+import src.tab1
 
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -33,6 +34,7 @@ class Tab2(QtWidgets.QWidget):
         gridLayout.addWidget(dynamic_anal_label, 1, 2, 1, 1)
         dynamic_run_button = QtWidgets.QPushButton(self)
         dynamic_run_button.setObjectName("dynamic_run_button")
+        #dynamic_run_button.clicked.connect(self.runDynamicAnalysis)
         gridLayout.addWidget(dynamic_run_button, 1, 3, 1, 1)
         dynamic_stop_button = QtWidgets.QPushButton(self)
         dynamic_stop_button.setObjectName("dynamic_stop_button")
@@ -177,6 +179,4 @@ class Tab2(QtWidgets.QWidget):
         text = popUp.exec_()
         print(text)
 
-    def runDynamicAnalysis(self):
-        r2 = r2pipe.open("./main.exe")
 
