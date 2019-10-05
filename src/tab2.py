@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from src import pop
+import pop
 import r2pipe
-import src.tab1
+import base64
+
 
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -27,6 +28,7 @@ class Tab2(QtWidgets.QWidget):
         static_run_button = QtWidgets.QPushButton(self)
         static_run_button.setLayoutDirection(QtCore.Qt.LeftToRight)
         static_run_button.setObjectName("static_run_button")
+        static_run_button.clicked.connect(self.staticAna)
         gridLayout.addWidget(static_run_button, 1, 1, 1, 1)
         dynamic_anal_label = QtWidgets.QLabel(self)
         dynamic_anal_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -43,12 +45,12 @@ class Tab2(QtWidgets.QWidget):
         poi_label.setAlignment(QtCore.Qt.AlignCenter)
         poi_label.setObjectName("poi_label")
         gridLayout.addWidget(poi_label, 2, 0, 1, 1)
-        poi_comboBox = QtWidgets.QComboBox(self)
-        poi_comboBox.setObjectName("poi_comboBox")
-        poi_comboBox.addItem("")
-        poi_comboBox.addItem("")
-        poi_comboBox.addItem("")
-        gridLayout.addWidget(poi_comboBox, 2, 1, 1, 1)
+        self.poi_comboBox = QtWidgets.QComboBox(self)
+        self.poi_comboBox.setObjectName("poi_comboBox")
+        self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
+        gridLayout.addWidget(self.poi_comboBox, 2, 1, 1, 1)
         gridLayout_6 = QtWidgets.QGridLayout()
         gridLayout_6.setObjectName("gridLayout_6")
         horizontalLayout = QtWidgets.QHBoxLayout()
@@ -62,30 +64,13 @@ class Tab2(QtWidgets.QWidget):
         scrollArea = QtWidgets.QScrollArea(self)
         scrollArea.setWidgetResizable(True)
         scrollArea.setObjectName("scrollArea")
-        scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 243, 222))
-        scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
-        gridLayout_4 = QtWidgets.QGridLayout(scrollAreaWidgetContents_2)
-        gridLayout_4.setObjectName("gridLayout_4")
-        checkBox_4 = QtWidgets.QCheckBox(scrollAreaWidgetContents_2)
-        checkBox_4.setObjectName("checkBox_4")
-        gridLayout_4.addWidget(checkBox_4, 4, 0, 1, 1)
-        checkBox_6 = QtWidgets.QCheckBox(scrollAreaWidgetContents_2)
-        checkBox_6.setObjectName("checkBox_6")
-        gridLayout_4.addWidget(checkBox_6, 0, 0, 1, 1)
-        checkBox_3 = QtWidgets.QCheckBox(scrollAreaWidgetContents_2)
-        checkBox_3.setObjectName("checkBox_3")
-        gridLayout_4.addWidget(checkBox_3, 5, 0, 1, 1)
-        checkBox_2 = QtWidgets.QCheckBox(scrollAreaWidgetContents_2)
-        checkBox_2.setObjectName("checkBox_2")
-        gridLayout_4.addWidget(checkBox_2, 3, 0, 1, 1)
-        checkBox_5 = QtWidgets.QCheckBox(scrollAreaWidgetContents_2)
-        checkBox_5.setObjectName("checkBox_5")
-        gridLayout_4.addWidget(checkBox_5, 2, 0, 1, 1)
-        checkBox = QtWidgets.QCheckBox(scrollAreaWidgetContents_2)
-        checkBox.setObjectName("checkBox")
-        gridLayout_4.addWidget(checkBox, 1, 0, 1, 1)
-        scrollArea.setWidget(scrollAreaWidgetContents_2)
+        self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 243, 222))
+        self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+
+        scrollArea.setWidget(self.scrollAreaWidgetContents_2)
         gridLayout_6.addWidget(scrollArea, 2, 1, 1, 1)
         poi_title_label = QtWidgets.QLabel(self)
         poi_title_label.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -133,9 +118,9 @@ class Tab2(QtWidgets.QWidget):
         detailed_poi_view_label.setAlignment(QtCore.Qt.AlignCenter)
         detailed_poi_view_label.setObjectName("detailed_poi_view_label")
         gridLayout.addWidget(detailed_poi_view_label, 3, 2, 1, 3)
-    
+
         _translate = QtCore.QCoreApplication.translate
-    
+
         plugin_label.setText(_translate("MainWindow", "Plugin"))
         plugin_comboBox.setItemText(0, _translate("MainWindow", "Plugin A"))
         plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin B"))
@@ -146,15 +131,9 @@ class Tab2(QtWidgets.QWidget):
         dynamic_run_button.setText(_translate("MainWindow", "Run"))
         dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
         poi_label.setText(_translate("MainWindow", "Point of Interest"))
-        poi_comboBox.setItemText(0, _translate("MainWindow", "DLL"))
-        poi_comboBox.setItemText(1, _translate("MainWindow", "Structs"))
-        poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        checkBox_4.setText(_translate("MainWindow", "Point of Interest E"))
-        checkBox_6.setText(_translate("MainWindow", "Point of Interest A"))
-        checkBox_3.setText(_translate("MainWindow", "Point of Interest X"))
-        checkBox_2.setText(_translate("MainWindow", "Point of Interest D"))
-        checkBox_5.setText(_translate("MainWindow", "Point of Interest C"))
-        checkBox.setText(_translate("MainWindow", "Point of Interest B"))
+        self.poi_comboBox.setItemText(0, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
         poi_title_label.setText(_translate("MainWindow",
                                                 "<html><head/><body><p><span style=\" font-weight:600;\">Point of Interest View</span></p></body></html>"))
         a_pushButton.setText(_translate("MainWindow", "A"))
@@ -179,4 +158,53 @@ class Tab2(QtWidgets.QWidget):
         text = popUp.exec_()
         print(text)
 
+    def staticAna(self):
+        for i in reversed(range(self.gridLayout_4.count())):
+            self.gridLayout_4.itemAt(i).widget().setParent(None)
+        try:
 
+            rlocal = r2pipe.open("./server.out")
+            rlocal.cmd("aaa")
+
+            if(str(self.poi_comboBox.currentText()) == 'Functions'):
+                all_recvs = rlocal.cmdj("aflj")
+
+                i = 0
+                for rec in all_recvs:
+                    checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                    checkBoxRecv.setText(rec["signature"])
+                    self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                    i+=1
+
+            elif(str(self.poi_comboBox.currentText()) == 'Structs'):
+                all_recvs = rlocal.cmdj("axtj sym.imp.recv")
+                all_sends = rlocal.cmdj("axtj sym.imp.send")
+
+                i = 0
+                for rec in all_recvs:
+                    insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
+                    checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                    checkBoxRecv.setText("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"])
+                    self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                    i+=1
+
+                for send in all_sends:
+                    insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
+                    checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                    checkBoxSend.setText("send "+insert_send["calling_function"] +" "+ insert_send["address"])
+                    self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                    i+=1
+
+            elif(str(self.poi_comboBox.currentText()) == 'Strings'):
+                strings = rlocal.cmdj("izzj")
+
+                i = 0
+                for strng in strings:
+                    if(strng["section"] == '.rodata'):
+                        checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                        checkBoxSend.setText((base64.b64decode(strng["string"])).decode())
+                        self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                        i+=1
+
+        except Exception as e:
+            print("Error " + str(e))

@@ -250,7 +250,7 @@ class Tab1(QtWidgets.QWidget):
                     if(saved):
                         mainWin.setWindowTitle("* "+self.nameProject)
                     else:
-                        mainWin.setWindowTitle(self.nameProject)
+                        mainWin.setWindowTitle("BEAT | "+self.nameProject)
                     activeProject = self.nameProject
 
                 except Exception as e:
