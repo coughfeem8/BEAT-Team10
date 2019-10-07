@@ -2,7 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import pop
 import r2pipe
 import base64
-
+from singleton import Singleton
+import pymongo
 
 
 class Tab2(QtWidgets.QWidget):
@@ -51,6 +52,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
         gridLayout.addWidget(self.poi_comboBox, 2, 1, 1, 1)
         gridLayout_6 = QtWidgets.QGridLayout()
         gridLayout_6.setObjectName("gridLayout_6")
@@ -95,9 +97,9 @@ class Tab2(QtWidgets.QWidget):
         scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         gridLayout_2 = QtWidgets.QGridLayout(scrollAreaWidgetContents_3)
         gridLayout_2.setObjectName("gridLayout_2")
-        poi_content_area_textEdit = QtWidgets.QTextEdit(scrollAreaWidgetContents_3)
-        poi_content_area_textEdit.setObjectName("poi_content_area_textEdit")
-        gridLayout_2.addWidget(poi_content_area_textEdit, 0, 0, 1, 1)
+        self.poi_content_area_textEdit = QtWidgets.QTextEdit(scrollAreaWidgetContents_3)
+        self.poi_content_area_textEdit.setObjectName("poi_content_area_textEdit")
+        gridLayout_2.addWidget(self.poi_content_area_textEdit, 0, 0, 1, 1)
         c_pushButton = QtWidgets.QPushButton(scrollAreaWidgetContents_3)
         c_pushButton.setMaximumSize(QtCore.QSize(16, 20))
         c_pushButton.clicked.connect(self.openComment)
@@ -135,6 +137,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "Functions"))
         self.poi_comboBox.setItemText(1, _translate("MainWindow", "Structs"))
         self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLL"))
         poi_title_label.setText(_translate("MainWindow",
                                                 "<html><head/><body><p><span style=\" font-weight:600;\">Point of Interest View</span></p></body></html>"))
         a_pushButton.setText(_translate("MainWindow", "A"))
@@ -160,13 +163,29 @@ class Tab2(QtWidgets.QWidget):
         print(text)
 
     def staticAna(self):
-        #s = Singleton.getInstance()
-        #print(s)
+        s = Singleton.getProject()
+        if (s=="BEAT"):
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("Run Static Analysis")
+            msg.setText("Please select a project")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.exec_()
+            return
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+        projInfo = projectDb["projectInfo"]
+        cursor = projInfo.find()
+        for db in cursor:
+            binaryFile = db['BnyFilePath']
+
+        checkBoxes = {}
+
         for i in reversed(range(self.gridLayout_4.count())):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         try:
 
-            rlocal = r2pipe.open("./server.out")
+            rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
 
             if(str(self.poi_comboBox.currentText()) == 'Functions'):
@@ -188,6 +207,7 @@ class Tab2(QtWidgets.QWidget):
                     insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
                     checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
                     checkBoxRecv.setText("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"])
+                    checkBoxRecv.stateChanged.connect(lambda: self.checkState(checkBoxRecv.text()))
                     self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                     i+=1
 
@@ -195,6 +215,7 @@ class Tab2(QtWidgets.QWidget):
                     insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
                     checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
                     checkBoxSend.setText("send "+insert_send["calling_function"] +" "+ insert_send["address"])
+                    checkBoxSend.stateChanged.connect(self.checkState)
                     self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
                     i+=1
 
@@ -208,6 +229,18 @@ class Tab2(QtWidgets.QWidget):
                         checkBoxSend.setText((base64.b64decode(strng["string"])).decode())
                         self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
                         i+=1
-
+            elif(self.poi_comboBox.currentText() == 'DLL'):
+                DLL = rlocal.cmdj("afvdj")
+                i=0
+                for dl in DLL:
+                    print(dl)
         except Exception as e:
             print("Error " + str(e))
+
+    def checkState(self, state):
+        print(state)
+        #if b.isChecked() == True:
+         #   text = self.poi_content_area_textEdit.toPlainText()
+         #   text+= "\n"+b.text()
+         #   self.poi_content_area_textEdit.setPlainText(text)
+

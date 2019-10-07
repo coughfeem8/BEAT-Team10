@@ -117,7 +117,6 @@ class Tab1(QtWidgets.QWidget):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic",
                       "Endian"]
 
-
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(2)
         self.tableWidget.setRowCount(12)
@@ -167,8 +166,6 @@ class Tab1(QtWidgets.QWidget):
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
                                                   "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
 
-        s = Singleton.getProject()
-        print(s)
         if fileName:
             try:
                 global r2BinInfo
@@ -236,7 +233,7 @@ class Tab1(QtWidgets.QWidget):
             if projectName:
                 self.nameProject = str(projectName[0], 'utf-8')
                 try:
-
+                    Singleton.setProject(self.nameProject)
                     projectDb = mongoClient[self.nameProject]
                     projInfo = projectDb["projectInfo"]
                     binInfo = projectDb["binaryInfo"]
