@@ -1,8 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
-
-
-
+from singleton import Singleton
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
@@ -12,7 +10,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
 
         MainWindow.setWindowTitle("BEAT")
-
+        s = Singleton()
+        s.setProject("BEAT")
+        print(s.getProject())
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)

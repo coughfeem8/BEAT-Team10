@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
 import pymongo
-
+from singleton import Singleton
 
 
 class Tab1(QtWidgets.QWidget):
@@ -166,6 +166,9 @@ class Tab1(QtWidgets.QWidget):
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
                                                   "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
+
+        s = Singleton.getProject()
+        print(s)
         if fileName:
             try:
                 global r2BinInfo

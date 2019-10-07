@@ -4,6 +4,7 @@ import r2pipe
 import base64
 
 
+
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
         QtWidgets.QWidget.__init__(self, parent)
@@ -159,6 +160,8 @@ class Tab2(QtWidgets.QWidget):
         print(text)
 
     def staticAna(self):
+        #s = Singleton.getInstance()
+        #print(s)
         for i in reversed(range(self.gridLayout_4.count())):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         try:
