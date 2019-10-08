@@ -205,6 +205,19 @@ class Tab2(QtWidgets.QWidget):
                 POI = {"POI_type": "function", "Signature": rec["signature"]}
                 insert_info = project_POI.insert(POI, check_keys=False)
 
+            # Gets all variables in JSON format
+            for variable in rlocal.cmd("afvd").split("\n"):
+                var = variable.split()
+                if var[var.index("=") + 1] == ":":
+                    var_value = None
+                    var.insert(var.index('=') + 1, var_value)
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText("%s %s" % (var[0], var[1]))
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                POI = {"POI_type": "variable", "variable_type": var[0], "variable_name": var[1],
+                       "variable_value": var[3], "variable_reg": var[5], "variable_loc": var[7]}
+                insert_info = project_POI.insert(POI, check_keys=False)
+
             # Gets all structs in JSON format
             all_recvs = rlocal.cmdj("axtj sym.imp.recv")
             all_sends = rlocal.cmdj("axtj sym.imp.send")
