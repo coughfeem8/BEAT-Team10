@@ -53,6 +53,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
         gridLayout.addWidget(self.poi_comboBox, 2, 1, 1, 1)
         gridLayout_6 = QtWidgets.QGridLayout()
         gridLayout_6.setObjectName("gridLayout_6")
@@ -134,10 +135,11 @@ class Tab2(QtWidgets.QWidget):
         dynamic_run_button.setText(_translate("MainWindow", "Run"))
         dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
         poi_label.setText(_translate("MainWindow", "Point of Interest"))
-        self.poi_comboBox.setItemText(0, _translate("MainWindow", "Functions"))
-        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Structs"))
-        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLL"))
+        self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
+        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "Strings"))
+        self.poi_comboBox.setItemText(4, _translate("MainWindow", "DLL"))
         poi_title_label.setText(_translate("MainWindow",
                                                 "<html><head/><body><p><span style=\" font-weight:600;\">Point of Interest View</span></p></body></html>"))
         a_pushButton.setText(_translate("MainWindow", "A"))
@@ -185,55 +187,58 @@ class Tab2(QtWidgets.QWidget):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         try:
 
+
+
             rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
 
-            if(str(self.poi_comboBox.currentText()) == 'Functions'):
-                all_recvs = rlocal.cmdj("aflj")
+            i = 0
+            #if(str(self.poi_comboBox.currentText()) == 'Functions'):
+            all_recvs = rlocal.cmdj("aflj")
 
-                i = 0
-                for rec in all_recvs:
-                    checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                    checkBoxRecv.setText(rec["signature"])
-                    self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
-                    i+=1
+                #i = 0
+            for rec in all_recvs:
+                checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText(rec["signature"])
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i+=1
 
-            elif(str(self.poi_comboBox.currentText()) == 'Structs'):
-                all_recvs = rlocal.cmdj("axtj sym.imp.recv")
-                all_sends = rlocal.cmdj("axtj sym.imp.send")
+            #elif(str(self.poi_comboBox.currentText()) == 'Structs'):
+            all_recvs = rlocal.cmdj("axtj sym.imp.recv")
+            all_sends = rlocal.cmdj("axtj sym.imp.send")
 
-                i = 0
-                for rec in all_recvs:
-                    insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
-                    checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                    checkBoxRecv.setText("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"])
-                    checkBoxRecv.stateChanged.connect(lambda: self.checkState(checkBoxRecv.text()))
-                    self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
-                    i+=1
+                #i = 0
+            for rec in all_recvs:
+                insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
+                checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"])
+                checkBoxRecv.stateChanged.connect(lambda: self.checkState(checkBoxRecv.text()))
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i+=1
 
-                for send in all_sends:
-                    insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
+            for send in all_sends:
+                insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
+                checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxSend.setText("send "+insert_send["calling_function"] +" "+ insert_send["address"])
+                checkBoxSend.stateChanged.connect(self.checkState)
+                self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                i+=1
+
+            #elif(str(self.poi_comboBox.currentText()) == 'Strings'):
+            strings = rlocal.cmdj("izzj")
+
+                #i = 0
+            for strng in strings:
+                if(strng["section"] == '.rodata'):
                     checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                    checkBoxSend.setText("send "+insert_send["calling_function"] +" "+ insert_send["address"])
-                    checkBoxSend.stateChanged.connect(self.checkState)
+                    checkBoxSend.setText((base64.b64decode(strng["string"])).decode())
                     self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
                     i+=1
-
-            elif(str(self.poi_comboBox.currentText()) == 'Strings'):
-                strings = rlocal.cmdj("izzj")
-
-                i = 0
-                for strng in strings:
-                    if(strng["section"] == '.rodata'):
-                        checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                        checkBoxSend.setText((base64.b64decode(strng["string"])).decode())
-                        self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
-                        i+=1
-            elif(self.poi_comboBox.currentText() == 'DLL'):
-                DLL = rlocal.cmdj("afvdj")
-                i=0
-                for dl in DLL:
-                    print(dl)
+            #elif(self.poi_comboBox.currentText() == 'DLL'):
+            DLL = rlocal.cmdj("afvdj")
+                #i=0
+            for dl in DLL:
+                print(dl)
         except Exception as e:
             print("Error " + str(e))
 
