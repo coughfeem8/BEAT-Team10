@@ -181,13 +181,12 @@ class Tab2(QtWidgets.QWidget):
         for db in cursor:
             binaryFile = db['BnyFilePath']
 
-        checkBoxes = {}
 
         for i in reversed(range(self.gridLayout_4.count())):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         try:
 
-            project_POI = projectDb["project_POI"]
+            fnctDB = projectDb["functions"]
 
             rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
@@ -195,17 +194,18 @@ class Tab2(QtWidgets.QWidget):
             i = 0
 
             # Gets all functions is JSON format
-            all_recvs = rlocal.cmdj("aflj")
+            functions = rlocal.cmdj("aflj")
 
-            for rec in all_recvs:
+            for fc in functions:
                 checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText(rec["signature"])
+                checkBoxRecv.setText(fc["signature"])
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                 i += 1
-                POI = {"POI_type": "function", "Signature": rec["signature"]}
-                insert_info = project_POI.insert(POI, check_keys=False)
-
+                insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
+                fnctDB.insert_one(insert_info)
+            print("vars")
             # Gets all variables in JSON format
+            varDB = projectDb["variable"]
             for variable in rlocal.cmd("afvd").split("\n"):
                 var = variable.split()
                 if var[var.index("=") + 1] == ":":
@@ -214,11 +214,11 @@ class Tab2(QtWidgets.QWidget):
                 checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
                 checkBoxRecv.setText("%s %s" % (var[0], var[1]))
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
-                POI = {"POI_type": "variable", "variable_type": var[0], "variable_name": var[1],
-                       "variable_value": var[3], "variable_reg": var[5], "variable_loc": var[7]}
-                insert_info = project_POI.insert(POI, check_keys=False)
+                i += 1
+                varDB.insert_one(variable)
 
             # Gets all structs in JSON format
+            strucDB = projectDb["structures"]
             all_recvs = rlocal.cmdj("axtj sym.imp.recv")
             all_sends = rlocal.cmdj("axtj sym.imp.send")
 
@@ -229,8 +229,7 @@ class Tab2(QtWidgets.QWidget):
                 checkBoxRecv.stateChanged.connect(lambda: self.checkState(checkBoxRecv.text()))
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                 i += 1
-                POI = {"POI_type": "struct_recv", "calling_function": insert_recv["calling_function"], "address": insert_recv["address"]}
-                insert_info = project_POI.insert(POI, check_keys=False)
+                strucDB.insert_one(rec)
 
             for send in all_sends:
                 insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
@@ -239,25 +238,30 @@ class Tab2(QtWidgets.QWidget):
                 checkBoxSend.stateChanged.connect(self.checkState)
                 self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
                 i += 1
-                POI = {"POI_type": "struct_send", "calling_function": insert_send["calling_function"], "address": insert_send["address"]}
-                insert_info = project_POI.insert(POI, check_keys=False)
+                strucDB.insert_one(send)
+
 
             # Gets all strings in JSON format
             strings = rlocal.cmdj("izzj")
-
+            strDB = projectDb["string"]
             for string in strings:
                 if(string["section"] == '.rodata'):
                     checkBoxSend = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
                     checkBoxSend.setText((base64.b64decode(string["string"])).decode())
                     self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
                     i += 1
-                    POI = {"POI_type": "string", "Value": (base64.b64decode(string["string"])).decode()}
-                    insert_info = project_POI.insert(POI, check_keys=False)
+                    strDB.insert_one(string)
 
-            # Gets all DLLs in JSON format
-            DLL = rlocal.cmdj("afvdj")
-            for dl in DLL:
-                print(dl)
+            # Gets all imports in JSON format
+            imports = rlocal.cmdj("iij")
+            impDB = projectDb["imports"]
+            for dl in imports:
+                checkBoxSend = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxSend.setText(dl["name"]+" "+dl["type"])
+                self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                i += 1
+                impDB.insert_one(dl)
+
 
         except Exception as e:
             print("Error " + str(e))
