@@ -54,6 +54,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
+
         gridLayout.addWidget(self.poi_comboBox, 2, 1, 1, 1)
         gridLayout_6 = QtWidgets.QGridLayout()
         gridLayout_6.setObjectName("gridLayout_6")
@@ -123,6 +124,8 @@ class Tab2(QtWidgets.QWidget):
         detailed_poi_view_label.setObjectName("detailed_poi_view_label")
         gridLayout.addWidget(detailed_poi_view_label, 3, 2, 1, 3)
 
+        self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poiComBxChng(text = self.poi_comboBox.currentText()))
+
         _translate = QtCore.QCoreApplication.translate
 
         plugin_label.setText(_translate("MainWindow", "Plugin"))
@@ -174,6 +177,7 @@ class Tab2(QtWidgets.QWidget):
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             msg.exec_()
             return
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         projectDb = mongoClient[s]
         projInfo = projectDb["projectInfo"]
@@ -181,21 +185,18 @@ class Tab2(QtWidgets.QWidget):
         for db in cursor:
             binaryFile = db['BnyFilePath']
 
-
         for i in reversed(range(self.gridLayout_4.count())):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         try:
-
-            fnctDB = projectDb["functions"]
-
             rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
-
             i = 0
 
             # Gets all functions is JSON format
             functions = rlocal.cmdj("aflj")
-
+            if projectDb["functions"]:
+                projectDb.drop_collection("functions")
+            fnctDB = projectDb["functions"]
             for fc in functions:
                 checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
                 checkBoxRecv.setText(fc["signature"])
@@ -203,21 +204,25 @@ class Tab2(QtWidgets.QWidget):
                 i += 1
                 insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
                 fnctDB.insert_one(insert_info)
-            print("vars")
+
             # Gets all variables in JSON format
+            '''
             varDB = projectDb["variable"]
-            for variable in rlocal.cmd("afvd").split("\n"):
-                var = variable.split()
-                if var[var.index("=") + 1] == ":":
-                    var_value = None
-                    var.insert(var.index('=') + 1, var_value)
+            var = rlocal.cmdj("afvj")
+            for variable in var:
+                #var = variable.split()
+                #if var[var.index("=") + 1] == ":":
+                #    var_value = None
+                #    var.insert(var.index('=') + 1, var_value)
                 checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText("%s %s" % (var[0], var[1]))
+                checkBoxRecv.setText("%s %s" % (variable[0], variable[1]))
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                 i += 1
                 varDB.insert_one(variable)
-
+            '''
             # Gets all structs in JSON format
+            if projectDb["structures"]:
+                projectDb.drop_collection("structures")
             strucDB = projectDb["structures"]
             all_recvs = rlocal.cmdj("axtj sym.imp.recv")
             all_sends = rlocal.cmdj("axtj sym.imp.send")
@@ -243,6 +248,8 @@ class Tab2(QtWidgets.QWidget):
 
             # Gets all strings in JSON format
             strings = rlocal.cmdj("izzj")
+            if projectDb["string"]:
+                projectDb.drop_collection("string")
             strDB = projectDb["string"]
             for string in strings:
                 if(string["section"] == '.rodata'):
@@ -254,6 +261,8 @@ class Tab2(QtWidgets.QWidget):
 
             # Gets all imports in JSON format
             imports = rlocal.cmdj("iij")
+            if projectDb["imports"]:
+                projectDb.drop_collection("imports")
             impDB = projectDb["imports"]
             for dl in imports:
                 checkBoxSend = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
@@ -265,11 +274,90 @@ class Tab2(QtWidgets.QWidget):
 
         except Exception as e:
             print("Error " + str(e))
+        QtWidgets.QApplication.restoreOverrideCursor()
 
     def checkState(self, state):
         print(state)
-        #if b.isChecked() == True:
-         #   text = self.poi_content_area_textEdit.toPlainText()
-         #   text+= "\n"+b.text()
-         #   self.poi_content_area_textEdit.setPlainText(text)
 
+    def poiComBxChng(self, text):
+        s = Singleton.getProject()
+        if s == "BEAT":
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("Run Static Analysis")
+            msg.setText("Please select a project")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.exec_()
+            return
+
+        for i in reversed(range(self.gridLayout_4.count())):
+            self.gridLayout_4.itemAt(i).widget().setParent(None)
+
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+        i =0
+
+        if text == "Functions":
+            projInfo = projectDb["functions"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText(db["signature"])
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+        elif text == "DLL":
+            projInfo = projectDb["imports"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText(db["name"]+" "+db["type"])
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+
+        elif text == "Structs":
+            projInfo = projectDb["structures"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText("recv "+db["fcn_name"] +" "+ hex(db["from"]))
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+
+        elif text == "Strings":
+            projInfo = projectDb["string"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText((base64.b64decode(db["string"])).decode())
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+
+        elif text == "All":
+            projInfo = projectDb["functions"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText(db["signature"])
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+            projInfo = projectDb["string"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText((base64.b64decode(db["string"])).decode())
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+            projInfo = projectDb["structures"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText("recv "+db["fcn_name"] +" "+ hex(db["from"]))
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+            projInfo = projectDb["imports"]
+            cursor = projInfo.find()
+            for db in cursor:
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText(db["name"]+" "+db["type"])
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1

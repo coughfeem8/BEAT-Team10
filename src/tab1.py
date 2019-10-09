@@ -167,6 +167,7 @@ class Tab1(QtWidgets.QWidget):
                                                   "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
 
         if fileName:
+            QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             try:
                 global r2BinInfo
                 self.lineEdit_3.setText(fileName)
@@ -179,12 +180,13 @@ class Tab1(QtWidgets.QWidget):
                     return
 
                 self.fillBnryProp(r2BinInfo)
+
             except Exception as e:
                 msg = QtWidgets.QMessageBox()
                 msg.setText(str(e))
                 msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
                 retval = msg.exec_()
-
+            QtWidgets.QApplication.restoreOverrideCursor()
 
     def SaveProject(self):
         if self.lineEdit_3.text() != "":

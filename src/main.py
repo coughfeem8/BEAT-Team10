@@ -12,7 +12,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         MainWindow.setWindowTitle("BEAT")
         s = Singleton()
         s.setProject("BEAT")
-        print(s.getProject())
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
