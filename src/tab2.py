@@ -136,10 +136,10 @@ class Tab2(QtWidgets.QWidget):
         dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
         poi_label.setText(_translate("MainWindow", "Point of Interest"))
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
-        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Structs"))
-        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLL"))
-        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "Strings"))
+        self.poi_comboBox.setItemText(4, _translate("MainWindow", "DLL"))
         poi_title_label.setText(_translate("MainWindow",
                                                 "<html><head/><body><p><span style=\" font-weight:600;\">Point of Interest View</span></p></body></html>"))
         a_pushButton.setText(_translate("MainWindow", "A"))
@@ -181,33 +181,83 @@ class Tab2(QtWidgets.QWidget):
         for db in cursor:
             binaryFile = db['BnyFilePath']
 
+        checkBoxes = {}
+
         for i in reversed(range(self.gridLayout_4.count())):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         try:
 
+            project_POI = projectDb["project_POI"]
+
             rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
 
-            functions = rlocal.cmdj("aflj")
+            i = 0
+
+            # Gets all functions is JSON format
+            all_recvs = rlocal.cmdj("aflj")
+
+            for rec in all_recvs:
+                checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText(rec["signature"])
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+                POI = {"POI_type": "function", "Signature": rec["signature"]}
+                insert_info = project_POI.insert(POI, check_keys=False)
+
+            # Gets all variables in JSON format
+            for variable in rlocal.cmd("afvd").split("\n"):
+                var = variable.split()
+                if var[var.index("=") + 1] == ":":
+                    var_value = None
+                    var.insert(var.index('=') + 1, var_value)
+                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText("%s %s" % (var[0], var[1]))
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                POI = {"POI_type": "variable", "variable_type": var[0], "variable_name": var[1],
+                       "variable_value": var[3], "variable_reg": var[5], "variable_loc": var[7]}
+                insert_info = project_POI.insert(POI, check_keys=False)
+
+            # Gets all structs in JSON format
             all_recvs = rlocal.cmdj("axtj sym.imp.recv")
             all_sends = rlocal.cmdj("axtj sym.imp.send")
+
+            for rec in all_recvs:
+                insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
+                checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxRecv.setText("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"])
+                checkBoxRecv.stateChanged.connect(lambda: self.checkState(checkBoxRecv.text()))
+                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                i += 1
+                POI = {"POI_type": "struct_recv", "calling_function": insert_recv["calling_function"], "address": insert_recv["address"]}
+                insert_info = project_POI.insert(POI, check_keys=False)
+
+            for send in all_sends:
+                insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
+                checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                checkBoxSend.setText("send "+insert_send["calling_function"] +" "+ insert_send["address"])
+                checkBoxSend.stateChanged.connect(self.checkState)
+                self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                i += 1
+                POI = {"POI_type": "struct_send", "calling_function": insert_send["calling_function"], "address": insert_send["address"]}
+                insert_info = project_POI.insert(POI, check_keys=False)
+
+            # Gets all strings in JSON format
             strings = rlocal.cmdj("izzj")
-            dll = rlocal.cmdj("iij")
 
-            func = projectDb["functions"]
-            stri = projectDb["strings"]
-            imprt = projectDb["imports"]
-            structs = rlocal.cmdj("tj")
-            for st in structs:
-                print(st)
-                print("\n")
+            for string in strings:
+                if(string["section"] == '.rodata'):
+                    checkBoxSend = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                    checkBoxSend.setText((base64.b64decode(string["string"])).decode())
+                    self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                    i += 1
+                    POI = {"POI_type": "string", "Value": (base64.b64decode(string["string"])).decode()}
+                    insert_info = project_POI.insert(POI, check_keys=False)
 
-            for fc in functions:
-                func.insert_one(fc)
-            for strs in strings:
-                stri.insert_one(strs)
-            for imp in dll:
-                imprt.insert_one(imp)
+            # Gets all DLLs in JSON format
+            DLL = rlocal.cmdj("afvdj")
+            for dl in DLL:
+                print(dl)
 
         except Exception as e:
             print("Error " + str(e))
