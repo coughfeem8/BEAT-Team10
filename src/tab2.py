@@ -9,44 +9,45 @@ import pymongo
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
         QtWidgets.QWidget.__init__(self, parent)
-        gridLayout = QtWidgets.QGridLayout(self)
-        gridLayout.setObjectName("gridLayout")
-        plugin_label = QtWidgets.QLabel(self)
-        plugin_label.setAlignment(QtCore.Qt.AlignCenter)
-        plugin_label.setObjectName("plugin_label")
-        gridLayout.addWidget(plugin_label, 0, 0, 1, 1)
-        plugin_comboBox = QtWidgets.QComboBox(self)
-        plugin_comboBox.setMaxVisibleItems(10)
-        plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
-        plugin_comboBox.setObjectName("plugin_comboBox")
-        plugin_comboBox.addItem("")
-        plugin_comboBox.addItem("")
-        plugin_comboBox.addItem("")
-        gridLayout.addWidget(plugin_comboBox, 0, 1, 1, 1)
-        static_anal_label = QtWidgets.QLabel(self)
-        static_anal_label.setAlignment(QtCore.Qt.AlignCenter)
-        static_anal_label.setObjectName("static_anal_label")
-        gridLayout.addWidget(static_anal_label, 1, 0, 1, 1)
-        static_run_button = QtWidgets.QPushButton(self)
-        static_run_button.setLayoutDirection(QtCore.Qt.LeftToRight)
-        static_run_button.setObjectName("static_run_button")
-        static_run_button.clicked.connect(self.staticAna)
-        gridLayout.addWidget(static_run_button, 1, 1, 1, 1)
-        dynamic_anal_label = QtWidgets.QLabel(self)
-        dynamic_anal_label.setAlignment(QtCore.Qt.AlignCenter)
-        dynamic_anal_label.setObjectName("dynamic_anal_label")
-        gridLayout.addWidget(dynamic_anal_label, 1, 2, 1, 1)
-        dynamic_run_button = QtWidgets.QPushButton(self)
-        dynamic_run_button.setObjectName("dynamic_run_button")
-        #dynamic_run_button.clicked.connect(self.runDynamicAnalysis)
-        gridLayout.addWidget(dynamic_run_button, 1, 3, 1, 1)
-        dynamic_stop_button = QtWidgets.QPushButton(self)
-        dynamic_stop_button.setObjectName("dynamic_stop_button")
-        gridLayout.addWidget(dynamic_stop_button, 1, 4, 1, 2)
-        poi_label = QtWidgets.QLabel(self)
-        poi_label.setAlignment(QtCore.Qt.AlignCenter)
-        poi_label.setObjectName("poi_label")
-        gridLayout.addWidget(poi_label, 2, 0, 1, 1)
+        self.gridLayout_2 = QtWidgets.QGridLayout(self)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+
+        self.plugin_label = QtWidgets.QLabel(self)
+        self.plugin_label.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.plugin_label.setObjectName("plugin_label")
+        self.gridLayout_2.addWidget(self.plugin_label, 0, 0, 1, 1)
+
+        self.plugin_comboBox = QtWidgets.QComboBox(self)
+        self.plugin_comboBox.setMaxVisibleItems(10)
+        self.plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
+        self.plugin_comboBox.setObjectName("plugin_comboBox")
+        self.plugin_comboBox.addItem("")
+        self.plugin_comboBox.addItem("")
+        self.plugin_comboBox.addItem("")
+        self.gridLayout_2.addWidget(self.plugin_comboBox, 0, 1, 1, 1)
+
+        self.static_anal_label = QtWidgets.QLabel(self)
+        self.static_anal_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.static_anal_label.setObjectName("static_anal_label")
+        self.gridLayout_2.addWidget(self.static_anal_label, 1, 0, 1, 1)
+        self.static_run_button = QtWidgets.QPushButton(self)
+        self.static_run_button.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.static_run_button.setObjectName("static_run_button")
+        self.gridLayout_2.addWidget(self.static_run_button, 1, 1, 1, 1)
+        self.static_run_button.clicked.connect(self.staticAna)
+
+        self.dynamic_anal_label = QtWidgets.QLabel(self)
+        self.dynamic_anal_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.dynamic_anal_label.setObjectName("dynamic_anal_label")
+        self.gridLayout_2.addWidget(self.dynamic_anal_label, 1, 2, 1, 1)
+        self.dynamic_run_button = QtWidgets.QPushButton(self)
+        self.dynamic_run_button.setObjectName("dynamic_run_button")
+        self.gridLayout_2.addWidget(self.dynamic_run_button, 1, 3, 2, 1)
+        self.dynamic_stop_button = QtWidgets.QPushButton(self)
+        self.dynamic_stop_button.setObjectName("dynamic_stop_button")
+        self.gridLayout_2.addWidget(self.dynamic_stop_button, 1, 4, 2, 1)
+
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
         self.poi_comboBox.addItem("")
@@ -54,102 +55,126 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
+        self.gridLayout_2.addWidget(self.poi_comboBox, 2, 1, 2, 1)
 
-        gridLayout.addWidget(self.poi_comboBox, 2, 1, 1, 1)
-        gridLayout_6 = QtWidgets.QGridLayout()
-        gridLayout_6.setObjectName("gridLayout_6")
-        horizontalLayout = QtWidgets.QHBoxLayout()
-        horizontalLayout.setObjectName("horizontalLayout")
-        search_bar_lineEdit = QtWidgets.QLineEdit(self)
-        search_bar_lineEdit.setFrame(True)
-        search_bar_lineEdit.setObjectName("search_bar_lineEdit")
-        search_bar_lineEdit.addAction(QtGui.QIcon("resources/search.png"), QtWidgets.QLineEdit.LeadingPosition)
-        horizontalLayout.addWidget(search_bar_lineEdit)
-        gridLayout_6.addLayout(horizontalLayout, 1, 1, 1, 1)
-        scrollArea = QtWidgets.QScrollArea(self)
-        scrollArea.setWidgetResizable(True)
-        scrollArea.setObjectName("scrollArea")
+        self.poi_label = QtWidgets.QLabel(self)
+        self.poi_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.poi_label.setObjectName("poi_label")
+        self.gridLayout_2.addWidget(self.poi_label, 3, 0, 1, 1)
+
+        self.comment_PushButton = QtWidgets.QPushButton(self)
+        self.comment_PushButton.setObjectName("comment_PushButton")
+        self.gridLayout_2.addWidget(self.comment_PushButton, 3, 2, 1, 1)
+        self.comment_PushButton.clicked.connect(self.openComment)
+
+        self.analysis_PushButton = QtWidgets.QPushButton(self)
+        self.analysis_PushButton.setObjectName("analysis_PushButton")
+        self.gridLayout_2.addWidget(self.analysis_PushButton, 3, 3, 1, 1)
+        self.analysis_PushButton.clicked.connect(self.openAnalysis)
+
+        self.output_PushButton = QtWidgets.QPushButton(self)
+        self.output_PushButton.setObjectName("output_PushButton")
+        self.gridLayout_2.addWidget(self.output_PushButton, 3, 4, 1, 1)
+        self.output_PushButton.clicked.connect(self.openOutput)
+
+        self.gridLayout_6 = QtWidgets.QGridLayout()
+        self.gridLayout_6.setObjectName("gridLayout_6")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+
+        self.search_bar_lineEdit = QtWidgets.QLineEdit(self)
+        self.search_bar_lineEdit.setFrame(True)
+        self.search_bar_lineEdit.setObjectName("search_bar_lineEdit")
+        self.horizontalLayout.addWidget(self.search_bar_lineEdit)
+
+        self.gridLayout_6.addLayout(self.horizontalLayout, 1, 1, 1, 1)
+        self.scrollArea = QtWidgets.QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 243, 222))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 332, 383))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
+
         self.gridLayout_4 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_4.setObjectName("gridLayout_4")
 
-        scrollArea.setWidget(self.scrollAreaWidgetContents_2)
-        gridLayout_6.addWidget(scrollArea, 2, 1, 1, 1)
-        poi_title_label = QtWidgets.QLabel(self)
-        poi_title_label.setLayoutDirection(QtCore.Qt.LeftToRight)
-        poi_title_label.setAutoFillBackground(False)
-        poi_title_label.setStyleSheet("font: 75 8pt \"MS Shell Dlg 2\";\n"
-                                           "background-color: rgb(0, 170, 255);")
-        poi_title_label.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        poi_title_label.setObjectName("poi_title_label")
-        gridLayout_6.addWidget(poi_title_label, 0, 1, 1, 1)
-        gridLayout.addLayout(gridLayout_6, 3, 0, 2, 2)
-        a_pushButton = QtWidgets.QPushButton(self)
-        a_pushButton.setMaximumSize(QtCore.QSize(16, 20))
-        a_pushButton.clicked.connect(self.openAnalysis)
-        a_pushButton.setObjectName("a_pushButton")
-        gridLayout.addWidget(a_pushButton, 3, 5, 1, 1)
-        scrollArea_2 = QtWidgets.QScrollArea(self)
-        scrollArea_2.setWidgetResizable(True)
-        scrollArea_2.setObjectName("scrollArea_2")
-        scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 373, 253))
-        scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
-        gridLayout_2 = QtWidgets.QGridLayout(scrollAreaWidgetContents_3)
-        gridLayout_2.setObjectName("gridLayout_2")
-        self.poi_content_area_textEdit = QtWidgets.QTextEdit(scrollAreaWidgetContents_3)
-        self.poi_content_area_textEdit.setObjectName("poi_content_area_textEdit")
-        gridLayout_2.addWidget(self.poi_content_area_textEdit, 0, 0, 1, 1)
-        c_pushButton = QtWidgets.QPushButton(scrollAreaWidgetContents_3)
-        c_pushButton.setMaximumSize(QtCore.QSize(16, 20))
-        c_pushButton.clicked.connect(self.openComment)
-        c_pushButton.setObjectName("c_pushButton")
-        gridLayout_2.addWidget(c_pushButton, 0, 1, 1, 1)
-        terminal_window_lineEdit = QtWidgets.QLineEdit(scrollAreaWidgetContents_3)
-        terminal_window_lineEdit.setObjectName("terminal_window_lineEdit")
-        gridLayout_2.addWidget(terminal_window_lineEdit, 1, 0, 1, 1)
-        scrollArea_2.setWidget(scrollAreaWidgetContents_3)
-        gridLayout.addWidget(scrollArea_2, 4, 2, 1, 3)
-        o_pushButton = QtWidgets.QPushButton(self)
-        o_pushButton.setMaximumSize(QtCore.QSize(16, 20))
-        o_pushButton.clicked.connect(self.openOutput)
-        o_pushButton.setObjectName("o_pushButton")
-        gridLayout.addWidget(o_pushButton, 4, 5, 1, 1)
-        detailed_poi_view_label = QtWidgets.QLabel(self)
-        detailed_poi_view_label.setStyleSheet("font: 75 8pt \"MS Shell Dlg 2\";\n"
-                                                   "background-color: rgb(0, 170, 255);")
-        detailed_poi_view_label.setAlignment(QtCore.Qt.AlignCenter)
-        detailed_poi_view_label.setObjectName("detailed_poi_view_label")
-        gridLayout.addWidget(detailed_poi_view_label, 3, 2, 1, 3)
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
+        self.gridLayout_6.addWidget(self.scrollArea, 2, 1, 1, 1)
 
-        self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poiComBxChng(text = self.poi_comboBox.currentText()))
+        self.poi_title_label = QtWidgets.QLabel(self)
+        self.poi_title_label.setLayoutDirection(QtCore.Qt.LeftToRight)
+        self.poi_title_label.setAutoFillBackground(False)
+        self.poi_title_label.setStyleSheet("font: 75 8pt \"MS Shell Dlg 2\";\n"
+                                           "background-color: rgb(0, 170, 255);")
+        self.poi_title_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.poi_title_label.setObjectName("poi_title_label")
+        self.gridLayout_6.addWidget(self.poi_title_label, 0, 1, 1, 1)
+        self.gridLayout_2.addLayout(self.gridLayout_6, 4, 0, 2, 2)
+        self.scrollArea_2 = QtWidgets.QScrollArea(self)
+        self.scrollArea_2.setWidgetResizable(True)
+        self.scrollArea_2.setObjectName("scrollArea_2")
+
+        self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 505, 418))
+        self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
+        self.gridLayout = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
+
+        self.gridLayout.setObjectName("gridLayout")
+        self.poi_content_area_textEdit = QtWidgets.QTextEdit(self.scrollAreaWidgetContents_3)
+        self.poi_content_area_textEdit.setObjectName("poi_content_area_textEdit")
+        self.gridLayout.addWidget(self.poi_content_area_textEdit, 0, 0, 2, 1)
+
+        self.terminal_window_lineEdit = QtWidgets.QLineEdit(self.scrollAreaWidgetContents_3)
+        self.terminal_window_lineEdit.setObjectName("terminal_window_lineEdit")
+        self.gridLayout.addWidget(self.terminal_window_lineEdit, 2, 0, 1, 2)
+
+        self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
+        self.gridLayout_2.addWidget(self.scrollArea_2, 5, 2, 1, 3)
+        self.detailed_poi_view_label = QtWidgets.QLabel(self)
+        self.detailed_poi_view_label.setStyleSheet("font: 75 8pt \"MS Shell Dlg 2\";\n"
+                                                   "background-color: rgb(0, 170, 255);")
+        self.detailed_poi_view_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.detailed_poi_view_label.setObjectName("detailed_poi_view_label")
+        self.gridLayout_2.addWidget(self.detailed_poi_view_label, 4, 2, 1, 3)
 
         _translate = QtCore.QCoreApplication.translate
 
-        plugin_label.setText(_translate("MainWindow", "Plugin"))
-        plugin_comboBox.setItemText(0, _translate("MainWindow", "Plugin A"))
-        plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin B"))
-        plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin C"))
-        static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
-        static_run_button.setText(_translate("MainWindow", "Run"))
-        dynamic_anal_label.setText(_translate("MainWindow", "Dynamic Analysis"))
-        dynamic_run_button.setText(_translate("MainWindow", "Run"))
-        dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
-        poi_label.setText(_translate("MainWindow", "Point of Interest"))
+        self.plugin_label.setText(_translate("MainWindow", "Plugin"))
+
+        self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
+        self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
+        self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
+
+        self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
+        self.static_run_button.setText(_translate("MainWindow", "Run"))
+        self.dynamic_anal_label.setText(_translate("MainWindow", "Dynamic Analysis"))
+        self.dynamic_run_button.setText(_translate("MainWindow", "Run"))
+        self.dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
+
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
-        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Functions"))
-        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Structs"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(4, _translate("MainWindow", "DLL"))
-        poi_title_label.setText(_translate("MainWindow",
-                                                "<html><head/><body><p><span style=\" font-weight:600;\">Point of Interest View</span></p></body></html>"))
-        a_pushButton.setText(_translate("MainWindow", "A"))
-        c_pushButton.setText(_translate("MainWindow", "C"))
-        o_pushButton.setText(_translate("MainWindow", "O"))
-        detailed_poi_view_label.setText(_translate("MainWindow",
-                                                    "<html><head/><body><p><span style=\" font-weight:600;\">Detailed Point of Interst View</span></p></body></html>"))
+        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Variables"))
+        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLLs"))
+        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
+        self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poiComBxChng(text=self.poi_comboBox.currentText()))
+
+        self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
+
+        self.comment_PushButton.setText(_translate("MainWindow", "Comment"))
+        self.analysis_PushButton.setText(_translate("MainWindow", "Analysis"))
+        self.output_PushButton.setText(_translate("MainWindow", "Output"))
+
+        self.poi_title_label.setText(_translate("MainWindow",
+                                                "<html><head/><body><p><span style=\" font-weight:600;\">Point of "
+                                                "Interest View</span></p></body></html>"))
+        self.detailed_poi_view_label.setText(_translate("MainWindow",
+                                                        "<html><head/><body><p><span style=\" "
+                                                        "font-weight:600;\">Detailed Point of Interst "
+                                                        "View</span></p></body></html>"))
 
 
     def openComment(self):
@@ -170,7 +195,7 @@ class Tab2(QtWidgets.QWidget):
     def setCheckBox(self, text, type):
         checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
         checkBoxRecv.setText(text)
-        checkBoxRecv.stateChanged.connect(lambda: self.checkState(text,type))
+        checkBoxRecv.stateChanged.connect(lambda x: self.checkState(text,type, x))
         return checkBoxRecv
 
 
@@ -213,20 +238,7 @@ class Tab2(QtWidgets.QWidget):
                 fnctDB.insert_one(insert_info)
 
             # Gets all variables in JSON format
-            '''
-            varDB = projectDb["variable"]
-            var = rlocal.cmdj("afvj")
-            for variable in var:
-                #var = variable.split()
-                #if var[var.index("=") + 1] == ":":
-                #    var_value = None
-                #    var.insert(var.index('=') + 1, var_value)
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText("%s %s" % (variable[0], variable[1]))
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
-                i += 1
-                varDB.insert_one(variable)
-            '''
+
             # Gets all structs in JSON format
             if projectDb["structures"]:
                 projectDb.drop_collection("structures")
@@ -278,32 +290,38 @@ class Tab2(QtWidgets.QWidget):
             print("Error " + str(e))
         QtWidgets.QApplication.restoreOverrideCursor()
 
-    def checkState(self, state, type):
+    def checkState(self, text, type, state):
+
         s = Singleton.getProject()
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         projectDb = mongoClient[s]
 
+        lastText = self.poi_content_area_textEdit.toPlainText()
+
         if type == "Functions":
             projInfo = projectDb["functions"]
-            cursor = projInfo.find_one({"signature": state})
-            self.poi_content_area_textEdit.setPlainText(str(cursor))
+            cursor = projInfo.find_one({"signature": text})
         elif type == "Imports":
             projInfo = projectDb["imports"]
-            state = state.split()
-            cursor = projInfo.find_one({"name":state[0]})
-            self.poi_content_area_textEdit.setPlainText(str(cursor))
+            text = text.split()
+            cursor = projInfo.find_one({"name": text[0]})
         elif type == "Strings":
             projInfo = projectDb["string"]
-            state = base64.b64encode(state.encode())
-            cursor = projInfo.find_one({"string":state.decode()})
-            self.poi_content_area_textEdit.setPlainText(str(cursor))
+            text = base64.b64encode(text.encode())
+            cursor = projInfo.find_one({"string": text.decode()})
         elif type == "Structs":
             projInfo = projectDb["structures"]
-            state = state.split()
-            cursor = projInfo.find_one({"from":int(state[2], 0)})
-            self.poi_content_area_textEdit.setPlainText(str(cursor))
+            text = text.split()
+            cursor = projInfo.find_one({"from": int(text[2], 0)})
+        del cursor['_id']
+        if state == QtCore.Qt.Checked:
 
-
+            self.poi_content_area_textEdit.setPlainText(lastText + "\n" + str(cursor))
+        else:
+            y = str(cursor)
+            #print(y)
+            lastText = lastText.replace("\n"+y,' ')
+            self.poi_content_area_textEdit.setPlainText(lastText)
 
     def poiComBxChng(self, text):
         s = Singleton.getProject()
@@ -327,61 +345,64 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                chkBox = self.setCheckBox(fc["signature"],"Functions")
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                chkBox = self.setCheckBox(db["signature"],"Functions")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
-        elif text == "DLL":
+        elif text == "DLLs":
             projInfo = projectDb["imports"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText(db["name"]+" "+db["type"])
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                chkBox = self.setCheckBox(db["name"] + " " + db["type"], "Imports")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
 
         elif text == "Structs":
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
-                chkBox = self.setCheckBox("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
-                checkBoxRecv.setText("recv "+db["fcn_name"] +" "+ hex(db["from"]))
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
+                               "calling_function": db["fcn_name"]}
+                chkBox = self.setCheckBox("send " + insert_send["calling_function"] + " " + insert_send["address"],
+                                          "Structs")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
 
         elif text == "Strings":
             projInfo = projectDb["string"]
             cursor = projInfo.find()
             for db in cursor:
-                chkBox = self.setCheckBox(text.decode(),"Strings")
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                text = base64.b64decode(db["string"])
+                chkBox = self.setCheckBox(text.decode(), "Strings")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
 
         elif text == "All":
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText(db["signature"])
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                chkBox = self.setCheckBox(db["signature"], "Functions")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
             projInfo = projectDb["string"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText((base64.b64decode(db["string"])).decode())
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                text = base64.b64decode(db["string"])
+                chkBox = self.setCheckBox(text.decode(), "Strings")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText("recv "+db["fcn_name"] +" "+ hex(db["from"]))
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
+                               "calling_function": db["fcn_name"]}
+                chkBox = self.setCheckBox("send " + insert_send["calling_function"] + " " + insert_send["address"],
+                                          "Structs")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
             projInfo = projectDb["imports"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText(db["name"]+" "+db["type"])
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                chkBox = self.setCheckBox(db["name"] + " " + db["type"], "Imports")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
+
