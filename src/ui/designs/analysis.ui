@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
-    <height>677</height>
+    <width>702</width>
+    <height>503</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -95,21 +95,31 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3" rowspan="2">
+        <item row="1" column="3">
          <widget class="QPushButton" name="dynamic_run_button">
           <property name="text">
            <string>Run</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="4" rowspan="2">
+        <item row="1" column="4">
          <widget class="QPushButton" name="dynamic_stop_button">
           <property name="text">
            <string>Stop</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1" rowspan="2">
+        <item row="2" column="0">
+         <widget class="QLabel" name="poi_label">
+          <property name="text">
+           <string>Point of Interest</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
          <widget class="QComboBox" name="poi_comboBox">
           <item>
            <property name="text">
@@ -128,38 +138,7 @@
           </item>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="poi_label">
-          <property name="text">
-           <string>Point of Interest</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QPushButton" name="comment_PushButton">
-          <property name="text">
-           <string>Comment</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QPushButton" name="analysis_PushButton">
-          <property name="text">
-           <string>Analysis</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="4">
-         <widget class="QPushButton" name="output_PushButton">
-          <property name="text">
-           <string>Output</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="0" rowspan="2" colspan="2">
+        <item row="3" column="0" rowspan="3" colspan="2">
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout">
@@ -182,8 +161,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>332</width>
-               <height>383</height>
+               <width>247</width>
+               <height>242</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout_4">
@@ -255,7 +234,20 @@ background-color: rgb(0, 170, 255);</string>
           </item>
          </layout>
         </item>
-        <item row="5" column="2" colspan="3">
+        <item row="3" column="5">
+         <widget class="QPushButton" name="a_pushButton">
+          <property name="maximumSize">
+           <size>
+            <width>16</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>A</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2" rowspan="2" colspan="3">
          <widget class="QScrollArea" name="scrollArea_2">
           <property name="widgetResizable">
            <bool>true</bool>
@@ -265,13 +257,42 @@ background-color: rgb(0, 170, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>505</width>
-             <height>418</height>
+             <width>377</width>
+             <height>271</height>
             </rect>
            </property>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="0" rowspan="2">
+            <item row="0" column="1">
+             <widget class="QPushButton" name="c_pushButton">
+              <property name="maximumSize">
+               <size>
+                <width>16</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>C</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>170</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="0">
              <widget class="QTextEdit" name="poi_content_area_textEdit"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QPlainTextEdit" name="terminalOutput"/>
             </item>
             <item row="2" column="0" colspan="2">
              <widget class="QLineEdit" name="terminal_window_lineEdit"/>
@@ -280,7 +301,33 @@ background-color: rgb(0, 170, 255);</string>
           </widget>
          </widget>
         </item>
-        <item row="4" column="2" colspan="3">
+        <item row="4" column="5">
+         <widget class="QPushButton" name="o_pushButton">
+          <property name="maximumSize">
+           <size>
+            <width>16</width>
+            <height>20</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>O</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="5">
+         <spacer name="verticalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>225</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="3" column="2" colspan="3">
          <widget class="QLabel" name="detailed_poi_view_label">
           <property name="styleSheet">
            <string notr="true">font: 75 8pt &quot;MS Shell Dlg 2&quot;;
@@ -321,8 +368,8 @@ background-color: rgb(0, 170, 255);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
-     <height>26</height>
+     <width>702</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
