@@ -167,6 +167,13 @@ class Tab2(QtWidgets.QWidget):
         text = popUp.exec_()
         print(text)
 
+    def setCheckBox(self, text, type):
+        checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+        checkBoxRecv.setText(text)
+        checkBoxRecv.stateChanged.connect(lambda: self.checkState(text,type))
+        return checkBoxRecv
+
+
     def staticAna(self):
         s = Singleton.getProject()
         if (s=="BEAT"):
@@ -182,6 +189,7 @@ class Tab2(QtWidgets.QWidget):
         projectDb = mongoClient[s]
         projInfo = projectDb["projectInfo"]
         cursor = projInfo.find()
+        binaryFile = ""
         for db in cursor:
             binaryFile = db['BnyFilePath']
 
@@ -198,9 +206,8 @@ class Tab2(QtWidgets.QWidget):
                 projectDb.drop_collection("functions")
             fnctDB = projectDb["functions"]
             for fc in functions:
-                checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText(fc["signature"])
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                chkBox = self.setCheckBox(fc["signature"],"Functions")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
                 insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
                 fnctDB.insert_one(insert_info)
@@ -229,19 +236,15 @@ class Tab2(QtWidgets.QWidget):
 
             for rec in all_recvs:
                 insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
-                checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"])
-                checkBoxRecv.stateChanged.connect(lambda: self.checkState(checkBoxRecv.text()))
-                self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
+                chkBox = self.setCheckBox("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
                 strucDB.insert_one(rec)
 
             for send in all_sends:
                 insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
-                checkBoxSend =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxSend.setText("send "+insert_send["calling_function"] +" "+ insert_send["address"])
-                checkBoxSend.stateChanged.connect(self.checkState)
-                self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                chkBox = self.setCheckBox("send "+insert_send["calling_function"] +" "+ insert_send["address"],"Structs")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
                 strucDB.insert_one(send)
 
@@ -253,9 +256,9 @@ class Tab2(QtWidgets.QWidget):
             strDB = projectDb["string"]
             for string in strings:
                 if(string["section"] == '.rodata'):
-                    checkBoxSend = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                    checkBoxSend.setText((base64.b64decode(string["string"])).decode())
-                    self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                    text = base64.b64decode(string["string"])
+                    chkBox = self.setCheckBox(text.decode(),"Strings")
+                    self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                     i += 1
                     strDB.insert_one(string)
 
@@ -265,9 +268,8 @@ class Tab2(QtWidgets.QWidget):
                 projectDb.drop_collection("imports")
             impDB = projectDb["imports"]
             for dl in imports:
-                checkBoxSend = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxSend.setText(dl["name"]+" "+dl["type"])
-                self.gridLayout_4.addWidget(checkBoxSend, i, 0, 1, 1)
+                chkBox = self.setCheckBox(dl["name"]+" "+dl["type"],"Imports")
+                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
                 i += 1
                 impDB.insert_one(dl)
 
@@ -276,8 +278,32 @@ class Tab2(QtWidgets.QWidget):
             print("Error " + str(e))
         QtWidgets.QApplication.restoreOverrideCursor()
 
-    def checkState(self, state):
-        print(state)
+    def checkState(self, state, type):
+        s = Singleton.getProject()
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+
+        if type == "Functions":
+            projInfo = projectDb["functions"]
+            cursor = projInfo.find_one({"signature": state})
+            self.poi_content_area_textEdit.setPlainText(str(cursor))
+        elif type == "Imports":
+            projInfo = projectDb["imports"]
+            state = state.split()
+            cursor = projInfo.find_one({"name":state[0]})
+            self.poi_content_area_textEdit.setPlainText(str(cursor))
+        elif type == "Strings":
+            projInfo = projectDb["string"]
+            state = base64.b64encode(state.encode())
+            cursor = projInfo.find_one({"string":state.decode()})
+            self.poi_content_area_textEdit.setPlainText(str(cursor))
+        elif type == "Structs":
+            projInfo = projectDb["structures"]
+            state = state.split()
+            cursor = projInfo.find_one({"from":int(state[2], 0)})
+            self.poi_content_area_textEdit.setPlainText(str(cursor))
+
+
 
     def poiComBxChng(self, text):
         s = Singleton.getProject()
@@ -301,8 +327,7 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText(db["signature"])
+                chkBox = self.setCheckBox(fc["signature"],"Functions")
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                 i += 1
         elif text == "DLL":
@@ -318,7 +343,7 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
+                chkBox = self.setCheckBox("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
                 checkBoxRecv.setText("recv "+db["fcn_name"] +" "+ hex(db["from"]))
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                 i += 1
@@ -327,8 +352,7 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["string"]
             cursor = projInfo.find()
             for db in cursor:
-                checkBoxRecv = QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-                checkBoxRecv.setText((base64.b64decode(db["string"])).decode())
+                chkBox = self.setCheckBox(text.decode(),"Strings")
                 self.gridLayout_4.addWidget(checkBoxRecv, i, 0, 1, 1)
                 i += 1
 
