@@ -47,6 +47,7 @@ class Tab2(QtWidgets.QWidget):
         self.dynamic_stop_button = QtWidgets.QPushButton(self)
         self.dynamic_stop_button.setObjectName("dynamic_stop_button")
         self.gridLayout_2.addWidget(self.dynamic_stop_button, 1, 4, 2, 1)
+        self.dynamic_run_button.clicked.connect(self.breakpointCheck)
 
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
@@ -221,6 +222,8 @@ class Tab2(QtWidgets.QWidget):
         for i in reversed(range(self.gridLayout_4.count())):
             self.gridLayout_4.itemAt(i).widget().setParent(None)
         """
+        self.poi_listWidget.clear()
+
         try:
             rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
@@ -250,7 +253,6 @@ class Tab2(QtWidgets.QWidget):
                 var = variable.split()
                 if var[var.index('=')+1] == ':':
                     var.insert(var.index('=')+1, 0)
-                print(var)
                 item = self.setItem("%s %s" % (var[0], var[1]), "Variables")
                 self.poi_listWidget.addItem(item)
                 insert_info = {"type": var[0], "name": var[1], "value": var[3], "register": var[5], "location": var[7]}
@@ -315,10 +317,16 @@ class Tab2(QtWidgets.QWidget):
 
             #self.poi_listWidget.itemClicked.connect(lambda x: self.checkState(text, type, x))
             self.poi_listWidget.itemClicked.connect(lambda x: self.detailedPOI(self.poi_listWidget.currentItem()))
+            # self.poi_listWidget.itemClicked.connect(lambda x: self.breakpointCheck(self.poi_listWidget))
 
         except Exception as e:
             print("Error " + str(e))
         QtWidgets.QApplication.restoreOverrideCursor()
+
+    def breakpointCheck(self):
+        for i in range(self.poi_listWidget.count()):
+            item = self.poi_listWidget.item(i)
+            print(f"{i} {item.text()} {item.checkState()}")
 
     def detailedPOI(self, item):
         s = Singleton.getProject()
@@ -346,14 +354,9 @@ class Tab2(QtWidgets.QWidget):
             text = item.text().split()
             cursor = projInfo.find_one({"from": int(text[2], 0)})
         del cursor['_id']
-        if item.checkState() == QtCore.Qt.Checked:
-
-            self.poi_content_area_textEdit.setPlainText(lastText + "\n" + str(cursor))
-        else:
-            y = str(cursor)
-            print(y)
-            lastText = lastText.replace("\n" + y, ' ')
-            self.poi_content_area_textEdit.setPlainText(y)
+        y = str(cursor)
+        lastText = lastText.replace("\n" + y, ' ')
+        self.poi_content_area_textEdit.setPlainText(y)
 
     def checkState(self, text, type, state):
 
