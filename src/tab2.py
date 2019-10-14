@@ -230,7 +230,7 @@ class Tab2(QtWidgets.QWidget):
 
                 insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
                 fnctDB.insert_one(insert_info)
-
+            '''
             # Gets all variables in JSON format
             if projectDb["variables"]:
                 projectDb.drop_collection("variables")
@@ -245,7 +245,7 @@ class Tab2(QtWidgets.QWidget):
                 self.poi_listWidget.addItem(item)
                 insert_info = {"type": var[0], "name": var[1], "value": var[3], "register": var[5], "location": var[7]}
                 varDB.insert_one(insert_info)
-
+            '''
             # Gets all structs in JSON format
             if projectDb["structures"]:
                 projectDb.drop_collection("structures")
@@ -318,19 +318,23 @@ class Tab2(QtWidgets.QWidget):
             cursor = projInfo.find_one({"name": var[1]})
         elif item.toolTip() == "Imports":
             projInfo = projectDb["imports"]
-            text = item.text().split()
-            cursor = projInfo.find_one({"name": text[0]})
+            text = item.text().split(" ")
+            newText = text[0:-1]
+            listToStr = ' '.join([str(elem) for elem in newText])
+            cursor = projInfo.find_one({"name": listToStr})
         elif item.toolTip() == "Strings":
             projInfo = projectDb["string"]
-            cursor = projInfo.find_one({"string": item.text()})
+            text = base64.b64encode(item.text().encode())
+            cursor = projInfo.find_one({"string": text.decode()})
         elif item.toolTip() == "Structs":
             projInfo = projectDb["structures"]
             text = item.text().split()
             cursor = projInfo.find_one({"from": int(text[2], 0)})
-        del cursor['_id']
-        y = str(cursor)
-        lastText = lastText.replace("\n" + y, ' ')
-        self.poi_content_area_textEdit.setPlainText(y)
+        if cursor is not None:
+            del cursor['_id']
+            y = str(cursor)
+            lastText = lastText.replace("\n" + y, ' ')
+            self.poi_content_area_textEdit.setPlainText(y)
 
     def poi_comboBox_change(self, text):
         s = Singleton.getProject()
@@ -370,7 +374,6 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
-
                 insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
                                "calling_function": db["fcn_name"]}
                 item = self.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],

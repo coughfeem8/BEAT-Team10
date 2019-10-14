@@ -135,29 +135,29 @@ class Tab1(QtWidgets.QWidget):
 
     def fillBnryProp(self, r2BinInfo):
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
-        self.tableWidget.set_item(0, 1, item)
+        self.tableWidget.setItem(0, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
-        self.tableWidget.set_item(1, 1, item)
+        self.tableWidget.setItem(1, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
-        self.tableWidget.set_item(2, 1, item)
+        self.tableWidget.setItem(2, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
-        self.tableWidget.set_item(3, 1, item)
+        self.tableWidget.setItem(3, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
-        self.tableWidget.set_item(4, 1, item)
+        self.tableWidget.setItem(4, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
-        self.tableWidget.set_item(5, 1, item)
+        self.tableWidget.setItem(5, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
-        self.tableWidget.set_item(6, 1, item)
+        self.tableWidget.setItem(6, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
-        self.tableWidget.set_item(7, 1, item)
+        self.tableWidget.setItem(7, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
-        self.tableWidget.set_item(8, 1, item)
+        self.tableWidget.setItem(8, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
-        self.tableWidget.set_item(9, 1, item)
+        self.tableWidget.setItem(9, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
-        self.tableWidget.set_item(10, 1, item)
+        self.tableWidget.setItem(10, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
-        self.tableWidget.set_item(11, 1, item)
+        self.tableWidget.setItem(11, 1, item)
 
 
     def BrowseBnryFiles(self):
@@ -256,8 +256,8 @@ class Tab1(QtWidgets.QWidget):
                     activeProject = self.nameProject
 
                 except Exception as e:
-                    #print(e)
-                    print(1)
+                    print(e)
+                    #print(1)
 
     def searchProjects(self):
         global mongoClient
@@ -292,6 +292,3 @@ class Tab1(QtWidgets.QWidget):
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
-
-def getProject():
-    return activeProject
