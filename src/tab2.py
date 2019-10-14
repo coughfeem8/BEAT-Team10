@@ -35,7 +35,7 @@ class Tab2(QtWidgets.QWidget):
         self.static_run_button.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.static_run_button.setObjectName("static_run_button")
         self.gridLayout_2.addWidget(self.static_run_button, 1, 1, 1, 1)
-        self.static_run_button.clicked.connect(self.staticAna)
+        self.static_run_button.clicked.connect(self.static_analysis)
 
         self.dynamic_anal_label = QtWidgets.QLabel(self)
         self.dynamic_anal_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -47,7 +47,7 @@ class Tab2(QtWidgets.QWidget):
         self.dynamic_stop_button = QtWidgets.QPushButton(self)
         self.dynamic_stop_button.setObjectName("dynamic_stop_button")
         self.gridLayout_2.addWidget(self.dynamic_stop_button, 1, 4, 2, 1)
-        self.dynamic_run_button.clicked.connect(self.breakpointCheck)
+        self.dynamic_run_button.clicked.connect(self.breakpoint_check)
 
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
@@ -68,17 +68,17 @@ class Tab2(QtWidgets.QWidget):
         self.comment_PushButton = QtWidgets.QPushButton(self)
         self.comment_PushButton.setObjectName("comment_PushButton")
         self.gridLayout_2.addWidget(self.comment_PushButton, 3, 2, 1, 1)
-        self.comment_PushButton.clicked.connect(self.openComment)
+        self.comment_PushButton.clicked.connect(self.open_comment)
 
         self.analysis_PushButton = QtWidgets.QPushButton(self)
         self.analysis_PushButton.setObjectName("analysis_PushButton")
         self.gridLayout_2.addWidget(self.analysis_PushButton, 3, 3, 1, 1)
-        self.analysis_PushButton.clicked.connect(self.openAnalysis)
+        self.analysis_PushButton.clicked.connect(self.open_analysis)
 
         self.output_PushButton = QtWidgets.QPushButton(self)
         self.output_PushButton.setObjectName("output_PushButton")
         self.gridLayout_2.addWidget(self.output_PushButton, 3, 4, 1, 1)
-        self.output_PushButton.clicked.connect(self.openOutput)
+        self.output_PushButton.clicked.connect(self.open_output)
 
         self.gridLayout_6 = QtWidgets.QGridLayout()
         self.gridLayout_6.setObjectName("gridLayout_6")
@@ -155,7 +155,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
         self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
         self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
-        self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poiComBxChng(text=self.poi_comboBox.currentText()))
+        self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poi_comboBox_change(text=self.poi_comboBox.currentText()))
 
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 
@@ -171,35 +171,28 @@ class Tab2(QtWidgets.QWidget):
                                                         "font-weight:600;\">Detailed Point of Interst "
                                                         "View</span></p></body></html>"))
 
-
-
-    def openComment(self):
+    def open_comment(self):
         popUp = pop.commentDialog(self)
         text = popUp.exec_()
         print(text)
 
-    def openAnalysis(self):
+    def open_analysis(self):
         popUp = pop.analysisResultDialog(self)
         text = popUp.exec_()
         print(text)
 
-    def openOutput(self):
+    def open_output(self):
         popUp = pop.outputFieldDialog(self)
         text = popUp.exec_()
         print(text)
 
-    def setItem(self, text, type):
-        """
-        checkBoxRecv =  QtWidgets.QCheckBox(self.scrollAreaWidgetContents_2)
-        checkBoxRecv.setText(text)
-        checkBoxRecv.stateChanged.connect(lambda x: self.checkState(text,type, x))
-        """
+    def set_item(self, text, type):
         item = QtWidgets.QListWidgetItem(text)
         item.setCheckState(QtCore.Qt.Unchecked)
         item.setToolTip(type)
         return item
 
-    def staticAna(self):
+    def static_analysis(self):
         s = Singleton.getProject()
         if (s=="BEAT"):
             msg = QtWidgets.QMessageBox()
@@ -209,25 +202,22 @@ class Tab2(QtWidgets.QWidget):
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             msg.exec_()
             return
+
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         projectDb = mongoClient[s]
         projInfo = projectDb["projectInfo"]
         cursor = projInfo.find()
         binaryFile = ""
+
         for db in cursor:
             binaryFile = db['BnyFilePath']
 
-        """
-        for i in reversed(range(self.gridLayout_4.count())):
-            self.gridLayout_4.itemAt(i).widget().setParent(None)
-        """
         self.poi_listWidget.clear()
 
         try:
             rlocal = r2pipe.open(binaryFile)
             rlocal.cmd("aaa")
-            i = 0
 
             # Gets all functions is JSON format
             functions = rlocal.cmdj("aflj")
@@ -235,14 +225,12 @@ class Tab2(QtWidgets.QWidget):
                 projectDb.drop_collection("functions")
             fnctDB = projectDb["functions"]
             for fc in functions:
-                #chkBox = self.setCheckBox(fc["signature"],"Functions")
-                #self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                #i += 1
-                item = self.setItem(fc["signature"], "Functions")
+                item = self.set_item(fc["signature"], "Functions")
                 self.poi_listWidget.addItem(item)
 
                 insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
                 fnctDB.insert_one(insert_info)
+
             # Gets all variables in JSON format
             if projectDb["variables"]:
                 projectDb.drop_collection("variables")
@@ -253,10 +241,11 @@ class Tab2(QtWidgets.QWidget):
                 var = variable.split()
                 if var[var.index('=')+1] == ':':
                     var.insert(var.index('=')+1, 0)
-                item = self.setItem("%s %s" % (var[0], var[1]), "Variables")
+                item = self.set_item("%s %s" % (var[0], var[1]), "Variables")
                 self.poi_listWidget.addItem(item)
                 insert_info = {"type": var[0], "name": var[1], "value": var[3], "register": var[5], "location": var[7]}
                 varDB.insert_one(insert_info)
+
             # Gets all structs in JSON format
             if projectDb["structures"]:
                 projectDb.drop_collection("structures")
@@ -266,24 +255,17 @@ class Tab2(QtWidgets.QWidget):
 
             for rec in all_recvs:
                 insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
-                # chkBox = self.setCheckBox("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
-                # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                # i += 1
-                item = self.setItem("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
+                item = self.set_item("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
                 self.poi_listWidget.addItem(item)
 
                 strucDB.insert_one(rec)
 
             for send in all_sends:
                 insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
-                # chkBox = self.setCheckBox("send "+insert_send["calling_function"] +" "+ insert_send["address"],"Structs")
-                # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                # i += 1
-                item = self.setItem("send "+insert_send["calling_function"] +" "+ insert_send["address"],"Structs")
+                item = self.set_item("send "+insert_send["calling_function"] +" "+ insert_send["address"],"Structs")
                 self.poi_listWidget.addItem(item)
 
                 strucDB.insert_one(send)
-
 
             # Gets all strings in JSON format
             strings = rlocal.cmdj("izzj")
@@ -293,10 +275,7 @@ class Tab2(QtWidgets.QWidget):
             for string in strings:
                 if(string["section"] == '.rodata'):
                     text = base64.b64decode(string["string"])
-                    # chkBox = self.setCheckBox(text.decode(),"Strings")
-                    # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                    # i += 1
-                    item = self.setItem(text.decode(), "Strings")
+                    item = self.set_item(text.decode(), "Strings")
                     self.poi_listWidget.addItem(item)
 
                     strDB.insert_one(string)
@@ -307,28 +286,23 @@ class Tab2(QtWidgets.QWidget):
                 projectDb.drop_collection("imports")
             impDB = projectDb["imports"]
             for dl in imports:
-                # chkBox = self.setCheckBox(dl["name"]+" "+dl["type"],"Imports")
-                # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                # i += 1
-                item = self.setItem(dl["name"]+" "+dl["type"], "Imports")
+                item = self.set_item(dl["name"]+" "+dl["type"], "Imports")
                 self.poi_listWidget.addItem(item)
 
                 impDB.insert_one(dl)
 
-            #self.poi_listWidget.itemClicked.connect(lambda x: self.checkState(text, type, x))
-            self.poi_listWidget.itemClicked.connect(lambda x: self.detailedPOI(self.poi_listWidget.currentItem()))
-            # self.poi_listWidget.itemClicked.connect(lambda x: self.breakpointCheck(self.poi_listWidget))
+            self.poi_listWidget.itemClicked.connect(lambda x: self.detailed_poi(self.poi_listWidget.currentItem()))
 
         except Exception as e:
             print("Error " + str(e))
         QtWidgets.QApplication.restoreOverrideCursor()
 
-    def breakpointCheck(self):
+    def breakpoint_check(self):
         for i in range(self.poi_listWidget.count()):
             item = self.poi_listWidget.item(i)
             print(f"{i} {item.text()} {item.checkState()}")
 
-    def detailedPOI(self, item):
+    def detailed_poi(self, item):
         s = Singleton.getProject()
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         projectDb = mongoClient[s]
@@ -358,43 +332,7 @@ class Tab2(QtWidgets.QWidget):
         lastText = lastText.replace("\n" + y, ' ')
         self.poi_content_area_textEdit.setPlainText(y)
 
-    def checkState(self, text, type, state):
-
-        s = Singleton.getProject()
-        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
-        projectDb = mongoClient[s]
-
-        lastText = self.poi_content_area_textEdit.toPlainText()
-
-        if type == "Functions":
-            print("functions")
-            projInfo = projectDb["functions"]
-            cursor = projInfo.find_one({"signature": text})
-        elif type == "Imports":
-            print("imports")
-            projInfo = projectDb["imports"]
-            text = text.split()
-            cursor = projInfo.find_one({"name": text[0]})
-        elif type == "Strings":
-            print("Strings")
-            projInfo = projectDb["string"]
-            text = base64.b64encode(text.encode())
-            cursor = projInfo.find_one({"string": text.decode()})
-        elif type == "Structs":
-            print("Structs")
-            projInfo = projectDb["structures"]
-            text = text.split()
-            cursor = projInfo.find_one({"from": int(text[2], 0)})
-        del cursor['_id']
-        if state == QtCore.Qt.Checked:
-
-            self.poi_content_area_textEdit.setPlainText(lastText + "\n" + str(cursor))
-        else:
-            y = str(cursor)
-            lastText = lastText.replace("\n" + y, ' ')
-            self.poi_content_area_textEdit.setPlainText(lastText)
-
-    def poiComBxChng(self, text):
+    def poi_comboBox_change(self, text):
         s = Singleton.getProject()
         if s == "BEAT":
             msg = QtWidgets.QMessageBox()
@@ -405,35 +343,29 @@ class Tab2(QtWidgets.QWidget):
             msg.exec_()
             return
 
-        """
-        for i in reversed(range(self.gridLayout_4.count())):
-            self.gridLayout_4.itemAt(i).widget().setParent(None)
-        """
         self.poi_listWidget.clear()
 
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         projectDb = mongoClient[s]
-        i =0
 
         if text == "Functions":
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                # chkBox = self.setCheckBox(db["signature"],"Functions")
-                # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                # i += 1
-                item = self.setItem(db["signature"], "Functions")
+                item = self.set_item(db["signature"], "Functions")
+                self.poi_listWidget.addItem(item)
+        elif text == "Variables":
+            projInfo = projectDb['variables']
+            coursor = projInfo.find()
+            for db in coursor:
+                item = self.set_item("%s %s" % (db["type"], db["name"]), "Variables")
                 self.poi_listWidget.addItem(item)
         elif text == "DLLs":
             projInfo = projectDb["imports"]
             cursor = projInfo.find()
             for db in cursor:
-                # chkBox = self.setCheckBox(db["name"] + " " + db["type"], "Imports")
-                # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                # i += 1
-                item = self.setItem(db["name"] + " " + db["type"], "Imports")
+                item = self.set_item(db["name"] + " " + db["type"], "Imports")
                 self.poi_listWidget.addItem(item)
-
         elif text == "Structs":
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
@@ -441,13 +373,7 @@ class Tab2(QtWidgets.QWidget):
 
                 insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
                                "calling_function": db["fcn_name"]}
-                """
-                chkBox = self.setCheckBox("send " + insert_send["calling_function"] + " " + insert_send["address"],
-                                          "Structs")
-                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                i += 1
-                """
-                item = self.setItem("send " + insert_send["calling_function"] + " " + insert_send["address"],
+                item = self.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
                                           "Structs")
                 self.poi_listWidget.addItem(item)
         elif text == "Strings":
@@ -455,55 +381,36 @@ class Tab2(QtWidgets.QWidget):
             cursor = projInfo.find()
             for db in cursor:
                 text = base64.b64decode(db["string"])
-                # chkBox = self.setCheckBox(text.decode(), "Strings")
-                # self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                # i += 1
-                item = self.setItem(text.decode(), "Strings")
+                item = self.set_item(text.decode(), "Strings")
                 self.poi_listWidget.addItem(item)
 
         elif text == "All":
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                """
-                chkBox = self.setCheckBox(db["signature"], "Functions")
-                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                i += 1
-                """
-                item = self.setItem(db["signature"], "Functions")
+                item = self.set_item(db["signature"], "Functions")
                 self.poi_listWidget.addItem(item)
-            projInfo = projectDb["string"]
+            projInfo = projectDb["variables"]
             cursor = projInfo.find()
             for db in cursor:
-                text = base64.b64decode(db["string"])
-                """
-                chkBox = self.setCheckBox(text.decode(), "Strings")
-                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                i += 
-                """
-                item = self.setItem(text.decode(), "Strings")
+                item = self.set_item("%s %s" % (db["type"], db["name"]), "Variables")
                 self.poi_listWidget.addItem(item)
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
                 insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
                                "calling_function": db["fcn_name"]}
-                """
-                chkBox = self.setCheckBox("send " + insert_send["calling_function"] + " " + insert_send["address"],
-                                          "Structs")
-                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                i += 1
-                """
-                item = self.setItem("send " + insert_send["calling_function"] + " " + insert_send["address"],
+                item = self.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
                                     "Structs")
+                self.poi_listWidget.addItem(item)
+            projInfo = projectDb["string"]
+            cursor = projInfo.find()
+            for db in cursor:
+                text = base64.b64decode(db["string"])
+                item = self.set_item(text.decode(), "Strings")
                 self.poi_listWidget.addItem(item)
             projInfo = projectDb["imports"]
             cursor = projInfo.find()
             for db in cursor:
-                """
-                chkBox = self.setCheckBox(db["name"] + " " + db["type"], "Imports")
-                self.gridLayout_4.addWidget(chkBox, i, 0, 1, 1)
-                i += 1
-                """
-                item = self.setItem(db["name"] + " " + db["type"], "Imports")
+                item = self.set_item(db["name"] + " " + db["type"], "Imports")
                 self.poi_listWidget.addItem(item)
