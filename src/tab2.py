@@ -1,10 +1,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pop
-import r2pipe
 import base64
 from singleton import Singleton
 import pymongo
-
+import analysis
 
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -35,7 +34,6 @@ class Tab2(QtWidgets.QWidget):
         self.static_run_button.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.static_run_button.setObjectName("static_run_button")
         self.gridLayout_2.addWidget(self.static_run_button, 1, 1, 1, 1)
-        self.static_run_button.clicked.connect(self.static_analysis)
 
         self.dynamic_anal_label = QtWidgets.QLabel(self)
         self.dynamic_anal_label.setAlignment(QtCore.Qt.AlignCenter)
@@ -191,111 +189,6 @@ class Tab2(QtWidgets.QWidget):
         item.setCheckState(QtCore.Qt.Unchecked)
         item.setToolTip(type)
         return item
-
-    def static_analysis(self):
-        s = Singleton.getProject()
-        if (s=="BEAT"):
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setWindowTitle("Run Static Analysis")
-            msg.setText("Please select a project")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msg.exec_()
-            return
-
-        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
-        projectDb = mongoClient[s]
-        projInfo = projectDb["projectInfo"]
-        cursor = projInfo.find()
-        binaryFile = ""
-
-        for db in cursor:
-            binaryFile = db['BnyFilePath']
-
-        self.poi_listWidget.clear()
-
-        try:
-            rlocal = r2pipe.open(binaryFile)
-            rlocal.cmd("aaa")
-
-            # Gets all functions is JSON format
-            functions = rlocal.cmdj("aflj")
-            if projectDb["functions"]:
-                projectDb.drop_collection("functions")
-            fnctDB = projectDb["functions"]
-            for fc in functions:
-                item = self.set_item(fc["signature"], "Functions")
-                self.poi_listWidget.addItem(item)
-
-                insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
-                fnctDB.insert_one(insert_info)
-
-            # Gets all variables in JSON format
-            if projectDb["variables"]:
-                projectDb.drop_collection("variables")
-            varDB = projectDb["variables"]
-            variables = rlocal.cmd('afvd').split('\n')
-            variables = variables[:-1]
-            for variable in variables:
-                var = variable.split()
-                if var[var.index('=')+1] == ':':
-                    var.insert(var.index('=')+1, 0)
-                item = self.set_item("%s %s" % (var[0], var[1]), "Variables")
-                self.poi_listWidget.addItem(item)
-                insert_info = {"type": var[0], "name": var[1], "value": var[3], "register": var[5], "location": var[7]}
-                varDB.insert_one(insert_info)
-
-            # Gets all structs in JSON format
-            if projectDb["structures"]:
-                projectDb.drop_collection("structures")
-            strucDB = projectDb["structures"]
-            all_recvs = rlocal.cmdj("axtj sym.imp.recv")
-            all_sends = rlocal.cmdj("axtj sym.imp.send")
-
-            for rec in all_recvs:
-                insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
-                item = self.set_item("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
-                self.poi_listWidget.addItem(item)
-
-                strucDB.insert_one(rec)
-
-            for send in all_sends:
-                insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
-                item = self.set_item("send "+insert_send["calling_function"] +" "+ insert_send["address"],"Structs")
-                self.poi_listWidget.addItem(item)
-
-                strucDB.insert_one(send)
-
-            # Gets all strings in JSON format
-            strings = rlocal.cmdj("izzj")
-            if projectDb["string"]:
-                projectDb.drop_collection("string")
-            strDB = projectDb["string"]
-            for string in strings:
-                if(string["section"] == '.rodata'):
-                    text = base64.b64decode(string["string"])
-                    item = self.set_item(text.decode(), "Strings")
-                    self.poi_listWidget.addItem(item)
-
-                    strDB.insert_one(string)
-
-            # Gets all imports in JSON format
-            imports = rlocal.cmdj("iij")
-            if projectDb["imports"]:
-                projectDb.drop_collection("imports")
-            impDB = projectDb["imports"]
-            for dl in imports:
-                item = self.set_item(dl["name"]+" "+dl["type"], "Imports")
-                self.poi_listWidget.addItem(item)
-
-                impDB.insert_one(dl)
-
-            self.poi_listWidget.itemClicked.connect(lambda x: self.detailed_poi(self.poi_listWidget.currentItem()))
-
-        except Exception as e:
-            print("Error " + str(e))
-        QtWidgets.QApplication.restoreOverrideCursor()
 
     def breakpoint_check(self):
         for i in range(self.poi_listWidget.count()):
