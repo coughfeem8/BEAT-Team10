@@ -3,7 +3,9 @@ import pop
 import r2pipe
 import base64
 from singleton import Singleton
-import pymongo
+import pymongo, time, re
+import subprocess
+
 
 
 class Tab2(QtWidgets.QWidget):
@@ -48,6 +50,7 @@ class Tab2(QtWidgets.QWidget):
         self.dynamic_stop_button.setObjectName("dynamic_stop_button")
         self.gridLayout_2.addWidget(self.dynamic_stop_button, 1, 4, 2, 1)
         self.dynamic_run_button.clicked.connect(self.breakpoint_check)
+
 
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
@@ -133,6 +136,8 @@ class Tab2(QtWidgets.QWidget):
         self.detailed_poi_view_label.setAlignment(QtCore.Qt.AlignCenter)
         self.detailed_poi_view_label.setObjectName("detailed_poi_view_label")
         self.gridLayout_2.addWidget(self.detailed_poi_view_label, 4, 2, 1, 3)
+
+        self.dynamic_stop_button.clicked.connect(self.dynamicAnal)
 
         _translate = QtCore.QCoreApplication.translate
 
@@ -300,7 +305,8 @@ class Tab2(QtWidgets.QWidget):
     def breakpoint_check(self):
         for i in range(self.poi_listWidget.count()):
             item = self.poi_listWidget.item(i)
-            print(f"{i} {item.text()} {item.checkState()}")
+            if item.checkState() == QtCore.Qt.Checked:
+                print(f"{i} {item.text()} {item.checkState()}")
 
     def detailed_poi(self, item):
         s = Singleton.getProject()
@@ -417,3 +423,49 @@ class Tab2(QtWidgets.QWidget):
             for db in cursor:
                 item = self.set_item(db["name"] + " " + db["type"], "Imports")
                 self.poi_listWidget.addItem(item)
+
+    def openShell(self):
+        filename = Singleton.getPath()
+        cmd = ['radare2', "-q0", filename]
+        self.process = subprocess.Popen(cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, bufsize=0)
+        self.process.stdout.read(1)
+        self.process.stderr.read(1)
+
+    def execute(self, cmd):
+        cmd = cmd.strip().replace("\n", ";")
+        self.process.stdin.write((cmd + '\n').encode('utf8'))
+        r = self.process.stdout
+        e = self.process.stderr
+        self.process.stdin.flush()
+        out = b''
+        while True:
+            try:
+                er = e.read(8192)
+                foo = r.read(4096)
+                print("Foo: ")
+                print(foo)
+                print("Error: ")
+                print(er)
+            except:
+                continue
+            if er:
+                out += er
+            else:
+                time.sleep(0.001)
+            if foo:
+                if foo.endswith(b'\0'):
+                    out += foo[:-1]
+                    out += er[:-1]
+                    break
+                out += foo
+            else:
+                time.sleep(0.001)
+        return out.decode('utf-8', errors='ignore')
+
+    def dynamicAnal(self):
+        #r2 = r2pipe.open
+        self.openShell()
+        self.execute("aaa")
+        x = self.execute("doo")
+        self.terminal_output_textEdit.setPlainText(x)

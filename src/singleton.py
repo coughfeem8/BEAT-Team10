@@ -1,6 +1,7 @@
 class Singleton:
     __instance = None
     project = ""
+    filepath = ""
     @staticmethod
     def getInstance():
       """ Static access method. """
@@ -13,6 +14,12 @@ class Singleton:
     @staticmethod
     def setProject(project):
         Singleton.project = project
+    @staticmethod
+    def getPath():
+        return Singleton.filepath
+    @staticmethod
+    def setPath(path):
+        Singleton.filepath = path
     def __init__(self):
       """ Virtually private constructor. """
       if Singleton.__instance != None:

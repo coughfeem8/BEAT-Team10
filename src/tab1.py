@@ -95,10 +95,15 @@ class Tab1(QtWidgets.QWidget):
         pushButton_9.setObjectName("pushButton_9")
 
         gridLayout_2.addWidget(pushButton_9, 4, 0, 1, 1)
-        pushButton_10 = QtWidgets.QPushButton(gridLayoutWidget_2)
-        pushButton_10.setObjectName("pushButton_10")
-        pushButton_10.clicked.connect(self.SaveProject)
-        gridLayout_2.addWidget(pushButton_10, 4, 2, 1, 1)
+        self.pushButton_10 = QtWidgets.QPushButton(gridLayoutWidget_2)
+        self.pushButton_10.setObjectName("pushButton_10")
+        self.pushButton_10.clicked.connect(self.SaveProject)
+        gridLayout_2.addWidget(self.pushButton_10, 4, 2, 1, 1)
+
+        self.pushButton_10.setEnabled(False)
+        self.pushButton_8.setEnabled(False)
+        self.lineEdit_2.setReadOnly(True)
+        self.textEdit_2.setReadOnly(True)
 
         _translate = QtCore.QCoreApplication.translate
 
@@ -111,7 +116,7 @@ class Tab1(QtWidgets.QWidget):
         label_10.setText(_translate("MainWindow", "Binary File Properties"))
         label_9.setText(_translate("MainWindow", "Binary File Path"))
         pushButton_9.setText(_translate("MainWindow", "Delete"))
-        pushButton_10.setText(_translate("MainWindow", "Save"))
+        self.pushButton_10.setText(_translate("MainWindow", "Save"))
 
     def fillBnryPropEmpty(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic",
@@ -129,34 +134,48 @@ class Tab1(QtWidgets.QWidget):
         for x in range(len(properties)):
             item = QtWidgets.QTableWidgetItem(properties[x])
             empty = QtWidgets.QTableWidgetItem("")
+            item.setFlags(QtCore.Qt.ItemIsEnabled)
             item.setFont(bolds)
+            empty.setFlags(QtCore.Qt.ItemIsEnabled)
             self.tableWidget.setItem(x, 0, item)
             self.tableWidget.setItem(x, 1, empty)
 
     def fillBnryProp(self, r2BinInfo):
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(0, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(1, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(2, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(3, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(4, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(5, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(6, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(7, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(8, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(9, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(10, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.tableWidget.setItem(11, 1, item)
 
 
@@ -164,7 +183,7 @@ class Tab1(QtWidgets.QWidget):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
-                                                  "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
+                                                  "Binary Files (*.exe | *.elf | *.out)", options=options)
 
         if fileName:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -175,6 +194,10 @@ class Tab1(QtWidgets.QWidget):
                 r2BinInfo = rlocal.cmdj("ij")
 
                 if r2BinInfo["core"]["format"] == "any":
+                    msg = QtWidgets.QMessageBox()
+                    msg.setText("Error")
+                    return
+                if r2BinInfo["bin"]["arch"] != "x86":
                     msg = QtWidgets.QMessageBox()
                     msg.setText("Error")
                     return
@@ -198,6 +221,12 @@ class Tab1(QtWidgets.QWidget):
             insertInfo = projInfo.insert(info, check_keys=False)
             binInfo = projectDb["binaryInfo"]
             insertObj = binInfo.insert(r2BinInfo, check_keys=False)
+
+            self.pushButton_10.setEnabled(False)
+            self.pushButton_8.setEnabled(False)
+            self.lineEdit_2.setReadOnly(True)
+            self.textEdit_2.setReadOnly(True)
+
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Save Project")
@@ -215,8 +244,16 @@ class Tab1(QtWidgets.QWidget):
         text, okPressed = QtWidgets.QInputDialog.getText(self, "Create New Project", "Name of Project:",
                                                          QtWidgets.QLineEdit.Normal, "")
         if okPressed and text != '':
+            dbnames = mongoClient.list_database_names()
+            if text in dbnames:
+                msg = QtWidgets.QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Project with that name already exists")
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                retval = msg.exec_()
+                return
             activeProject = text
-            self.lineEdit_2.setText("")
+            self.lineEdit_2.setText(text)
             self.textEdit_2.setText("")
             self.lineEdit_3.setText("")
             self.fillBnryPropEmpty()
@@ -226,7 +263,9 @@ class Tab1(QtWidgets.QWidget):
             item = self.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.listWidget.setCurrentItem(item[0])
             self.setWindowTitle('Create Project')
-            saved = True
+            self.pushButton_10.setEnabled(True)
+            self.pushButton_8.setEnabled(True)
+            self.textEdit_2.setReadOnly(False)
 
     def itemActivated_event(self):
         if self.listWidget.count() != 0:
@@ -236,6 +275,7 @@ class Tab1(QtWidgets.QWidget):
                 self.nameProject = str(projectName[0], 'utf-8')
                 try:
                     Singleton.setProject(self.nameProject)
+
                     projectDb = mongoClient[self.nameProject]
                     projInfo = projectDb["projectInfo"]
                     binInfo = projectDb["binaryInfo"]
@@ -244,7 +284,7 @@ class Tab1(QtWidgets.QWidget):
                         self.textEdit_2.setPlainText(db['ProjectDescription'])
                         self.lineEdit_2.setText(db['ProjectName'])
                         self.lineEdit_3.setText(db['BnyFilePath'])
-
+                        Singleton.setPath(db['BnyFilePath'])
                     cursorBin = binInfo.find()
                     for db in cursorBin:
                         self.fillBnryPropEmpty()
