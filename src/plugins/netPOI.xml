@@ -29,4 +29,21 @@
         <name>sym.imp.close</name>
         <type>Function</type>
     </point_of_interest>
+    <point_of_interest>
+        <name>Client</name>
+        <type>String</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Server</name>
+        <type>String</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Connection</name>
+        <type>String</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Binding</name>
+        <type>String</type>
+    </point_of_interest>
+
 </plugin>

@@ -163,6 +163,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
         self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
         self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poi_comboBox_change(text=self.poi_comboBox.currentText()))
+        self.search_bar_lineEdit.textChanged.connect(self.printText)
 
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 
@@ -205,6 +206,9 @@ class Tab2(QtWidgets.QWidget):
         item.setCheckState(QtCore.Qt.Unchecked)
         item.setToolTip(type)
         return item
+
+    def printText(self):
+        print(self.search_bar_lineEdit.text())
 
     def static_analysis(self):
         s = Singleton.getProject()
