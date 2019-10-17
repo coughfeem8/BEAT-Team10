@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-import os, xmltodict
+import os, xmltodict, xmlschema
 from singleton import Singleton
 
 
@@ -139,27 +139,11 @@ class Tab3(QtWidgets.QWidget):
 
         LabelDetailedPLuginView.setText(_translate("self", "Detailed Plugin View"))
         LabelDPVPluginStructure.setText(_translate("self", "Plugin Structure"))
-        #self.DPVPluginStructure.setText(_translate("self", "Plugin Structure file path..."))
         LabelDPVPluginDataSet.setText(_translate("self", "Plugin Predetermined Data Set"))
-        #self.DPVPluginDataSet.setText(_translate("self", "Plugin Predifined Data Set..."))
         LabelDPVPluginName.setText(_translate("self", "Plugin Name"))
-        #self.DPVPluginName.setText(_translate("self", "Plugin Name..."))
         LabelDPVPLuginDescription.setText(_translate("self", "Plugin Description"))
-        #self.DPVPluginDescription.setHtml(_translate("self",
-            #                                         "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-            #                                         "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-            #                                         "p, li { white-space: pre-wrap; }\n"
-            #                                         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-            #                                         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Plugin Description...</p>\n"
-            #                                         "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         LabelDPVOutputField.setText(_translate("self", "Default Output Field"))
         LabelDPVPointOfInterest.setText(_translate("self", "Points Of Interest"))
-        #self.DVPPointOfInterest.setHtml(_translate("self",
-         #                                          "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-         #                                          "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-         #                                          "p, li { white-space: pre-wrap; }\n"
-         #                                          "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:7.8pt; font-weight:400; font-style:normal;\">\n"
-         #                                          "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">List of points of Interest...</p></body></html>"))
         ButtonDPVPluginStructure.setText(_translate("self", "Browse"))
         ButtonDPVBDataset.setText(_translate("self", "Browse"))
         ButtonDeletePlugin.setText(_translate("self", "Delete"))
@@ -222,10 +206,14 @@ class Tab3(QtWidgets.QWidget):
                 doc = xmltodict.parse(fd.read())
                 if doc["plugin"]["name"] == plgName:
                     break
+        xms = pl.split('.')[0]+'.xsd'
+        schema = xmlschema.XMLSchema('plugins/%s' %xms)
+        #print(pl.split('.')[0]+'.xsd')
         if plgName:
             self.DPVPluginName.setText(doc["plugin"]["name"])
             self.DPVPluginDescription.setText(doc["plugin"]["description"])
             self.DPVPluginDataSet.setText('plugins/%s' % pl)
+            self.DPVPluginStructure.setText('plugins/%s'%xms )
             for i in doc["plugin"]["point_of_interest"]:
                 lastText = self.DVPPointOfInterest.toPlainText()
                 new = lastText + i["type"] + " " + i["name"] + "\n"

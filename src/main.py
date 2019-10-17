@@ -19,10 +19,14 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 794, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        #f = []
+        f = []
         for (dirpath, dirnames, filenames) in walk('./plugins'):
-            Singleton.setPlugins(filenames)
+            for name in filenames:
+                if name.endswith('.xml'):
+                    f.append(name)
             break
+        Singleton.setPlugins(f)
+
 
 
 

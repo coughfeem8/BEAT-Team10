@@ -4,46 +4,57 @@
     <point_of_interest>
         <name>sym.imp.socket</name>
         <type>Function</type>
+        <pythonOutput>sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>sym.imp.bind</name>
         <type>Function</type>
+        <pythonOutput>sock.bind(server_address)</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>sym.imp.listen</name>
         <type>Function</type>
+        <pythonOutput>sock.listen(1)</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>sym.imp.accept</name>
         <type>Function</type>
+        <pythonOutput>connection, client_address = sock.accept()</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>sym.imp.recv</name>
         <type>Function</type>
+        <pythonOutput>data = connection.recv(16)</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>sym.imp.send</name>
         <type>Function</type>
+        <pythonOutput>sock.sendall(message)</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>sym.imp.close</name>
         <type>Function</type>
+        <pythonOutput>sock.close()</pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>Client</name>
         <type>String</type>
+        <pythonOutput></pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>Server</name>
         <type>String</type>
+        <pythonOutput></pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>Connection</name>
         <type>String</type>
+        <pythonOutput></pythonOutput>
     </point_of_interest>
     <point_of_interest>
         <name>Binding</name>
         <type>String</type>
+        <pythonOutput></pythonOutput>
     </point_of_interest>
 
 </plugin>
