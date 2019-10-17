@@ -56,6 +56,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
     def establish_connections(self, MainWindow):
         self.analysisTab.static_run_button.clicked.connect(self.static_ran)
+        self.analysisTab.poi_comboBox.currentIndexChanged.connect(
+            lambda x: self.poi_comboBox_change(text=self.analysisTab.poi_comboBox.currentText()))
 
     def static_ran(self):
         s = Singleton.getProject()
@@ -128,6 +130,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             impDB.insert_one(dl)
 
         self.set_pois(projectDb, functions, variables, rec_structs, sent_structs, strings, imports)
+        self.analysisTab.poi_listWidget.itemClicked.connect(lambda x: self.detailed_poi(self.analysisTab.poi_listWidget.currentItem()))
 
     def set_pois(self, projectDb, functions, variables, rec_structs, sent_structs, strings, imports):
         projInfo = projectDb["functions"]
@@ -159,38 +162,119 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             text = base64.b64decode(db["string"])
             item = self.analysisTab.set_item(text.decode(), "Strings")
             self.analysisTab.poi_listWidget.addItem(item)
-        """
-        elif text == "All":
+
+    def poi_comboBox_change(self, text):
+        s = Singleton.getProject()
+        if s == "BEAT":
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("Run Static Analysis")
+            msg.setText("Please select a project")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.exec_()
+            return
+
+        self.analysisTab.poi_listWidget.clear()
+
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+
+        if text == "Functions":
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                item = self.set_item(db["signature"], "Functions")
-                self.poi_listWidget.addItem(item)
-            projInfo = projectDb["variables"]
+                item = self.analysisTab.set_item(db["signature"], "Functions")
+                self.analysisTab.poi_listWidget.addItem(item)
+        elif text == "Variables":
+            projInfo = projectDb['variables']
+            coursor = projInfo.find()
+            for db in coursor:
+                item = self.analysisTab.set_item("%s %s" % (db["type"], db["name"]), "Variables")
+                self.analysisTab.poi_listWidget.addItem(item)
+        elif text == "DLLs":
+            projInfo = projectDb["imports"]
             cursor = projInfo.find()
             for db in cursor:
-                item = self.set_item("%s %s" % (db["type"], db["name"]), "Variables")
-                self.poi_listWidget.addItem(item)
+                item = self.analysisTab.set_item(db["name"] + " " + db["type"], "Imports")
+                self.analysisTab.poi_listWidget.addItem(item)
+        elif text == "Structs":
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
+
                 insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
                                "calling_function": db["fcn_name"]}
-                item = self.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
-                                     "Structs")
-                self.poi_listWidget.addItem(item)
+                item = self.analysisTab.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
+                                          "Structs")
+                self.analysisTab.poi_listWidget.addItem(item)
+        elif text == "Strings":
             projInfo = projectDb["string"]
             cursor = projInfo.find()
             for db in cursor:
                 text = base64.b64decode(db["string"])
-                item = self.set_item(text.decode(), "Strings")
-                self.poi_listWidget.addItem(item)
+                item = self.analysisTab.set_item(text.decode(), "Strings")
+                self.analysisTab.poi_listWidget.addItem(item)
+
+        elif text == "All":
+            projInfo = projectDb["functions"]
+            cursor = projInfo.find()
+            for db in cursor:
+                item = self.analysisTab.set_item(db["signature"], "Functions")
+                self.analysisTab.poi_listWidget.addItem(item)
+            projInfo = projectDb["variables"]
+            cursor = projInfo.find()
+            for db in cursor:
+                item = self.analysisTab.set_item("%s %s" % (db["type"], db["name"]), "Variables")
+                self.analysisTab.poi_listWidget.addItem(item)
+            projInfo = projectDb["structures"]
+            cursor = projInfo.find()
+            for db in cursor:
+                insert_send = {"address": db["address"], "opcode": db["opcode"],
+                               "calling_function": db["calling_function"]}
+                item = self.analysisTab.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
+                                    "Structs")
+                self.analysisTab.poi_listWidget.addItem(item)
+            projInfo = projectDb["string"]
+            cursor = projInfo.find()
+            for db in cursor:
+                text = base64.b64decode(db["string"])
+                item = self.analysisTab.set_item(text.decode(), "Strings")
+                self.analysisTab.poi_listWidget.addItem(item)
             projInfo = projectDb["imports"]
             cursor = projInfo.find()
             for db in cursor:
-                item = self.set_item(db["name"] + " " + db["type"], "Imports")
-                self.poi_listWidget.addItem(item)
-        """
+                item = self.analysisTab.set_item(db["name"] + " " + db["type"], "Imports")
+                self.analysisTab.poi_listWidget.addItem(item)
+
+    def detailed_poi(self, item):
+        s = Singleton.getProject()
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+
+        lastText = self.analysisTab.poi_content_area_textEdit.toPlainText()
+
+        if item.toolTip() == "Functions":
+            projInfo = projectDb["functions"]
+            cursor = projInfo.find_one({"signature": item.text()})
+        elif item.toolTip() == "Variables":
+            projInfo = projectDb["variables"]
+            var = item.text().split()
+            cursor = projInfo.find_one({"name": var[1]})
+        elif item.toolTip() == "Imports":
+            projInfo = projectDb["imports"]
+            text = item.text().split()
+            cursor = projInfo.find_one({"name": text[0]})
+        elif item.toolTip() == "Strings":
+            projInfo = projectDb["string"]
+            cursor = projInfo.find_one({"string": item.text()})
+        elif item.toolTip() == "Structs":
+            projInfo = projectDb["structures"]
+            text = item.text().split()
+            cursor = projInfo.find_one({"from": int(text[2], 0)})
+        del cursor['_id']
+        y = str(cursor)
+        lastText = lastText.replace("\n" + y, ' ')
+        self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
 
 if __name__ == "__main__":
