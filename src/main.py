@@ -148,8 +148,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         projInfo = projectDb["structures"]
         cursor = projInfo.find()
         for db in cursor:
-            insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
-                           "calling_function": db["fcn_name"]}
+            insert_send = {"address": db["address"], "opcode": db["opcode"],
+                           "calling_function": db["calling_function"]}
             item = self.analysisTab.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
                                  "Structs")
             self.analysisTab.poi_listWidget.addItem(item)

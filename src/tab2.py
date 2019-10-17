@@ -186,7 +186,7 @@ class Tab2(QtWidgets.QWidget):
 
     def set_item(self, text, type):
         item = QtWidgets.QListWidgetItem(text)
-        item.setCheckState(QtCore.Qt.Unchecked)
+        item.setCheckState(QtCore.Qt.Checked)
         item.setToolTip(type)
         return item
 
