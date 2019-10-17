@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import tab1, tab2, tab3, tab4, tab5
 from singleton import Singleton
+from os import walk
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
@@ -17,6 +18,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 794, 605))
         self.tabWidget.setObjectName("tabWidget")
+
+        #f = []
+        for (dirpath, dirnames, filenames) in walk('./plugins'):
+            Singleton.setPlugins(filenames)
+            break
+
 
 
         self.ProjectTab = tab1.Tab1(self, MainWindow)

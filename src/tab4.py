@@ -1,8 +1,10 @@
 # Also known as tbe Point of Interest Tab
 from PyQt5 import QtCore, QtGui, QtWidgets
 import xmlschema
+import xmltodict
 import pprint
 import ui.poi
+from singleton import Singleton
 
 
 class Tab4(ui.poi.Ui_POI_tab):
@@ -10,49 +12,44 @@ class Tab4(ui.poi.Ui_POI_tab):
         super(Tab4, self).__init__(parent)
         self.setupUi(self)
 
-        self.my_schema = xmlschema.XMLSchema('resources/schemas/network_plugin.xsd')
-        self.pois = []
-        self.pois = self.dump_xml()
-        # pois = self.create_pois(self.pois)
-        self.pois_btns = [self.POI, self.POI_2, self.POI_3, self.POI_4, self.POI_5]
-        # self.setup_poi_data(pois)
-        #self.setup_poi_data(self.pois_btns, self.pois)
-        self.POI.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[0])))
-        self.POI_2.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[1])))
-        self.POI_3.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[2])))
-        self.POI_4.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[3])))
-        self.POI_5.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.pois[4])))
+        self.comboBox.currentIndexChanged.connect(lambda x: self.fillPOIs(plugin=self.comboBox.currentText()))
+        self.comboBox_2.addItem("All")
+        self.setPlugins()
+        self.listWidget_2.itemSelectionChanged.connect(self.itemActivated_event)
 
 
-    def dump_xml(self, dataset=None):
-        # should require to get them from somewhere not straight xml.
-        xmls = ['variable', 'string', 'dll', 'packet', 'function', 'struct']
-        xml_d = []
-        for f in xmls:
-            print(self.my_schema.is_valid('resources/schemas/{}.xml'.format(f)))
-            xml_d.append(self.my_schema.to_dict('resources/schemas/{}.xml'.format(f)))
-        return xml_d
+    def setPlugins(self):
+        for pl in Singleton.getPlugins():
+            with open('plugins/%s' %pl) as fd:
+                doc = xmltodict.parse(fd.read())
+                i = doc["plugin"]["name"]
+                self.comboBox.addItem(i)
 
-    def setup_poi_data(self, buttons, pois):
-        '''fix this part to make it work better'''
-        for item, data in zip(buttons,pois):
-            print(item)
-            item.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(data)))
+    def fillPOIs(self, plugin):
+        for pl in Singleton.getPlugins():
+            with open('plugins/%s' %pl) as fd:
+                doc = xmltodict.parse(fd.read())
+                if doc["plugin"]["name"] == plugin:
+                    break
+        for i in doc["plugin"]["point_of_interest"]:
+            self.listWidget_2.addItem(i["name"])
 
+    def filterPOIs(self, plugin, type):
+        for pl in Singleton.getPlugins():
+            with open('plugins/%s' % pl) as fd:
+                doc = xmltodict.parse(fd.read())
+                if doc["plugin"]["name"] == plugin:
+                    break
+        for i in doc["plugin"]["point_of_interest"]:
+            if i["type"] == type:
+                self.listWidget_2.addItem(i["name"])
 
-    def display_editor_text(self, text):
-        self.POI_content_area.setText(text)
-
-
-    def create_pois(self, pois):
-        buttns = []
-        for poi in pois:
-            pprint.pprint(poi)
-            butn = QtWidgets.QPushButton(self.POI_list_view)
-            butn.setFlat(True)
-            butn.setObjectName(poi['name'])
-            self.verticalLayout.addWidget(butn)
-            self.POI_frame.addWidget(self.POI_list_view)
-            butn.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(poi)))
-            buttns.append(butn)
-        return buttns
+    def itemActivated_event(self):
+        with open('plugins/netPOI.xml') as fd:
+            doc = xmltodict.parse(fd.read())
+        poiSelect = self.listWidget_2.selectedItems()
+        poiName = [item.text().encode("ascii") for item in poiSelect]
+        if poiName:
+            for i in doc["plugin"]["point_of_interest"]:
+                if poiName[0].decode() == i["name"]:
+                    self.textEdit.setText(i["name"]+" "+i["type"])

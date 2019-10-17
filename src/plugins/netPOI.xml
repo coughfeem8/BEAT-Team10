@@ -1,0 +1,32 @@
+<plugin>
+    <name>Network Plugin</name>
+    <description>Network related POIs</description>
+    <point_of_interest>
+        <name>sym.imp.socket</name>
+        <type>Function</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.bind</name>
+        <type>Function</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.listen</name>
+        <type>Function</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.accept</name>
+        <type>Function</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.recv</name>
+        <type>Function</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.send</name>
+        <type>Function</type>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.close</name>
+        <type>Function</type>
+    </point_of_interest>
+</plugin>

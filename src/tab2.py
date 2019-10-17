@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import pop
 import r2pipe
 import base64
+import xmltodict
 from singleton import Singleton
 import pymongo, time, re
 import subprocess
@@ -24,9 +25,9 @@ class Tab2(QtWidgets.QWidget):
         self.plugin_comboBox.setMaxVisibleItems(10)
         self.plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.plugin_comboBox.setObjectName("plugin_comboBox")
-        self.plugin_comboBox.addItem("")
-        self.plugin_comboBox.addItem("")
-        self.plugin_comboBox.addItem("")
+        #self.plugin_comboBox.addItem("")
+        #self.plugin_comboBox.addItem("")
+        #self.plugin_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.plugin_comboBox, 0, 1, 1, 1)
 
         self.static_anal_label = QtWidgets.QLabel(self)
@@ -138,14 +139,15 @@ class Tab2(QtWidgets.QWidget):
         self.gridLayout_2.addWidget(self.detailed_poi_view_label, 4, 2, 1, 3)
 
         self.dynamic_stop_button.clicked.connect(self.dynamicAnal)
+        self.setPlugins()
 
         _translate = QtCore.QCoreApplication.translate
 
         self.plugin_label.setText(_translate("MainWindow", "Plugin"))
 
-        self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
-        self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
-        self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
+        #self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
+        #self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
+        #self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
 
         self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
         self.static_run_button.setText(_translate("MainWindow", "Run"))
@@ -175,6 +177,13 @@ class Tab2(QtWidgets.QWidget):
                                                         "<html><head/><body><p><span style=\" "
                                                         "font-weight:600;\">Detailed Point of Interst "
                                                         "View</span></p></body></html>"))
+
+    def setPlugins(self):
+        for pl in Singleton.getPlugins():
+            with open('plugins/%s' %pl) as fd:
+                doc = xmltodict.parse(fd.read())
+                i = doc["plugin"]["name"]
+                self.plugin_comboBox.addItem(i)
 
     def open_comment(self):
         popUp = pop.commentDialog(self)
@@ -469,3 +478,5 @@ class Tab2(QtWidgets.QWidget):
         self.execute("aaa")
         x = self.execute("doo")
         self.terminal_output_textEdit.setPlainText(x)
+
+

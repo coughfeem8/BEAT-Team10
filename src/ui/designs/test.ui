@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>804</width>
-    <height>624</height>
+    <height>608</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,11 +20,11 @@
       <x>0</x>
       <y>0</y>
       <width>801</width>
-      <height>571</height>
+      <height>601</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="ProjectTab">
      <attribute name="title">
@@ -196,79 +196,49 @@
       <property name="frameShadow">
        <enum>QFrame::Raised</enum>
       </property>
-      <widget class="QWidget" name="gridLayoutWidget">
+      <widget class="QGroupBox" name="groupBox_5">
        <property name="geometry">
         <rect>
-         <x>9</x>
-         <y>9</y>
-         <width>181</width>
-         <height>493</height>
+         <x>10</x>
+         <y>10</y>
+         <width>179</width>
+         <height>491</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <property name="verticalSpacing">
-         <number>6</number>
+       <property name="title">
+        <string>Point of Interest</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <widget class="QWidget" name="verticalLayoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>30</y>
+          <width>161</width>
+          <height>451</height>
+         </rect>
         </property>
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="textEdit">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Point of Interest View</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" rowspan="2">
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetDefaultConstraint</enum>
-          </property>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Point of Interest A</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Point of Interest B</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Point of Interest C</string>
-            </property>
-           </widget>
-          </item>
-          <item alignment="Qt::AlignHCenter">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Point of Interest X</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="4" column="0" alignment="Qt::AlignRight|Qt::AlignVCenter">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>New</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QLineEdit" name="lineEdit_4"/>
+         </item>
+         <item>
+          <widget class="QListWidget" name="listWidget_2"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_11">
+           <property name="text">
+            <string>New</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </widget>
      <widget class="QFrame" name="frame_2">
@@ -324,17 +294,14 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <widget class="QLabel" name="label_11">
+          <widget class="QTextEdit" name="textEdit">
            <property name="geometry">
             <rect>
-             <x>160</x>
-             <y>180</y>
-             <width>211</width>
-             <height>17</height>
+             <x>0</x>
+             <y>0</y>
+             <width>531</width>
+             <height>361</height>
             </rect>
-           </property>
-           <property name="text">
-            <string>Point Of Interest Content Area</string>
            </property>
           </widget>
          </widget>
