@@ -1,9 +1,4 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import pop
-import base64
-from singleton import Singleton
-import pymongo
-import analysis
 
 class Tab2(QtWidgets.QWidget):
     def __init__(self, parent, main):
@@ -45,7 +40,6 @@ class Tab2(QtWidgets.QWidget):
         self.dynamic_stop_button = QtWidgets.QPushButton(self)
         self.dynamic_stop_button.setObjectName("dynamic_stop_button")
         self.gridLayout_2.addWidget(self.dynamic_stop_button, 1, 4, 2, 1)
-        self.dynamic_run_button.clicked.connect(self.breakpoint_check)
 
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
@@ -66,17 +60,14 @@ class Tab2(QtWidgets.QWidget):
         self.comment_PushButton = QtWidgets.QPushButton(self)
         self.comment_PushButton.setObjectName("comment_PushButton")
         self.gridLayout_2.addWidget(self.comment_PushButton, 3, 2, 1, 1)
-        self.comment_PushButton.clicked.connect(self.open_comment)
 
         self.analysis_PushButton = QtWidgets.QPushButton(self)
         self.analysis_PushButton.setObjectName("analysis_PushButton")
         self.gridLayout_2.addWidget(self.analysis_PushButton, 3, 3, 1, 1)
-        self.analysis_PushButton.clicked.connect(self.open_analysis)
 
         self.output_PushButton = QtWidgets.QPushButton(self)
         self.output_PushButton.setObjectName("output_PushButton")
         self.gridLayout_2.addWidget(self.output_PushButton, 3, 4, 1, 1)
-        self.output_PushButton.clicked.connect(self.open_output)
 
         self.gridLayout_6 = QtWidgets.QGridLayout()
         self.gridLayout_6.setObjectName("gridLayout_6")
@@ -167,29 +158,3 @@ class Tab2(QtWidgets.QWidget):
                                                         "<html><head/><body><p><span style=\" "
                                                         "font-weight:600;\">Detailed Point of Interst "
                                                         "View</span></p></body></html>"))
-
-    def open_comment(self):
-        popUp = pop.commentDialog(self)
-        text = popUp.exec_()
-        print(text)
-
-    def open_analysis(self):
-        popUp = pop.analysisResultDialog(self)
-        text = popUp.exec_()
-        print(text)
-
-    def open_output(self):
-        popUp = pop.outputFieldDialog(self)
-        text = popUp.exec_()
-        print(text)
-
-    def set_item(self, text, type):
-        item = QtWidgets.QListWidgetItem(text)
-        item.setCheckState(QtCore.Qt.Checked)
-        item.setToolTip(type)
-        return item
-
-    def breakpoint_check(self):
-        for i in range(self.poi_listWidget.count()):
-            item = self.poi_listWidget.item(i)
-            print(f"{i} {item.text()} {item.checkState()}")
