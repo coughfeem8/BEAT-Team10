@@ -25,9 +25,6 @@ class Tab2(QtWidgets.QWidget):
         self.plugin_comboBox.setMaxVisibleItems(10)
         self.plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.plugin_comboBox.setObjectName("plugin_comboBox")
-        #self.plugin_comboBox.addItem("")
-        #self.plugin_comboBox.addItem("")
-        #self.plugin_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.plugin_comboBox, 0, 1, 1, 1)
 
         self.static_anal_label = QtWidgets.QLabel(self)
@@ -52,10 +49,8 @@ class Tab2(QtWidgets.QWidget):
         self.gridLayout_2.addWidget(self.dynamic_stop_button, 1, 4, 2, 1)
         self.dynamic_run_button.clicked.connect(self.breakpoint_check)
 
-
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
-        self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
@@ -145,10 +140,6 @@ class Tab2(QtWidgets.QWidget):
 
         self.plugin_label.setText(_translate("MainWindow", "Plugin"))
 
-        #self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
-        #self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
-        #self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
-
         self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
         self.static_run_button.setText(_translate("MainWindow", "Run"))
         self.dynamic_anal_label.setText(_translate("MainWindow", "Dynamic Analysis"))
@@ -158,12 +149,12 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
         self.poi_comboBox.setItemText(1, _translate("MainWindow", "Variables"))
         self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLLs"))
-        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
-        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
-        self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Packets"))
+        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Structs"))
         self.poi_comboBox.currentIndexChanged.connect(lambda x: self.poi_comboBox_change(text=self.poi_comboBox.currentText()))
-        self.search_bar_lineEdit.textChanged.connect(self.printText)
+        self.poi_listWidget.itemClicked.connect(lambda x: self.detailed_poi(self.poi_listWidget.currentItem()))
+        #self.search_bar_lineEdit.textChanged.connect(self.printText)
 
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 
@@ -203,12 +194,33 @@ class Tab2(QtWidgets.QWidget):
 
     def set_item(self, text, type):
         item = QtWidgets.QListWidgetItem(text)
-        item.setCheckState(QtCore.Qt.Unchecked)
+        item.setCheckState(QtCore.Qt.Checked)
         item.setToolTip(type)
         return item
 
-    def printText(self):
-        print(self.search_bar_lineEdit.text())
+    def dbConnection(self):
+        s = Singleton.getProject()
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+        return projectDb
+
+    def pluginConnection(self):
+        for pl in Singleton.getPlugins():
+            with open('plugins/%s' % pl) as fd:
+                doc = xmltodict.parse(fd.read())
+                if doc["plugin"]["name"] == self.plugin_comboBox.currentText:
+                    break
+        return doc
+
+    def pluginTypes(self, type):
+        plugin = self.pluginConnection()
+
+        items =[]
+        for i in plugin["plugin"]["point_of_interest"]:
+            if type == i["type"]:
+                items.append(i["name"])
+
+        return items
 
     def static_analysis(self):
         s = Singleton.getProject()
@@ -222,97 +234,100 @@ class Tab2(QtWidgets.QWidget):
             return
 
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
-        projectDb = mongoClient[s]
-        projInfo = projectDb["projectInfo"]
-        cursor = projInfo.find()
-        binaryFile = ""
 
-        for db in cursor:
-            binaryFile = db['BnyFilePath']
+        projectDb = self.dbConnection()
 
         self.poi_listWidget.clear()
 
         try:
-            rlocal = r2pipe.open(binaryFile)
+            rlocal = r2pipe.open(Singleton.getPath())
             rlocal.cmd("aaa")
 
-            # Gets all functions is JSON format
-            functions = rlocal.cmdj("aflj")
-            if projectDb["functions"]:
-                projectDb.drop_collection("functions")
-            fnctDB = projectDb["functions"]
-            for fc in functions:
-                item = self.set_item(fc["signature"], "Functions")
-                self.poi_listWidget.addItem(item)
+            if self.poi_comboBox.currentText() == "All":
 
-                insert_info = {'offset': fc["offset"],'name':fc["name"],'size':fc["size"],'signature':fc["signature"]}
-                fnctDB.insert_one(insert_info)
-            '''
-            # Gets all variables in JSON format
-            if projectDb["variables"]:
-                projectDb.drop_collection("variables")
-            varDB = projectDb["variables"]
-            variables = rlocal.cmd('afvd').split('\n')
-            variables = variables[:-1]
-            for variable in variables:
-                var = variable.split()
-                if var[var.index('=')+1] == ':':
-                    var.insert(var.index('=')+1, 0)
-                item = self.set_item("%s %s" % (var[0], var[1]), "Variables")
-                self.poi_listWidget.addItem(item)
-                insert_info = {"type": var[0], "name": var[1], "value": var[3], "register": var[5], "location": var[7]}
-                varDB.insert_one(insert_info)
-            '''
-            # Gets all structs in JSON format
-            if projectDb["structures"]:
-                projectDb.drop_collection("structures")
-            strucDB = projectDb["structures"]
-            all_recvs = rlocal.cmdj("axtj sym.imp.recv")
-            all_sends = rlocal.cmdj("axtj sym.imp.send")
+                #Strings
+                strings = rlocal.cmdj("izj")
+                strplg = self.pluginTypes("String")
+                if projectDb["string"]:
+                    projectDb.drop_collection("string")
 
-            for rec in all_recvs:
-                insert_recv = {"address" : hex(rec["from"]), "opcode" : rec["opcode"], "calling_function" : rec["fcn_name"]}
-                item = self.set_item("recv "+insert_recv["calling_function"] +" "+ insert_recv["address"],"Structs")
-                self.poi_listWidget.addItem(item)
-
-                strucDB.insert_one(rec)
-
-            for send in all_sends:
-                insert_send = {"address" : hex(send["from"]), "opcode" : send["opcode"], "calling_function" : send["fcn_name"]}
-                item = self.set_item("send "+insert_send["calling_function"] +" "+ insert_send["address"],"Structs")
-                self.poi_listWidget.addItem(item)
-
-                strucDB.insert_one(send)
-
-            # Gets all strings in JSON format
-            strings = rlocal.cmdj("izzj")
-            if projectDb["string"]:
-                projectDb.drop_collection("string")
-            strDB = projectDb["string"]
-            for string in strings:
-                if(string["section"] == '.rodata'):
+                strDB = projectDb["string"]
+                for string in strings:
                     text = base64.b64decode(string["string"])
-                    item = self.set_item(text.decode(), "Strings")
-                    self.poi_listWidget.addItem(item)
+                    for i in strplg:
+                        if i.upper() in text.decode().upper():
+                            x = rlocal.cmdj("axtj %s" %string["vaddr"])
+                            ocurrence = []
+                            for str in x:
+                                ocurrence.append(hex(str["from"]))
+                            item = self.set_item(text.decode(), "Strings")
+                            self.poi_listWidget.addItem(item)
+                            string["ocurrence"] = ocurrence
+                            strDB.insert_one(string)
 
-                    strDB.insert_one(string)
+                #Functions
+                if projectDb["functions"]:
+                    projectDb.drop_collection("functions")
+                funcDB = projectDb["functions"]
+                funcAll = rlocal.cmdj("aflj")
+                funcplg = self.pluginTypes("Function")
 
-            # Gets all imports in JSON format
-            imports = rlocal.cmdj("iij")
-            if projectDb["imports"]:
-                projectDb.drop_collection("imports")
-            impDB = projectDb["imports"]
-            for dl in imports:
-                item = self.set_item(dl["name"]+" "+dl["type"], "Imports")
-                self.poi_listWidget.addItem(item)
+                for fc in funcAll:
 
-                impDB.insert_one(dl)
+                    if fc["name"] in funcplg:
+                        function = rlocal.cmdj("axtj %s" % fc["name"])
+                        ocurrence = []
+                        for f in function:
+                            ocurrence.append(hex(f["from"]))
+                        item = self.set_item(fc["name"], "Functions")
+                        self.poi_listWidget.addItem(item)
+                        fc["ocurrence"] = ocurrence
+                        funcDB.insert_one(fc)
 
-            self.poi_listWidget.itemClicked.connect(lambda x: self.detailed_poi(self.poi_listWidget.currentItem()))
+            elif self.poi_comboBox.currentText() == "Functions":
+                # Functions
+                if projectDb["functions"]:
+                    projectDb.drop_collection("functions")
+                funcDB = projectDb["functions"]
+                funcAll = rlocal.cmdj("aflj")
+                funcplg = self.pluginTypes("Function")
+
+                for fc in funcAll:
+                    if fc["name"] in funcplg:
+                        function = rlocal.cmdj("axtj %s" % fc["name"])
+                        ocurrence = []
+                        for f in function:
+                            ocurrence.append(hex(f["from"]))
+                        item = self.set_item(fc["name"], "Functions")
+                        self.poi_listWidget.addItem(item)
+                        fc["ocurrence"] = ocurrence
+                        funcDB.insert_one(fc)
+
+            elif self.poi_comboBox.currentText() == "String":
+                # Strings
+                strings = rlocal.cmdj("izj")
+                strplg = self.pluginTypes("String")
+                if projectDb["string"]:
+                    projectDb.drop_collection("string")
+
+                strDB = projectDb["string"]
+                for string in strings:
+                    text = base64.b64decode(string["string"])
+                    for i in strplg:
+                        if i.upper() in text.decode().upper():
+                            x = rlocal.cmdj("axtj %s" % string["vaddr"])
+                            ocurrence = []
+                            for str in x:
+                                ocurrence.append(hex(str["from"]))
+                            item = self.set_item(text.decode(), "Strings")
+                            self.poi_listWidget.addItem(item)
+                            string["ocurrence"] = ocurrence
+                            strDB.insert_one(string)
+
+
 
         except Exception as e:
-            print("Error " + str(e))
+            print(e)
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def breakpoint_check(self):
@@ -325,34 +340,20 @@ class Tab2(QtWidgets.QWidget):
         s = Singleton.getProject()
         mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
         projectDb = mongoClient[s]
-
-        lastText = self.poi_content_area_textEdit.toPlainText()
-
+        value = None
         if item.toolTip() == "Functions":
             projInfo = projectDb["functions"]
-            cursor = projInfo.find_one({"signature": item.text()})
-        elif item.toolTip() == "Variables":
-            projInfo = projectDb["variables"]
-            var = item.text().split()
-            cursor = projInfo.find_one({"name": var[1]})
-        elif item.toolTip() == "Imports":
-            projInfo = projectDb["imports"]
-            text = item.text().split(" ")
-            newText = text[0:-1]
-            listToStr = ' '.join([str(elem) for elem in newText])
-            cursor = projInfo.find_one({"name": listToStr})
+            cursor = projInfo.find_one({"name": item.text()})
+            if cursor is not None:
+                value = {'name':cursor["name"], 'signature':cursor["signature"],'varaddress':hex(cursor["offset"]), 'ocurrence':cursor["ocurrence"]}
         elif item.toolTip() == "Strings":
             projInfo = projectDb["string"]
             text = base64.b64encode(item.text().encode())
             cursor = projInfo.find_one({"string": text.decode()})
-        elif item.toolTip() == "Structs":
-            projInfo = projectDb["structures"]
-            text = item.text().split()
-            cursor = projInfo.find_one({"from": int(text[2], 0)})
-        if cursor is not None:
-            del cursor['_id']
-            y = str(cursor)
-            lastText = lastText.replace("\n" + y, ' ')
+            if cursor is not None:
+                value = {'string':text,'varaddress':hex(cursor["vaddr"]), 'ocurrence':cursor["ocurrence"]}
+        if value is not None:
+            y = str(value)
             self.poi_content_area_textEdit.setPlainText(y)
 
     def poi_comboBox_change(self, text):
@@ -375,28 +376,7 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                item = self.set_item(db["signature"], "Functions")
-                self.poi_listWidget.addItem(item)
-        elif text == "Variables":
-            projInfo = projectDb['variables']
-            coursor = projInfo.find()
-            for db in coursor:
-                item = self.set_item("%s %s" % (db["type"], db["name"]), "Variables")
-                self.poi_listWidget.addItem(item)
-        elif text == "DLLs":
-            projInfo = projectDb["imports"]
-            cursor = projInfo.find()
-            for db in cursor:
-                item = self.set_item(db["name"] + " " + db["type"], "Imports")
-                self.poi_listWidget.addItem(item)
-        elif text == "Structs":
-            projInfo = projectDb["structures"]
-            cursor = projInfo.find()
-            for db in cursor:
-                insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
-                               "calling_function": db["fcn_name"]}
-                item = self.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
-                                          "Structs")
+                item = self.set_item(db["name"], "Functions")
                 self.poi_listWidget.addItem(item)
         elif text == "Strings":
             projInfo = projectDb["string"]
@@ -410,20 +390,7 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                item = self.set_item(db["signature"], "Functions")
-                self.poi_listWidget.addItem(item)
-            projInfo = projectDb["variables"]
-            cursor = projInfo.find()
-            for db in cursor:
-                item = self.set_item("%s %s" % (db["type"], db["name"]), "Variables")
-                self.poi_listWidget.addItem(item)
-            projInfo = projectDb["structures"]
-            cursor = projInfo.find()
-            for db in cursor:
-                insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
-                               "calling_function": db["fcn_name"]}
-                item = self.set_item("send " + insert_send["calling_function"] + " " + insert_send["address"],
-                                    "Structs")
+                item = self.set_item(db["name"], "Functions")
                 self.poi_listWidget.addItem(item)
             projInfo = projectDb["string"]
             cursor = projInfo.find()
@@ -431,18 +398,15 @@ class Tab2(QtWidgets.QWidget):
                 text = base64.b64decode(db["string"])
                 item = self.set_item(text.decode(), "Strings")
                 self.poi_listWidget.addItem(item)
-            projInfo = projectDb["imports"]
-            cursor = projInfo.find()
-            for db in cursor:
-                item = self.set_item(db["name"] + " " + db["type"], "Imports")
-                self.poi_listWidget.addItem(item)
 
     def openShell(self):
         filename = Singleton.getPath()
-        cmd = ['radare2', "-q0", filename]
-        self.process = subprocess.Popen(cmd, shell=False, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE, bufsize=0)
-        self.process.stdout.read(1)
+        r2 = r2pipe.
+        r = r2.open(filename)
+        self.process = r.process
+        #r.process.stderr = subprocess.PIPE
+
+        #process.stdout.read(1)
         self.process.stderr.read(1)
 
     def execute(self, cmd):
