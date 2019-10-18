@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
-import tab1, tab3, tab4, tab5
-from ui import tab2
-from singleton import Singleton
-from controllers import analysis_tab_controller
+import tab3, tab4, tab5
+from ui import tab2, tab1
+from model.singleton import Singleton
+from controllers import project_tab_controller, analysis_tab_controller
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
@@ -37,6 +37,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.atc = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
         self.atc.establish_connections()
+
+        self.ptc = project_tab_controller.project_tab_controller(self.ProjectTab, MainWindow)
+        self.ptc.establish_connections()
+        self.ptc.establish_calls()
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)

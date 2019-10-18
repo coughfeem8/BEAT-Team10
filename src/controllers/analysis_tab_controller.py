@@ -1,12 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 import pop
 import pymongo
 import base64
-import analysis
-from singleton import Singleton
+from model import analysis
+from model.singleton import Singleton
 
 
-class analysis_tab_controller():
+class analysis_tab_controller:
 
     def __init__(self, analysisTab):
         self.analysisTab = analysisTab
