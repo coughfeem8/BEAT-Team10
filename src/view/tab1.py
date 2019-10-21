@@ -60,6 +60,7 @@ class Tab1(QtWidgets.QWidget):
         self.gridLayout_2.addWidget(self.tableWidget, 3, 1, 1, 1)
         self.pushButton_8 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
         self.pushButton_8.setObjectName("pushButton_8")
+        self.pushButton_8.setEnabled(False)
         self.gridLayout_2.addWidget(self.pushButton_8, 2, 2, 1, 1)
 
         self.textEdit_2 = QtWidgets.QTextEdit(self.gridLayoutWidget_2)
@@ -85,6 +86,7 @@ class Tab1(QtWidgets.QWidget):
 
         self.lineEdit_2 = QtWidgets.QLineEdit(self.gridLayoutWidget_2)
         self.lineEdit_2.setObjectName("lineEdit_2")
+        self.lineEdit_2.setReadOnly(True)
         self.gridLayout_2.addWidget(self.lineEdit_2, 0, 1, 1, 1)
 
         self.pushButton_9 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
@@ -93,6 +95,7 @@ class Tab1(QtWidgets.QWidget):
 
         self.pushButton_10 = QtWidgets.QPushButton(self.gridLayoutWidget_2)
         self.pushButton_10.setObjectName("pushButton_10")
+        self.pushButton_10.setEnabled(False)
         self.gridLayout_2.addWidget(self.pushButton_10, 4, 2, 1, 1)
 
         _translate = QtCore.QCoreApplication.translate

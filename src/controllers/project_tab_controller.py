@@ -3,6 +3,7 @@ import r2pipe
 import pymongo
 from model.singleton import Singleton
 
+
 class project_tab_controller:
 
     def __init__(self, projectTab, mainA):
@@ -26,7 +27,8 @@ class project_tab_controller:
         self.fillBnryPropEmpty()
 
     def fillBnryPropEmpty(self):
-        properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx", "Pic",
+        properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
+                      "Pic",
                       "Endian"]
 
         self.projectTab.tableWidget.setObjectName("tableWidget")
@@ -71,12 +73,12 @@ class project_tab_controller:
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
         self.projectTab.tableWidget.setItem(11, 1, item)
 
-
     def BrowseBnryFiles(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.projectTab, "Browse Binary File", "",
-                                                  "All Files (*);;Binary Files (*.exe | *.elf)", options=options)
+                                                            "All Files (*);;Binary Files (*.exe | *.elf)",
+                                                            options=options)
 
         if fileName:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -105,8 +107,9 @@ class project_tab_controller:
             saved = False
             projectDb = mongoClient[self.nameProject]
             projInfo = projectDb["projectInfo"]
-            info = {"ProjectName" : self.projectTab.lineEdit_2.text(), "ProjectDescription" : self.projectTab.textEdit_2.toPlainText(),
-                    "BnyFilePath" : self.projectTab.lineEdit_3.text()}
+            info = {"ProjectName": self.projectTab.lineEdit_2.text(),
+                    "ProjectDescription": self.projectTab.textEdit_2.toPlainText(),
+                    "BnyFilePath": self.projectTab.lineEdit_3.text()}
             insertInfo = projInfo.insert(info, check_keys=False)
             binInfo = projectDb["binaryInfo"]
             insertObj = binInfo.insert(r2BinInfo, check_keys=False)
@@ -116,12 +119,13 @@ class project_tab_controller:
             msg.setText("Project Saved")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+            self.projectTab.pushButton_8.setEnabled(False)
+            self.projectTab.pushButton_10.setEnabled(False)
         else:
             msg = QtWidgets.QMessageBox()
             msg.setText("Please select a Binary File")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
-
 
     def createProject(self):
         text, okPressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:",
@@ -129,17 +133,18 @@ class project_tab_controller:
         if okPressed and text != '':
             activeProject = text
             self.projectTab.lineEdit_2.setText(text)
-            self.projectTab.lineEdit_2.setReadOnly(True)
             self.projectTab.textEdit_2.setText("")
             self.projectTab.lineEdit_3.setText("")
             self.fillBnryPropEmpty()
-            #self.parent.activeProj = text
+            # self.parent.activeProj = text
             self.nameProject = text
             self.projectTab.listWidget.addItem(text)
             item = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.projectTab.listWidget.setCurrentItem(item[0])
             self.projectTab.setWindowTitle('Create Project')
             saved = True
+            self.projectTab.pushButton_8.setEnabled(True)
+            self.projectTab.pushButton_10.setEnabled(True)
 
     def itemActivated_event(self):
         if self.projectTab.listWidget.count() != 0:
@@ -162,15 +167,15 @@ class project_tab_controller:
                     for db in cursorBin:
                         self.fillBnryPropEmpty()
                         self.fillBnryProp(db)
-                    if(saved):
-                        mainWin.setWindowTitle("* "+self.nameProject)
+                    if (saved):
+                        mainWin.setWindowTitle("* " + self.nameProject)
                     else:
-                        mainWin.setWindowTitle("BEAT | "+self.nameProject)
+                        mainWin.setWindowTitle("BEAT | " + self.nameProject)
                     activeProject = self.nameProject
 
                 except Exception as e:
                     print(e)
-                    #print(1)
+                    # print(1)
 
     def searchProjects(self):
         global mongoClient
@@ -186,8 +191,10 @@ class project_tab_controller:
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setWindowTitle("Delete Project")
         if self.nameProject != "":
-            buttonReply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message', "Do you like to erase Project %s ?" % self.nameProject,
-                                               QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+            buttonReply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message',
+                                                         "Do you like to erase Project %s ?" % self.nameProject,
+                                                         QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                         QtWidgets.QMessageBox.No)
             if buttonReply == QtWidgets.QMessageBox.Yes:
 
                 mongoClient.drop_database(self.nameProject)

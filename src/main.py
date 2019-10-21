@@ -1,12 +1,12 @@
 from PyQt5 import QtCore, QtWidgets
 import tab3, tab4, tab5
-from ui import tab2, tab1
+from view import tab2, tab1
 from model.singleton import Singleton
 from controllers import project_tab_controller, analysis_tab_controller
 
+
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
-
         MainWindow.setObjectName("BEAT")
         MainWindow.resize(804, 615)
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
@@ -35,12 +35,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.documentationTab = tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
 
-        self.atc = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
-        self.atc.establish_connections()
-
         self.ptc = project_tab_controller.project_tab_controller(self.ProjectTab, MainWindow)
         self.ptc.establish_connections()
         self.ptc.establish_calls()
+
+        self.atc = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
+        self.atc.establish_connections()
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
@@ -57,6 +57,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                   _translate("MainWindow", "Points of Interest"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.documentationTab),
                                   _translate("MainWindow", "Documentation"))
+
 
 if __name__ == "__main__":
     import sys
