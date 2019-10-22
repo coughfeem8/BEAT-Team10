@@ -37,6 +37,26 @@
         <pythonOutput>sock.close()</pythonOutput>
     </point_of_interest>
     <point_of_interest>
+        <name>sym.imp.gethostbyname</name>
+        <type>Function</type>
+        <pythonOutput>socket.gethostbyname(hostname)</pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.inet_ntoa</name>
+        <type>Function</type>
+        <pythonOutput>socket.inet_ntoa(packed_ip)</pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.inet_addr</name>
+        <type>Function</type>
+        <pythonOutput>socket.inet_aton(ip_string)</pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>sym.imp.htons</name>
+        <type>Function</type>
+        <pythonOutput>socket.htons(x)</pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
         <name>Client</name>
         <type>String</type>
         <pythonOutput></pythonOutput>
@@ -56,5 +76,29 @@
         <type>String</type>
         <pythonOutput></pythonOutput>
     </point_of_interest>
-
+        <point_of_interest>
+        <name>IP</name>
+        <type>String</type>
+        <pythonOutput></pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Port</name>
+        <type>String</type>
+        <pythonOutput></pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Address</name>
+        <type>String</type>
+        <pythonOutput></pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Session</name>
+        <type>String</type>
+        <pythonOutput></pythonOutput>
+    </point_of_interest>
+    <point_of_interest>
+        <name>Socket</name>
+        <type>String</type>
+        <pythonOutput></pythonOutput>
+    </point_of_interest>
 </plugin>

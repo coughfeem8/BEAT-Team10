@@ -4,8 +4,7 @@ import r2pipe
 import base64
 import xmltodict
 from singleton import Singleton
-import pymongo, time, re
-import subprocess
+import pymongo, time
 
 
 
@@ -179,8 +178,27 @@ class Tab2(QtWidgets.QWidget):
 
     def open_comment(self):
         popUp = pop.commentDialog(self)
-        text = popUp.exec_()
-        print(text)
+        comm = popUp.exec_()
+        item = self.poi_listWidget.currentItem()
+        s = Singleton.getProject()
+        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+        projectDb = mongoClient[s]
+        value = None
+        if item.toolTip() == "Functions":
+            projInfo = projectDb["functions"]
+            cursor = projInfo.find_one({"name": item.text()})
+            if cursor is not None:
+                value = cursor["_id"]
+        elif item.toolTip() == "Strings":
+            projInfo = projectDb["string"]
+            text = base64.b64encode(item.text().encode())
+            cursor = projInfo.find_one({"string": text.decode()})
+            if cursor is not None:
+                value = cursor["_id"]
+        if value is not None:
+            index = {"_id":value}
+            newValue = {"$set": {"comment": comm}}
+            projInfo.update_one(index,newValue)
 
     def open_analysis(self):
         popUp = pop.analysisResultDialog(self)
@@ -263,7 +281,9 @@ class Tab2(QtWidgets.QWidget):
                             item = self.set_item(text.decode(), "Strings")
                             self.poi_listWidget.addItem(item)
                             string["ocurrence"] = ocurrence
+                            string["comment"] = ""
                             strDB.insert_one(string)
+                            break
 
                 #Functions
                 if projectDb["functions"]:
@@ -282,6 +302,7 @@ class Tab2(QtWidgets.QWidget):
                         item = self.set_item(fc["name"], "Functions")
                         self.poi_listWidget.addItem(item)
                         fc["ocurrence"] = ocurrence
+                        fc["comment"] = ""
                         funcDB.insert_one(fc)
 
             elif self.poi_comboBox.currentText() == "Functions":
@@ -301,9 +322,10 @@ class Tab2(QtWidgets.QWidget):
                         item = self.set_item(fc["name"], "Functions")
                         self.poi_listWidget.addItem(item)
                         fc["ocurrence"] = ocurrence
+                        fc["comment"] = ""
                         funcDB.insert_one(fc)
 
-            elif self.poi_comboBox.currentText() == "String":
+            elif self.poi_comboBox.currentText() == "Strings":
                 # Strings
                 strings = rlocal.cmdj("izj")
                 strplg = self.pluginTypes("String")
@@ -322,9 +344,9 @@ class Tab2(QtWidgets.QWidget):
                             item = self.set_item(text.decode(), "Strings")
                             self.poi_listWidget.addItem(item)
                             string["ocurrence"] = ocurrence
+                            string["comment"] = ""
                             strDB.insert_one(string)
-
-
+                            break
 
         except Exception as e:
             print(e)
@@ -345,13 +367,13 @@ class Tab2(QtWidgets.QWidget):
             projInfo = projectDb["functions"]
             cursor = projInfo.find_one({"name": item.text()})
             if cursor is not None:
-                value = {'name':cursor["name"], 'signature':cursor["signature"],'varaddress':hex(cursor["offset"]), 'ocurrence':cursor["ocurrence"]}
+                value = {'name':cursor["name"], 'signature':cursor["signature"],'varaddress':hex(cursor["offset"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
         elif item.toolTip() == "Strings":
             projInfo = projectDb["string"]
             text = base64.b64encode(item.text().encode())
             cursor = projInfo.find_one({"string": text.decode()})
             if cursor is not None:
-                value = {'string':text,'varaddress':hex(cursor["vaddr"]), 'ocurrence':cursor["ocurrence"]}
+                value = {'string':text,'varaddress':hex(cursor["vaddr"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
         if value is not None:
             y = str(value)
             self.poi_content_area_textEdit.setPlainText(y)
@@ -401,8 +423,8 @@ class Tab2(QtWidgets.QWidget):
 
     def openShell(self):
         filename = Singleton.getPath()
-        r2 = r2pipe.
-        r = r2.open(filename)
+        #r2 = r2pipe.
+        r = r2pipe.open(filename)
         self.process = r.process
         #r.process.stderr = subprocess.PIPE
 
@@ -441,10 +463,15 @@ class Tab2(QtWidgets.QWidget):
         return out.decode('utf-8', errors='ignore')
 
     def dynamicAnal(self):
-        #r2 = r2pipe.open
-        self.openShell()
-        self.execute("aaa")
-        x = self.execute("doo")
-        self.terminal_output_textEdit.setPlainText(x)
+
+        filename = Singleton.getPath()
+
+        r = r2pipe.open(filename)
+        #child_stdout = r.process.stdout
+        r.cmd('aaa')
+        x = r.cmdj('aflj')
+        for line in x:
+            print(line)
+
 
 

@@ -27,9 +27,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             break
         Singleton.setPlugins(f)
 
-
-
-
         self.ProjectTab = tab1.Tab1(self, MainWindow)
         self.tabWidget.addTab(self.ProjectTab, "")
 
