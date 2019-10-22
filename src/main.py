@@ -1,8 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
-import tab3, tab4, tab5
-from view import tab2, tab1
+from view import tab1, tab2, tab3, tab4, tab5
 from model.singleton import Singleton
-from controllers import project_tab_controller, analysis_tab_controller
+from controllers import project_tab_controller, analysis_tab_controller, poi_tab_controller
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -41,11 +40,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.atc = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
         self.atc.establish_connections()
+        """
+        self.ptc = plugin_tab_controller.plugin_tab_controller(self.pluginTab)
+        self.ptc.establish_connections()
+        """
+        self.poitc = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
+        self.poitc.establish_connections()
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        print("test")
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
