@@ -256,16 +256,19 @@ class addPOIDialog(QtWidgets.QDialog):
 
     def exec_(self):
         super(addPOIDialog, self).exec_()
+        return self.lineEdit.text(), self.lineEdit_2.text(), self.comboBox_2.currentText()
 
     def saveText(self):
-        if self.lineEdit_2.text() is "" or self.lineEdit.text() is "":
+        if self.lineEdit.text() is "":
             msg = QtWidgets.QMessageBox()
             msg.setWindowTitle("Error")
-            msg.setText("Output or Name can't be empty.")
+            msg.setText("Name can't be empty.")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
             return
         self.accept()
+
+
 
     def clearText(self):
         self.accept()

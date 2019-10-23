@@ -173,6 +173,7 @@ class Tab2(QtWidgets.QWidget):
         for pl in Singleton.getPlugins():
             with open('plugins/%s' %pl) as fd:
                 doc = xmltodict.parse(fd.read())
+                #print(doc)
                 i = doc["plugin"]["name"]
                 self.plugin_comboBox.addItem(i)
 
