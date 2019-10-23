@@ -158,16 +158,16 @@ class Tab3(QtWidgets.QWidget):
     def BrowseStruct(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
-                                                  "All Files (*);;Binary Files (*.exe,*.elf)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML Schema", "",
+                                                  "XML Schemas Files (*.xsd)", options=options)
         if fileName:
             self.DPVPluginStructure.setText(fileName)
 
     def BrowseDataSet(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
-                                                  "All Files (*);;Binary Files (*.exe,*.elf)", options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML File", "",
+                                                  "XML Files (*.xml)", options=options)
         if fileName:
             self.DPVPluginDataSet.setText(fileName)
 
