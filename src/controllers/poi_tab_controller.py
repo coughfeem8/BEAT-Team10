@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import xmlschema
 import pprint
-import view.poi
+from view import poi
 
 
 class poi_tab_controller:
