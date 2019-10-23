@@ -208,13 +208,12 @@ class Tab3(QtWidgets.QWidget):
                     break
         xms = pl.split('.')[0]+'.xsd'
         schema = xmlschema.XMLSchema('plugins/%s' %xms)
-        #print(pl.split('.')[0]+'.xsd')
         if plgName:
             self.DPVPluginName.setText(doc["plugin"]["name"])
             self.DPVPluginDescription.setText(doc["plugin"]["description"])
             self.DPVPluginDataSet.setText('plugins/%s' % pl)
             self.DPVPluginStructure.setText('plugins/%s'%xms )
-            for i in doc["plugin"]["point_of_interest"]:
+            for i in doc["plugin"]["point_of_interest"]["item"]:
                 lastText = self.DVPPointOfInterest.toPlainText()
                 new = lastText + i["type"] + " " + i["name"] + "\n"
                 self.DVPPointOfInterest.setText(new)

@@ -235,7 +235,7 @@ class Tab2(QtWidgets.QWidget):
         plugin = self.pluginConnection()
 
         items =[]
-        for i in plugin["plugin"]["point_of_interest"]:
+        for i in plugin["plugin"]["point_of_interest"]["item"]:
             if type == i["type"]:
                 items.append(i["name"])
 
