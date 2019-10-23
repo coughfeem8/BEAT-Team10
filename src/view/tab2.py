@@ -61,13 +61,9 @@ class Tab2(QtWidgets.QWidget):
         self.comment_PushButton.setObjectName("comment_PushButton")
         self.gridLayout_2.addWidget(self.comment_PushButton, 3, 2, 1, 1)
 
-        self.analysis_PushButton = QtWidgets.QPushButton(self)
-        self.analysis_PushButton.setObjectName("analysis_PushButton")
-        self.gridLayout_2.addWidget(self.analysis_PushButton, 3, 3, 1, 1)
-
         self.output_PushButton = QtWidgets.QPushButton(self)
         self.output_PushButton.setObjectName("output_PushButton")
-        self.gridLayout_2.addWidget(self.output_PushButton, 3, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.output_PushButton, 3, 3, 1, 1)
 
         self.gridLayout_6 = QtWidgets.QGridLayout()
         self.gridLayout_6.setObjectName("gridLayout_6")
@@ -148,7 +144,6 @@ class Tab2(QtWidgets.QWidget):
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 
         self.comment_PushButton.setText(_translate("MainWindow", "Comment"))
-        self.analysis_PushButton.setText(_translate("MainWindow", "Analysis"))
         self.output_PushButton.setText(_translate("MainWindow", "Output"))
 
         self.poi_title_label.setText(_translate("MainWindow",

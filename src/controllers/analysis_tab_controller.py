@@ -17,7 +17,6 @@ class analysis_tab_controller:
             lambda x: self.poi_comboBox_change(text=self.analysisTab.poi_comboBox.currentText()))
         self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
-        self.analysisTab.analysis_PushButton.clicked.connect(self.open_analysis)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
 
     def set_item(self, text, type):
@@ -247,11 +246,6 @@ class analysis_tab_controller:
 
     def open_comment(self):
         popUp = pop.commentDialog(self.analysisTab)
-        text = popUp.exec_()
-        print(text)
-
-    def open_analysis(self):
-        popUp = pop.analysisResultDialog(self.analysisTab)
         text = popUp.exec_()
         print(text)
 
