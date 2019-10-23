@@ -11,6 +11,7 @@ class plugin_tab_controller:
         self.plugin_tab.pushButton_7.clicked.connect(self.createPlugin)
         self.plugin_tab.ButtonDPVPluginStructure.clicked.connect(self.BrowseStruct)
         self.plugin_tab.ButtonDPVBDataset.clicked.connect(self.BrowseDataSet)
+        print("test")
 
     def BrowseStruct(self):
         options = QtWidgets.QFileDialog.Options()
