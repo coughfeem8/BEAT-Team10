@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
 import pymongo
+from os import walk
 from model.singleton import Singleton
 
 
@@ -25,11 +26,20 @@ class project_tab_controller:
     def establish_calls(self):
         self.searchProjects()
         self.fillBnryPropEmpty()
+        self.setPlugins()
+
+    def setPlugins(self):
+        f = []
+        for (dirpath, dirnames, filenames) in walk('./plugins'):
+            for name in filenames:
+                if name.endswith('.xml'):
+                    f.append(name)
+            break
+        Singleton.setPlugins(f)
 
     def fillBnryPropEmpty(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
-                      "Pic",
-                      "Endian"]
+                      "Pic", "Endian"]
 
         self.projectTab.tableWidget.setObjectName("tableWidget")
         self.projectTab.tableWidget.setColumnCount(2)

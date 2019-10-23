@@ -201,7 +201,7 @@ class Tab3(QtWidgets.QWidget):
     
         self.groupBox_3.setTitle(_translate("MainWindow", "Plugin View"))
         self.pushButton_7.setText(_translate("MainWindow", "New"))
-"""
+
         self.pushButton_7.clicked.connect(self.createPlugin)
         self.ButtonDPVPluginStructure.clicked.connect(self.BrowseStruct)
         self.ButtonDPVBDataset.clicked.connect(self.BrowseDataSet)
@@ -239,4 +239,4 @@ class Tab3(QtWidgets.QWidget):
             self.DPVPluginDescription.setText("")
             self.DPVPluginName.setText("")
             self.DVPPointOfInterest.setText("")
-"""
+
