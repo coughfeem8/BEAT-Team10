@@ -34,18 +34,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.documentationTab = tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
 
-        self.ptc = project_tab_controller.project_tab_controller(self.ProjectTab, MainWindow)
-        self.ptc.establish_connections()
-        self.ptc.establish_calls()
+        self.project_controller = project_tab_controller.project_tab_controller(self.ProjectTab, MainWindow)
+        self.project_controller.establish_connections()
+        self.project_controller.establish_calls()
 
-        self.atc = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
-        self.atc.establish_connections()
+        self.analysis_controller = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
+        self.analysis_controller.establish_connections()
 
-        self.ptc = plugin_tab_controller.plugin_tab_controller(self.pluginTab)
-        self.ptc.establish_connections()
+        self.plugin_controller = plugin_tab_controller.plugin_tab_controller(self.pluginTab)
+        self.plugin_controller.establish_connections()
 
-        self.poitc = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
-        self.poitc.establish_connections()
+        self.poi_controller = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
+        self.poi_controller.establish_connections()
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
