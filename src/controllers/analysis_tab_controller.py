@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 import pop
 import pymongo
 import base64
+import xmltodict
 from model import analysis
 from model.singleton import Singleton
 
@@ -19,6 +20,13 @@ class analysis_tab_controller:
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysisTab.analysis_PushButton.clicked.connect(self.open_analysis)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
+
+    def setPlugins(self):
+        for pl in Singleton.getPlugins():
+            with open('plugins/%s' %pl) as fd:
+                doc = xmltodict.parse(fd.read())
+                i = doc["plugin"]["name"]
+                self.analysisTab.plugin_comboBox.addItem(i)
 
     def set_item(self, text, type):
         item = QtWidgets.QListWidgetItem(text)
