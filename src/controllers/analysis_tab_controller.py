@@ -177,8 +177,8 @@ class analysis_tab_controller:
             projInfo = projectDb["structures"]
             cursor = projInfo.find()
             for db in cursor:
-                insert_send = {"address": hex(db["from"]), "opcode": db["opcode"],
-                               "calling_function": db["fcn_name"]}
+                insert_send = {"address": db["address"], "opcode": db["opcode"],
+                               "calling_function": db["calling_function"]}
                 item = self.set_item(
                     "send " + insert_send["calling_function"] + " " + insert_send["address"],
                     "Structs")
@@ -195,21 +195,12 @@ class analysis_tab_controller:
             projInfo = projectDb["functions"]
             cursor = projInfo.find()
             for db in cursor:
-                item = self.analysisTab.set_item(db["signature"], "Functions")
+                item = self.set_item(db["signature"], "Functions")
                 self.analysisTab.poi_listWidget.addItem(item)
             projInfo = projectDb["variables"]
             cursor = projInfo.find()
             for db in cursor:
                 item = self.set_item("%s %s" % (db["type"], db["name"]), "Variables")
-                self.analysisTab.poi_listWidget.addItem(item)
-            projInfo = projectDb["structures"]
-            cursor = projInfo.find()
-            for db in cursor:
-                insert_send = {"address": db["address"], "opcode": db["opcode"],
-                               "calling_function": db["calling_function"]}
-                item = self.set_item(
-                    "send " + insert_send["calling_function"] + " " + insert_send["address"],
-                    "Structs")
                 self.analysisTab.poi_listWidget.addItem(item)
             projInfo = projectDb["string"]
             cursor = projInfo.find()
@@ -221,6 +212,15 @@ class analysis_tab_controller:
             cursor = projInfo.find()
             for db in cursor:
                 item = self.set_item(db["name"] + " " + db["type"], "Imports")
+                self.analysisTab.poi_listWidget.addItem(item)
+            projInfo = projectDb["structures"]
+            cursor = projInfo.find()
+            for db in cursor:
+                insert_send = {"address": db["address"], "opcode": db["opcode"],
+                               "calling_function": db["calling_function"]}
+                item = self.set_item(
+                    "send " + insert_send["calling_function"] + " " + insert_send["address"],
+                    "Structs")
                 self.analysisTab.poi_listWidget.addItem(item)
 
     def detailed_poi(self, item):
@@ -254,17 +254,17 @@ class analysis_tab_controller:
         self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
     def open_comment(self):
-        popUp = pop.commentDialog(self)
+        popUp = pop.commentDialog(self.analysisTab)
         text = popUp.exec_()
         print(text)
 
     def open_analysis(self):
-        popUp = pop.analysisResultDialog(self)
+        popUp = pop.analysisResultDialog(self.analysisTab)
         text = popUp.exec_()
         print(text)
 
     def open_output(self):
-        popUp = pop.outputFieldDialog(self)
+        popUp = pop.outputFieldDialog(self.analysisTab)
         text = popUp.exec_()
         print(text)
 

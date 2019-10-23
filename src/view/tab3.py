@@ -201,3 +201,42 @@ class Tab3(QtWidgets.QWidget):
     
         self.groupBox_3.setTitle(_translate("MainWindow", "Plugin View"))
         self.pushButton_7.setText(_translate("MainWindow", "New"))
+
+        self.pushButton_7.clicked.connect(self.createPlugin)
+        self.ButtonDPVPluginStructure.clicked.connect(self.BrowseStruct)
+        self.ButtonDPVBDataset.clicked.connect(self.BrowseDataSet)
+
+    def BrowseStruct(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
+                                                  "All Files (*);;Binary Files (*.exe,*.elf)", options=options)
+        if fileName:
+            self.DPVPluginStructure.setText(fileName)
+
+    def BrowseDataSet(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse Binary File", "",
+                                                  "All Files (*);;Binary Files (*.exe,*.elf)", options=options)
+        if fileName:
+            self.DPVPluginDataSet.setText(fileName)
+
+    def createPlugin(self):
+        text, okPressed = QtWidgets.QInputDialog.getText(self, "Create New Plugin", "Name of Plugin:",
+                                                         QtWidgets.QLineEdit.Normal, "")
+        print(text)
+
+    def deletePlugin(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setWindowTitle("Delete Project")
+        buttonReply = QtWidgets.QMessageBox.question(self, 'PyQt5 message', "Are you sure to delete Plugin ?",
+                                           QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
+        if buttonReply == QtWidgets.QMessageBox.Yes:
+            self.DPVPluginStructure.setText("")
+            self.DPVPluginDataSet.setText("")
+            self.DPVPluginDescription.setText("")
+            self.DPVPluginName.setText("")
+            self.DVPPointOfInterest.setText("")
+
