@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import tab1, tab2, tab3, tab4, tab5
+import src.tab1, src.tab2, src.tab3, src.tab4,src.tab5
 from singleton import Singleton
 from os import walk
+
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
@@ -27,19 +28,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
             break
         Singleton.setPlugins(f)
 
-        self.ProjectTab = tab1.Tab1(self, MainWindow)
+        self.ProjectTab = src.tab1.Tab1(self, MainWindow)
         self.tabWidget.addTab(self.ProjectTab, "")
 
-        self.analysisTab = tab2.Tab2(self, self)
+        self.analysisTab = src.tab2.Tab2(self, self)
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = tab3.Tab3(self, self)
+        self.pluginTab = src.tab3.Tab3(self, self)
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = tab4.Tab4(self,self)
+        self.pointsOfInterestTab = src.tab4.Tab4(self,self)
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = tab5.Tab5(self, self)
+        self.documentationTab = src.tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
 
 

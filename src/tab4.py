@@ -3,11 +3,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import xmlschema
 import xmltodict
 import pprint
-import ui.poi
+import src.ui.poi
+import src.pop
 from singleton import Singleton
 
 
-class Tab4(ui.poi.Ui_POI_tab):
+class Tab4(src.ui.poi.Ui_POI_tab):
     def __init__(self, main, parent=None):
         super(Tab4, self).__init__(parent)
         self.setupUi(self)
@@ -18,6 +19,10 @@ class Tab4(ui.poi.Ui_POI_tab):
         self.listWidget_2.itemSelectionChanged.connect(self.itemActivatedPlugin)
         self.comboBox_2.currentIndexChanged.connect(lambda x: self.filterPOIs(plugin=self.comboBox.currentText(),
                                                                               type=self.comboBox_2.currentText()))
+
+        self.pushButton_11.clicked.connect(self.instantiateAddPOIWindow)
+
+
 
     def setPlugins(self):
         for pl in Singleton.getPlugins():
@@ -67,3 +72,7 @@ class Tab4(ui.poi.Ui_POI_tab):
             for i in doc["plugin"]["point_of_interest"]:
                 if poiName[0].decode() == i["name"]:
                     self.textEdit.setText(i["name"]+" "+i["type"])
+    def instantiateAddPOIWindow(self):
+        pop = src.pop.addPOIDialog(self)
+        comm = pop.exec_()
+
