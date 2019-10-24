@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-import os
-import pop
+from model import plugin
+import xmlschema
+
 
 class plugin_tab_controller:
 
@@ -11,23 +12,28 @@ class plugin_tab_controller:
         self.plugin_tab.pushButton_7.clicked.connect(self.createPlugin)
         self.plugin_tab.ButtonDPVPluginStructure.clicked.connect(self.BrowseStruct)
         self.plugin_tab.ButtonDPVBDataset.clicked.connect(self.BrowseDataSet)
-        print("test")
+        self.plugin_tab.listWidget.itemSelectionChanged.connect(self.itemActivated)
+
+    def establish_calls(self):
+        self.setPlugins()
+
+    def setPlugins(self):
+        for pl in plugin.getInstalledPlugins():
+            self.plugin_tab.listWidget.addItem(pl)
 
     def BrowseStruct(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.plugin_tab, "Browse Binary File", "",
-                                                            "All Files (*);;Binary Files (*.exe,*.elf)",
-                                                            options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.plugin_tab, "Browse XML Schema", "",
+                                                            "XML Schemas Files (*.xsd)", options=options)
         if fileName:
             self.plugin_tab.DPVPluginStructure.setText(fileName)
 
     def BrowseDataSet(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.plugin_tab, "Browse Binary File", "",
-                                                            "All Files (*);;Binary Files (*.exe,*.elf)",
-                                                            options=options)
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.plugin_tab, "Browse XML File", "",
+                                                            "XML Files (*.xml)", options=options)
         if fileName:
             self.plugin_tab.DPVPluginDataSet.setText(fileName)
 
@@ -50,3 +56,20 @@ class plugin_tab_controller:
             self.plugin_tab.DPVPluginDescription.setText("")
             self.plugin_tab.DPVPluginName.setText("")
             self.plugin_tab.DVPPointOfInterest.setText("")
+
+    def itemActivated(self):
+        plgSelect = self.plugin_tab.listWidget.selectedItems()
+        plgName = [item.text().encode("ascii") for item in plgSelect]
+        doc = plugin.pluginConnection(plgName)
+        pl = plugin.getPluginFile(plgName)
+        xms = pl.split('.')[0] + '.xsd'
+        schema = xmlschema.XMLSchema('plugins/%s' % xms)
+        if plgName:
+            self.plugin_tab.DPVPluginName.setText(doc["plugin"]["name"])
+            self.plugin_tab.DPVPluginDescription.setText(doc["plugin"]["description"])
+            self.plugin_tab.DPVPluginDataSet.setText('plugins/%s' % pl)
+            self.plugin_tab.DPVPluginStructure.setText('plugins/%s' % xms)
+            for i in doc["plugin"]["point_of_interest"]["item"]:
+                lastText = self.plugin_tab.DVPPointOfInterest.toPlainText()
+                new = lastText + i["type"] + " " + i["name"] + "\n"
+                self.plugin_tab.DVPPointOfInterest.setText(new)

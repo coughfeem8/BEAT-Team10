@@ -3,6 +3,7 @@ import r2pipe
 import pymongo
 from os import walk
 from model.singleton import Singleton
+from model import dbconnection
 
 
 class project_tab_controller:
@@ -24,6 +25,10 @@ class project_tab_controller:
         self.projectTab.pushButton_10.clicked.connect(self.SaveProject)
 
     def establish_calls(self):
+        self.projectTab.pushButton_10.setEnabled(False)
+        self.projectTab.pushButton_8.setEnabled(False)
+        self.projectTab.lineEdit_2.setReadOnly(True)
+        self.projectTab.textEdit_2.setReadOnly(True)
         self.searchProjects()
         self.fillBnryPropEmpty()
         self.setPlugins()
@@ -52,43 +57,56 @@ class project_tab_controller:
         QtGui.QFont.setBold(bolds, True)
         for x in range(len(properties)):
             item = QtWidgets.QTableWidgetItem(properties[x])
+            item.setFlags(QtCore.Qt.ItemIsEnabled)
             empty = QtWidgets.QTableWidgetItem("")
+            empty.setFlags(QtCore.Qt.ItemIsEnabled)
             item.setFont(bolds)
             self.projectTab.tableWidget.setItem(x, 0, item)
             self.projectTab.tableWidget.setItem(x, 1, empty)
 
     def fillBnryProp(self, r2BinInfo):
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(0, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(1, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(2, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(3, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(4, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(5, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(6, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(7, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(8, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(9, 1, item)
         item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(10, 1, item)
         item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
+        item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(11, 1, item)
 
     def BrowseBnryFiles(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.projectTab, "Browse Binary File", "",
-                                                            "All Files (*);;Binary Files (*.exe | *.elf)",
-                                                            options=options)
+                                                            "Binary Files (*.exe | *.elf | *.out)", options=options)
 
         if fileName:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -115,7 +133,7 @@ class project_tab_controller:
     def SaveProject(self):
         if self.projectTab.lineEdit_3.text() != "":
             saved = False
-            projectDb = mongoClient[self.nameProject]
+            projectDb = dbconnection.getCollection(self.nameProject)
             projInfo = projectDb["projectInfo"]
             info = {"ProjectName": self.projectTab.lineEdit_2.text(),
                     "ProjectDescription": self.projectTab.textEdit_2.toPlainText(),
@@ -138,15 +156,20 @@ class project_tab_controller:
             retval = msg.exec_()
 
     def createProject(self):
-        text, okPressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:",
-                                                         QtWidgets.QLineEdit.Normal, "")
+        text, okPressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:", QtWidgets.QLineEdit.Normal, "")
         if okPressed and text != '':
-            activeProject = text
+            dbnames = dbconnection.getDB()
+            if text in dbnames:
+                msg = QtWidgets.QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Project with that name already exists")
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                retval = msg.exec_()
+                return
             self.projectTab.lineEdit_2.setText(text)
             self.projectTab.textEdit_2.setText("")
             self.projectTab.lineEdit_3.setText("")
             self.fillBnryPropEmpty()
-            # self.parent.activeProj = text
             self.nameProject = text
             self.projectTab.listWidget.addItem(text)
             item = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
@@ -155,6 +178,7 @@ class project_tab_controller:
             saved = True
             self.projectTab.pushButton_8.setEnabled(True)
             self.projectTab.pushButton_10.setEnabled(True)
+            self.projectTab.textEdit_2.setReadOnly(False)
 
     def itemActivated_event(self):
         if self.projectTab.listWidget.count() != 0:
@@ -164,7 +188,7 @@ class project_tab_controller:
                 self.nameProject = str(projectName[0], 'utf-8')
                 try:
                     Singleton.setProject(self.nameProject)
-                    projectDb = mongoClient[self.nameProject]
+                    projectDb = dbconnection.getCollection(self.nameProject)
                     projInfo = projectDb["projectInfo"]
                     binInfo = projectDb["binaryInfo"]
                     cursor = projInfo.find()
@@ -172,7 +196,7 @@ class project_tab_controller:
                         self.projectTab.textEdit_2.setPlainText(db['ProjectDescription'])
                         self.projectTab.lineEdit_2.setText(db['ProjectName'])
                         self.projectTab.lineEdit_3.setText(db['BnyFilePath'])
-
+                        Singleton.setPath(db['BnyFilePath'])
                     cursorBin = binInfo.find()
                     for db in cursorBin:
                         self.fillBnryPropEmpty()
@@ -181,16 +205,15 @@ class project_tab_controller:
                         mainWin.setWindowTitle("* " + self.nameProject)
                     else:
                         mainWin.setWindowTitle("BEAT | " + self.nameProject)
-                    activeProject = self.nameProject
 
                 except Exception as e:
-                    print(e)
-                    # print(1)
+                    msg = QtWidgets.QMessageBox()
+                    msg.setText(str(e))
+                    msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                    retval = msg.exec_()
 
     def searchProjects(self):
-        global mongoClient
-        mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
-        cursor = mongoClient.list_database_names()
+        cursor = dbconnection.getDB()
         self.projectTab.listWidget.clear()
         for db in cursor:
             if db not in ['admin', 'local', 'config']:
@@ -207,7 +230,7 @@ class project_tab_controller:
                                                          QtWidgets.QMessageBox.No)
             if buttonReply == QtWidgets.QMessageBox.Yes:
 
-                mongoClient.drop_database(self.nameProject)
+                dbconnection.dropDB(self.nameProject)
 
                 self.projectTab.lineEdit_2.setText("")
                 self.projectTab.textEdit_2.setText("")
