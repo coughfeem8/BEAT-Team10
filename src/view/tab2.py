@@ -16,9 +16,6 @@ class Tab2(QtWidgets.QWidget):
         self.plugin_comboBox.setMaxVisibleItems(10)
         self.plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.plugin_comboBox.setObjectName("plugin_comboBox")
-        self.plugin_comboBox.addItem("")
-        self.plugin_comboBox.addItem("")
-        self.plugin_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.plugin_comboBox, 0, 1, 1, 1)
 
         self.static_anal_label = QtWidgets.QLabel(self)
@@ -122,10 +119,6 @@ class Tab2(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
 
         self.plugin_label.setText(_translate("MainWindow", "Plugin"))
-
-        self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
-        self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
-        self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
 
         self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
         self.static_run_button.setText(_translate("MainWindow", "Run"))
