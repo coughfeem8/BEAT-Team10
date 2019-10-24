@@ -1,49 +1,73 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
 import xmlschema
-import pprint
+import xmltodict
+import dicttoxml
 import view.poi
+import pop
+from model import plugin
+from xml.dom.minidom import parseString
 
 
 class poi_tab_controller:
 
     def __init__(self, poi_tab):
         self.poi_tab = poi_tab
+        self.poi_tab.comboBox_2.addItem("All")
 
     def establish_connections(self):
-        self.poi_tab.pois = self.dump_xml()
-        self.poi_tab.POI.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.poi_tab.pois[0])))
-        self.poi_tab.POI_2.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.poi_tab.pois[1])))
-        self.poi_tab.POI_3.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.poi_tab.pois[2])))
-        self.poi_tab.POI_4.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.poi_tab.pois[3])))
-        self.poi_tab.POI_5.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(self.poi_tab.pois[4])))
+        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fillPOIs(
+            cplg=self.poi_tab.comboBox.currentText()))
+        self.poi_tab.listWidget_2.itemSelectionChanged.connect(self.itemActivatedPlugin)
+        self.poi_tab.comboBox_2.currentIndexChanged.connect(lambda x: self.filterPOIs(cplg=self.poi_tab.comboBox.currentText(),
+                                                                             type=self.poi_tab.comboBox_2.currentText()))
+        self.poi_tab.pushButton_11.clicked.connect(self.instantiateAddPOIWindow)
 
-    def dump_xml(self, dataset=None):
-        # should require to get them from somewhere not straight xml.
-        xmls = ['variable', 'string', 'dll', 'packet', 'function', 'struct']
-        xml_d = []
-        for f in xmls:
-            print(self.poi_tab.my_schema.is_valid('resources/schemas/{}.xml'.format(f)))
-            xml_d.append(self.poi_tab.my_schema.to_dict('resources/schemas/{}.xml'.format(f)))
-        return xml_d
+    def establish_calls(self):
+        self.setPlugins()
 
-    def setup_poi_data(self, buttons, pois):
-        '''fix this part to make it work better'''
-        for item, data in zip(buttons, pois):
-            print(item)
-            item.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(data)))
+    def setPlugins(self):
+        for pl in plugin.getInstalledPlugins():
+            self.poi_tab.comboBox.addItem(pl)
 
-    def display_editor_text(self, text):
-        self.poi_tab.POI_content_area.setText(text)
+    def fillPOIs(self, cplg):
+        doc = plugin.pluginConnection(cplg)
+        types = []
+        for i in doc["plugin"]["point_of_interest"]["item"]:
+            self.poi_tab.listWidget_2.addItem(str(i["name"]))
+            if i["type"] not in types:
+                types.append(i["type"])
+                self.poi_tab.comboBox_2.addItem(i["type"])
 
-    def create_pois(self, pois):
-        buttns = []
-        for poi in pois:
-            pprint.pprint(poi)
-            butn = QtWidgets.QPushButton(self.poi_tab.POI_list_view)
-            butn.setFlat(True)
-            butn.setObjectName(poi['name'])
-            self.poi_tab.verticalLayout.addWidget(butn)
-            self.poi_tab.POI_frame.addWidget(self.poi_tab.POI_list_view)
-            butn.clicked.connect(lambda x: self.display_editor_text(pprint.pformat(poi)))
-            buttns.append(butn)
-        return buttns
+    def filterPOIs(self, cplg, type):
+        doc = plugin.pluginConnection(cplg)
+        for i in doc["plugin"]["point_of_interest"]["item"]:
+            if type != "All":
+                print(i)
+                if i["type"] == type:
+                    self.poi_tab.listWidget_2.addItem(str(i["name"]))
+            else:
+                self.poi_tab.listWidget_2.addItem(str(i["name"]))
+
+    def itemActivatedPlugin(self):
+        poiSelect = self.listWidget_2.selectedItems()
+        poiName = [item.text().encode("ascii") for item in poiSelect]
+        doc = plugin.pluginConnection(self.poi_tab.comboBox.currentText)
+        if poiName:
+            for i in doc["plugin"]["point_of_interest"]["item"]:
+                if poiName[0].decode() == i["name"]:
+                    self.poi_tab.textEdit.setText(i["name"] + " " + i["type"])
+
+    def instantiateAddPOIWindow(self):
+        pop = pop.addPOIDialog(self)
+        text, out, type = pop.exec_()
+        newpoi = {"name": text, "type": type, "pythonOutput": out}
+        doc = plugin.pluginConnection(self.poi_tab.comboBox.currentText)
+        pl = plugin.getPluginFile(self.poi_tab.comboBox.currentText)
+        old = doc["plugin"]["point_of_interest"]["item"]
+        old.append(newpoi)
+        doc["plugin"]["point_of_interest"] = old
+        xml = dicttoxml.dicttoxml(doc, attr_type=False, root=False)
+        dom = parseString(xml)
+        wr = open('plugins/%s' % pl, 'w')
+        wr.write(dom.toprettyxml())
+        wr.close()
+        self.filterPOIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))

@@ -16,9 +16,6 @@ class Tab2(QtWidgets.QWidget):
         self.plugin_comboBox.setMaxVisibleItems(10)
         self.plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.plugin_comboBox.setObjectName("plugin_comboBox")
-        self.plugin_comboBox.addItem("")
-        self.plugin_comboBox.addItem("")
-        self.plugin_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.plugin_comboBox, 0, 1, 1, 1)
 
         self.static_anal_label = QtWidgets.QLabel(self)
@@ -43,7 +40,6 @@ class Tab2(QtWidgets.QWidget):
 
         self.poi_comboBox = QtWidgets.QComboBox(self)
         self.poi_comboBox.setObjectName("poi_comboBox")
-        self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
@@ -127,10 +123,6 @@ class Tab2(QtWidgets.QWidget):
 
         self.plugin_label.setText(_translate("MainWindow", "Plugin"))
 
-        self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
-        self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
-        self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
-
         self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
         self.static_run_button.setText(_translate("MainWindow", "Run"))
         self.dynamic_anal_label.setText(_translate("MainWindow", "Dynamic Analysis"))
@@ -140,11 +132,9 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
         self.poi_comboBox.setItemText(1, _translate("MainWindow", "Variables"))
         self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLLs"))
-        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
-        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
-        self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
-
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Packets"))
+        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Structs"))
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 
         self.comment_PushButton.setText(_translate("MainWindow", "Comment"))

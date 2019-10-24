@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
 from view import tab1, tab2, tab3, tab4, tab5
 from model.singleton import Singleton
-from controllers import project_tab_controller, analysis_tab_controller, poi_tab_controller
+from model import plugin
+from controllers import project_tab_controller, analysis_tab_controller, poi_tab_controller, plugin_tab_controller
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -13,6 +14,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         MainWindow.setWindowTitle("BEAT")
         s = Singleton()
         s.setProject("BEAT")
+
+        plugin.setPlugins()
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -40,18 +44,21 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         self.atc = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
         self.atc.establish_connections()
-        """
+        self.atc.establish_calls()
+
         self.ptc = plugin_tab_controller.plugin_tab_controller(self.pluginTab)
         self.ptc.establish_connections()
-        """
+        self.ptc.establish_calls()
+
         self.poitc = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
         self.poitc.establish_connections()
+
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        print("test")
+
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
