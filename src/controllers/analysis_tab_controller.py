@@ -17,7 +17,6 @@ class analysis_tab_controller:
             lambda x: self.poi_comboBox_change(text=self.analysisTab.poi_comboBox.currentText()))
         self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
-        self.analysisTab.analysis_PushButton.clicked.connect(self.open_analysis)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
 
     def establish_calls(self):
@@ -164,11 +163,6 @@ class analysis_tab_controller:
             index = {"_id": value}
             newValue = {"$set": {"comment": comm}}
             dbInfo.update_one(index, newValue)
-
-    def open_analysis(self):
-        popUp = pop.analysisResultDialog(self)
-        text = popUp.exec_()
-        print(text)
 
     def open_output(self):
         popUp = pop.outputFieldDialog(self)

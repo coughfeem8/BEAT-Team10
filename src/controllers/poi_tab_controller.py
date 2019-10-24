@@ -48,7 +48,7 @@ class poi_tab_controller:
                 self.poi_tab.listWidget_2.addItem(str(i["name"]))
 
     def itemActivatedPlugin(self):
-        poiSelect = self.listWidget_2.selectedItems()
+        poiSelect = self.poi_tab.listWidget_2.selectedItems()
         poiName = [item.text().encode("ascii") for item in poiSelect]
         doc = plugin.pluginConnection(self.poi_tab.comboBox.currentText)
         if poiName:

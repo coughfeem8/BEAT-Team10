@@ -16,6 +16,9 @@ class Tab2(QtWidgets.QWidget):
         self.plugin_comboBox.setMaxVisibleItems(10)
         self.plugin_comboBox.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.plugin_comboBox.setObjectName("plugin_comboBox")
+        self.plugin_comboBox.addItem("")
+        self.plugin_comboBox.addItem("")
+        self.plugin_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.plugin_comboBox, 0, 1, 1, 1)
 
         self.static_anal_label = QtWidgets.QLabel(self)
@@ -46,6 +49,7 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
+        self.poi_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.poi_comboBox, 2, 1, 2, 1)
 
         self.poi_label = QtWidgets.QLabel(self)
@@ -57,13 +61,9 @@ class Tab2(QtWidgets.QWidget):
         self.comment_PushButton.setObjectName("comment_PushButton")
         self.gridLayout_2.addWidget(self.comment_PushButton, 3, 2, 1, 1)
 
-        self.analysis_PushButton = QtWidgets.QPushButton(self)
-        self.analysis_PushButton.setObjectName("analysis_PushButton")
-        self.gridLayout_2.addWidget(self.analysis_PushButton, 3, 3, 1, 1)
-
         self.output_PushButton = QtWidgets.QPushButton(self)
         self.output_PushButton.setObjectName("output_PushButton")
-        self.gridLayout_2.addWidget(self.output_PushButton, 3, 4, 1, 1)
+        self.gridLayout_2.addWidget(self.output_PushButton, 3, 3, 1, 1)
 
         self.gridLayout_6 = QtWidgets.QGridLayout()
         self.gridLayout_6.setObjectName("gridLayout_6")
@@ -123,6 +123,10 @@ class Tab2(QtWidgets.QWidget):
 
         self.plugin_label.setText(_translate("MainWindow", "Plugin"))
 
+        self.plugin_comboBox.setItemText(0, _translate("MainWindow", "Network Plugin"))
+        self.plugin_comboBox.setItemText(1, _translate("MainWindow", "Plugin A"))
+        self.plugin_comboBox.setItemText(2, _translate("MainWindow", "Plugin B"))
+
         self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
         self.static_run_button.setText(_translate("MainWindow", "Run"))
         self.dynamic_anal_label.setText(_translate("MainWindow", "Dynamic Analysis"))
@@ -132,13 +136,14 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
         self.poi_comboBox.setItemText(1, _translate("MainWindow", "Variables"))
         self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "Functions"))
-        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Packets"))
-        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLLs"))
+        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
+        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
+        self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
+
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 
         self.comment_PushButton.setText(_translate("MainWindow", "Comment"))
-        self.analysis_PushButton.setText(_translate("MainWindow", "Analysis"))
         self.output_PushButton.setText(_translate("MainWindow", "Output"))
 
         self.poi_title_label.setText(_translate("MainWindow",
