@@ -15,6 +15,8 @@ class analysis_tab_controller:
         self.analysisTab.static_run_button.clicked.connect(self.static_ran)
         self.analysisTab.poi_comboBox.currentIndexChanged.connect(
             lambda x: self.poi_comboBox_change(text=self.analysisTab.poi_comboBox.currentText()))
+        self.analysisTab.poi_listWidget.itemClicked.connect(
+            lambda x: self.detailed_poi(self.analysisTab.poi_listWidget.currentItem()))
         self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
@@ -46,29 +48,30 @@ class analysis_tab_controller:
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
         self.analysisTab.poi_listWidget.clear()
+        rlocal = analysis.staticAll(Singleton.getPath())
         try:
             if self.analysisTab.poi_comboBox.currentText() == "All":
 
-                strings = analysis.staticStrings(self.analysisTab.plugin_comboBox.currentText())
+                strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
 
-                functions = analysis.staticFunctions(self.analysisTab.plugin_comboBox.currentText())
+                functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Functions":
 
-                functions = analysis.staticFunctions(self.analysisTab.plugin_comboBox.currentText())
+                functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Strings":
 
-                strings = analysis.staticStrings(self.analysisTab.plugin_comboBox.currentText())
+                strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
@@ -142,8 +145,7 @@ class analysis_tab_controller:
             self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
     def open_comment(self):
-        popUp = pop.commentDialog(self)
-        comm = popUp.exec_()
+
         item = self.analysisTab.poi_listWidget.currentItem()
         s = Singleton.getProject()
         projectDB = dbconnection.getCollection(s)
@@ -153,16 +155,23 @@ class analysis_tab_controller:
             cursor = dbInfo.find_one({"name": item.text()})
             if cursor is not  None:
                 value = cursor["_id"]
+                cmt = cursor["comment"]
         elif item.toolTip() == "Strings":
             dbInfo = projectDB["string"]
             text = base64.b64encode(item.text().encode())
             cursor = dbInfo.find_one({"string": text.decode()})
             if cursor is not None:
                 value = cursor["_id"]
+                cmt = cursor["comment"]
         if value is not None:
+            if cmt is None:
+                cmt = ""
+            popUp = pop.commentDialog(self.analysisTab, cmt)
+            comm = popUp.exec_()
             index = {"_id": value}
             newValue = {"$set": {"comment": comm}}
             dbInfo.update_one(index, newValue)
+            self.detailed_poi(item)
 
     def open_output(self):
         popUp = pop.outputFieldDialog(self)

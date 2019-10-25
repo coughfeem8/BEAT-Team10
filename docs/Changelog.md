@@ -1,3 +1,4 @@
+ - v3.6 - Added Comments for POIs
  - v3.5.2 - Fixed error with plugin combobox in Tab2 view
  - v3.5.1 - Fixed error with Project controller connections
  - v3.5 - Added Filter of POIs dependeing on Plugin and Plugin functionality

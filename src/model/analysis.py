@@ -3,10 +3,12 @@ from model.singleton import Singleton
 from model import plugin, dbconnection
 import base64
 
-
-def staticStrings(cplugin):
-    rlocal = r2pipe.open(Singleton.getPath())
+def staticAll(path):
+    rlocal = r2pipe.open(path)
     rlocal.cmd("aaa")
+    return rlocal
+
+def staticStrings(rlocal, cplugin):
     items = []
     s = Singleton.getProject()
     projectDb = dbconnection.getCollection(s)
@@ -31,12 +33,9 @@ def staticStrings(cplugin):
                 string["comment"] = ""
                 strDB.insert_one(string)
                 break
-    rlocal.quit()
     return items
 
-def staticFunctions(cplugin):
-    rlocal = r2pipe.open(Singleton.getPath())
-    rlocal.cmd("aaa")
+def staticFunctions(rlocal, cplugin):
     items = []
     s = Singleton.getProject()
     projectDb = dbconnection.getCollection(s)
@@ -58,5 +57,9 @@ def staticFunctions(cplugin):
             fc["comment"] = ""
             funcDB.insert_one(fc)
 
-    rlocal.quit()
     return items
+
+def addBreakpointsFunctions(list, rlocal):
+    for i in range(len(list)):
+        r2breakpoint = 'db' + hex(list[i]["from"])
+        rlocal.cmd(r2breakpoint)

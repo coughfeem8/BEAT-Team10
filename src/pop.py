@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 class commentDialog(QtWidgets.QDialog):
-    def __init__(self, parent):
+    def __init__(self, parent, text):
         QtWidgets.QDialog.__init__(self, parent)
         self.setObjectName("Dialog")
         self.resize(402, 281)
@@ -16,7 +16,7 @@ class commentDialog(QtWidgets.QDialog):
         self.textEdit = QtWidgets.QTextEdit(self)
         self.textEdit.setGeometry(QtCore.QRect(10, 30, 381, 161))
         self.textEdit.setObjectName("textEdit")
-        #self.textEdit.setPlainText(str(parent.lineEdit_2.text()))
+        self.textEdit.setText(text)
         self.pushButton = QtWidgets.QPushButton(self)
         self.pushButton.setGeometry(QtCore.QRect(160, 220, 101, 41))
         self.pushButton.clicked.connect(self.saveText)
