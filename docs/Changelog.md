@@ -1,12 +1,29 @@
- - version 0.6 -
- redesign phase one
-- version 0.7 -
-v0.7.3 static analysis run for all POI
-v0.7.4 All POI added to mongo database
-v0.7.5 added variable extraction
-v0.7.5 Full Working Static
-v0.7.5 Added Detailed POI
-v0.7.5 Static Working "Perfectly"
-v0.7.7 reworked list to differentiate between checking a box, and clicking
-v0.7.8 fixed detailed display error, added breakpoint assignment
-Overall: Added fully funcitoning static analysis, with better implementation of the POI list. The previous list didn't differentiate between clicking the check box or clicking on a POI which would be an issue for determining breakpoints and showing detailed POI information.
+ - v3.5.2 - Fixed error with plugin combobox in Tab2 view
+ - v3.5.1 - Fixed error with Project controller connections
+ - v3.5 - Added Filter of POIs dependeing on Plugin and Plugin functionality
+ - v3.4.2 - Removed Analysis Button
+ - v3.4.1 - Minor code clean-up in analysis controller
+ - v3.4 - Tab3, Tab4 and Tab5 fully MVCd
+ - v3.3.1 - Tab1 Save and Browse buttons disabled
+ - v3.3 - Tab1 fully MVCd
+ - v3.2 - Tab2 fully MVCd
+ - v3.1 - Functionally fo tab2 moved to contorller
+ - v3.0.1 - Fixed DataBase Calls
+ - v3.0 - Full Static Analysis working
+ - v2.7.1 - Fixed detailed display error, added breakpoint assignment
+ - v2.7 - Reworked list to differentiate between checking a box, and clicking
+ - v2.6 - Added Detailed POI
+ - v2.5 - Added variable extraction
+ - v2.4 - All POI added to mongo database
+ - v2.3 - Static analysis run for all POI
+ - v1.4 - Redesigned tab4 design and gui
+ - v1.3.2 - Fixed errors on text from all xml/xsd
+ - v1.3.1 - Function for Tab4 rename
+ - v1.3 - Added XmlSchema to the system
+ - v1.2.1 - Moving Files to new folder designs
+ - v1.2 - Added Schemas to project
+ - v1.1.1 - Added try-catch functions
+ - v1.1 - Tab1 finished
+ - v1.0.1 - Added requirements and Mongo Interaction
+ - v1.0 - Added connection to Radare2 and Mongo
+ 

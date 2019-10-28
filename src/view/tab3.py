@@ -1,6 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-import os, xmltodict, xmlschema
-from singleton import Singleton
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Tab3(QtWidgets.QWidget):
@@ -27,12 +25,11 @@ class Tab3(QtWidgets.QWidget):
         self.listWidget = QtWidgets.QListWidget(verticalLayoutWidget_2)
         self.listWidget.setObjectName("listWidget")
         verticalLayout_2.addWidget(self.listWidget)
-        pushButton_7 = QtWidgets.QPushButton(verticalLayoutWidget_2)
-        pushButton_7.setObjectName("pushButton_7")
-        pushButton_7.clicked.connect(self.createPlugin)
-        verticalLayout_2.addWidget(pushButton_7)
+        self.pushButton_7 = QtWidgets.QPushButton(verticalLayoutWidget_2)
+        self.pushButton_7.setObjectName("self.pushButton_7")
+        verticalLayout_2.addWidget(self.pushButton_7)
         horizontalLayout.addWidget(groupBox_3)
-    
+
         DetailedPluginView = QtWidgets.QFrame(self)
         DetailedPluginView.setLayoutDirection(QtCore.Qt.LeftToRight)
         DetailedPluginView.setFrameShape(QtWidgets.QFrame.WinPanel)
@@ -107,14 +104,12 @@ class Tab3(QtWidgets.QWidget):
         DPVRight = QtWidgets.QVBoxLayout()
         DPVRight.setContentsMargins(-1, -1, -1, 0)
         DPVRight.setObjectName("DPVRight")
-        ButtonDPVPluginStructure = QtWidgets.QPushButton(DPVContents)
-        ButtonDPVPluginStructure.clicked.connect(self.BrowseStruct)
-        ButtonDPVPluginStructure.setObjectName("ButtonDPVPluginStructure")
-        DPVRight.addWidget(ButtonDPVPluginStructure, 0, QtCore.Qt.AlignTop)
-        ButtonDPVBDataset = QtWidgets.QPushButton(DPVContents)
-        ButtonDPVBDataset.clicked.connect(self.BrowseDataSet)
-        ButtonDPVBDataset.setObjectName("ButtonDPVBDataset")
-        DPVRight.addWidget(ButtonDPVBDataset)
+        self.ButtonDPVPluginStructure = QtWidgets.QPushButton(DPVContents)
+        self.ButtonDPVPluginStructure.setObjectName("self.ButtonDPVPluginStructure")
+        DPVRight.addWidget(self.ButtonDPVPluginStructure, 0, QtCore.Qt.AlignTop)
+        self.ButtonDPVBDataset = QtWidgets.QPushButton(DPVContents)
+        self.ButtonDPVBDataset.setObjectName("self.ButtonDPVBDataset")
+        DPVRight.addWidget(self.ButtonDPVBDataset)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         DPVRight.addItem(spacerItem1)
         horizontalLayout_2.addLayout(DPVRight)
@@ -134,7 +129,7 @@ class Tab3(QtWidgets.QWidget):
         horizontalLayout.addWidget(DetailedPluginView)
         horizontalLayout.setStretch(0, 1)
         horizontalLayout.setStretch(1, 3)
-    
+
         _translate = QtCore.QCoreApplication.translate
 
         LabelDetailedPLuginView.setText(_translate("self", "Detailed Plugin View"))
@@ -144,77 +139,10 @@ class Tab3(QtWidgets.QWidget):
         LabelDPVPLuginDescription.setText(_translate("self", "Plugin Description"))
         LabelDPVOutputField.setText(_translate("self", "Default Output Field"))
         LabelDPVPointOfInterest.setText(_translate("self", "Points Of Interest"))
-        ButtonDPVPluginStructure.setText(_translate("self", "Browse"))
-        ButtonDPVBDataset.setText(_translate("self", "Browse"))
+        self.ButtonDPVPluginStructure.setText(_translate("self", "Browse"))
+        self.ButtonDPVBDataset.setText(_translate("self", "Browse"))
         ButtonDeletePlugin.setText(_translate("self", "Delete"))
         ButtonSavePlugin.setText(_translate("self", "Save"))
-    
+
         groupBox_3.setTitle(_translate("MainWindow", "Plugin View"))
-        pushButton_7.setText(_translate("MainWindow", "New"))
-        self.searchPlugins()
-        self.listWidget.itemSelectionChanged.connect(self.itemActivated)
-    
-
-    def BrowseStruct(self):
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML Schema", "",
-                                                  "XML Schemas Files (*.xsd)", options=options)
-        if fileName:
-            self.DPVPluginStructure.setText(fileName)
-
-    def BrowseDataSet(self):
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML File", "",
-                                                  "XML Files (*.xml)", options=options)
-        if fileName:
-            self.DPVPluginDataSet.setText(fileName)
-
-    def createPlugin(self):
-        text, okPressed = QtWidgets.QInputDialog.getText(self, "Create New Plugin", "Name of Plugin:",
-                                                         QtWidgets.QLineEdit.Normal, "")
-        print(text)
-
-    def deletePlugin(self):
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Warning)
-        msg.setWindowTitle("Delete Project")
-        buttonReply = QtWidgets.QMessageBox.question(self, 'PyQt5 message', "Are you sure to delete Plugin ?",
-                                           QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
-        if buttonReply == QtWidgets.QMessageBox.Yes:
-            self.DPVPluginStructure.setText("")
-            self.DPVPluginDataSet.setText("")
-            self.DPVPluginDescription.setText("")
-            self.DPVPluginName.setText("")
-            self.DVPPointOfInterest.setText("")
-
-    def searchPlugins(self):
-        self.listWidget.clear()
-        for pl in Singleton.getPlugins():
-            with open('plugins/%s' %pl) as fd:
-                doc = xmltodict.parse(fd.read())
-                i = doc["plugin"]["name"]
-                self.listWidget.addItem(i)
-
-
-    def itemActivated(self):
-        plgSelect = self.listWidget.selectedItems()
-        plgName = [item.text().encode("ascii") for item in plgSelect]
-        for pl in Singleton.getPlugins():
-            with open('plugins/%s' % pl) as fd:
-                doc = xmltodict.parse(fd.read())
-                if doc["plugin"]["name"] == plgName:
-                    break
-        xms = pl.split('.')[0]+'.xsd'
-        schema = xmlschema.XMLSchema('plugins/%s' %xms)
-        if plgName:
-            self.DPVPluginName.setText(doc["plugin"]["name"])
-            self.DPVPluginDescription.setText(doc["plugin"]["description"])
-            self.DPVPluginDataSet.setText('plugins/%s' % pl)
-            self.DPVPluginStructure.setText('plugins/%s'%xms )
-            for i in doc["plugin"]["point_of_interest"]["item"]:
-                lastText = self.DVPPointOfInterest.toPlainText()
-                new = lastText + i["type"] + " " + i["name"] + "\n"
-                self.DVPPointOfInterest.setText(new)
-
+        self.pushButton_7.setText(_translate("MainWindow", "New"))
