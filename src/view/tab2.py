@@ -106,6 +106,7 @@ class Tab2(QtWidgets.QWidget):
         self.terminal_output_textEdit.setObjectName("terminal_output_textEdit")
         self.gridLayout.addWidget(self.terminal_output_textEdit, 2, 0, 1, 1)
 
+
         self.scrollArea_2.setWidget(self.scrollAreaWidgetContents_3)
         self.gridLayout_2.addWidget(self.scrollArea_2, 5, 2, 1, 3)
 

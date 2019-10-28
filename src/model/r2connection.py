@@ -116,6 +116,23 @@ class open():
 
         return out
 
+    def quit(self):
+        """Quit current r2pipe session and kill
+        """
+        self.cmd("q")
+        if hasattr(self, 'process'):
+            import subprocess
+            is_async = not isinstance(self.process, subprocess.Popen)
+            if not is_async:
+                self.process.stdin.flush()
+            self.process.terminate()
+            self.process.wait()
+            delattr(self, 'process')
+
+            if is_async:
+                import asyncio
+                asyncio.get_event_loop().run_until_complete(asyncio.sleep(0.1))
+
     def cmd(self, cmd, **kwargs):
         """Run an r2 command return string with result
         Args:

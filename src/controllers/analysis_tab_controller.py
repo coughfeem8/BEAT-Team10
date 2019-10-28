@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtWidgets
 import pop
 import base64
 import r2pipe
-from model import analysis, dbconnection, plugin
+from model import analysis, dbconnection, plugin, r2connection
 from model.singleton import Singleton
 
 
@@ -22,6 +22,7 @@ class analysis_tab_controller:
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
 
     def establish_calls(self):
+        self.analysisTab.terminal_output_textEdit.setReadOnly(True)
         self.setPlugins()
 
     def setPlugins(self):
@@ -126,49 +127,28 @@ class analysis_tab_controller:
                 self.analysisTab.poi_listWidget.addItem(item)
 
     def detailed_poi(self, item):
-        s = Singleton.getProject()
-        projectDb = dbconnection.getCollection(s)
-        value = None
-        if item.toolTip() == "Functions":
-            projInfo = projectDb["functions"]
-            cursor = projInfo.find_one({"name": item.text()})
-            if cursor is not None:
-                value = {'name':cursor["name"], 'signature':cursor["signature"],'varaddress':hex(cursor["offset"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
-        elif item.toolTip() == "Strings":
-            projInfo = projectDb["string"]
-            text = base64.b64encode(item.text().encode())
-            cursor = projInfo.find_one({"string": text.decode()})
-            if cursor is not None:
-                value = {'string':text,'varaddress':hex(cursor["vaddr"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
+        value = dbconnection.searchByItem(item)
         if value is not None:
             y = str(value)
             self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
     def open_comment(self):
-
-        item = self.analysisTab.poi_listWidget.currentItem()
         s = Singleton.getProject()
-        projectDB = dbconnection.getCollection(s)
-        value = None
+        item = self.analysisTab.poi_listWidget.currentItem()
+        value = dbconnection.searchByItem(item)
+        projectDb = dbconnection.getCollection(s)
         if item.toolTip() == "Functions":
-            dbInfo = projectDB["functions"]
-            cursor = dbInfo.find_one({"name": item.text()})
-            if cursor is not  None:
-                value = cursor["_id"]
-                cmt = cursor["comment"]
+            dbInfo = projectDb["function"]
         elif item.toolTip() == "Strings":
-            dbInfo = projectDB["string"]
-            text = base64.b64encode(item.text().encode())
-            cursor = dbInfo.find_one({"string": text.decode()})
-            if cursor is not None:
-                value = cursor["_id"]
-                cmt = cursor["comment"]
+            dbInfo = projectDb["string"]
         if value is not None:
+            id = value["_id"]
+            cmt = value["comment"]
             if cmt is None:
                 cmt = ""
             popUp = pop.commentDialog(self.analysisTab, cmt)
             comm = popUp.exec_()
-            index = {"_id": value}
+            index = {"_id": id}
             newValue = {"$set": {"comment": comm}}
             dbInfo.update_one(index, newValue)
             self.detailed_poi(item)
@@ -178,7 +158,33 @@ class analysis_tab_controller:
         text = popUp.exec_()
         print(text)
 
+    def terminal(self, text):
+        if text is not "":
+            lastText = self.analysisTab.terminal_output_textEdit.toPlainText()
+            self.analysisTab.terminal_output_textEdit.setText(lastText + text + "\n")
+
+
     def breakpoint_check(self):
+        poisChecked = []
+
+        r2 = r2connection.open(Singleton.getPath())
+
+        self.terminal(r2.cmd("aaa"))
+        self.terminal(r2.cmd("doo 12345"))
+
         for i in range(self.analysisTab.poi_listWidget.count()):
             item = self.analysisTab.poi_listWidget.item(i)
-            print(f"{i} {item.text()} {item.checkState()}")
+            if item.checkState() == QtCore.Qt.Checked:
+                poisChecked.append(item)
+        for ix in poisChecked:
+            value = dbconnection.searchByItem(ix)
+            oc = value["ocurrence"]
+            for o in oc:
+                #print(o)
+                r2breakpoint = 'db ' + o
+                #print(r2breakpoint)
+                self.terminal(r2.cmd(r2breakpoint))
+                #print(type(x))
+
+        r2.quit()
+
