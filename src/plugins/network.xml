@@ -103,15 +103,5 @@
 			<type>String</type>
 			<pythonOutput/>
 		</item>
-		<item>
-			<name>123</name>
-			<type>String</type>
-			<pythonOutput/>
-		</item>
-		<item>
-			<name>456</name>
-			<type>String</type>
-			<pythonOutput/>
-		</item>
 	</point_of_interest>
 </plugin>

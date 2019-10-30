@@ -98,4 +98,5 @@ class poi_tab_controller:
         wr = open('plugins/%s' % pl, 'w')
         wr.write(dom.toprettyxml())
         wr.close()
+        self.poi_tab.textEdit.setText("");
         self.filterPOIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))
