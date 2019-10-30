@@ -23,6 +23,8 @@ class project_tab_controller:
         self.projectTab.pushButton_8.clicked.connect(self.BrowseBnryFiles)
         self.projectTab.pushButton_9.clicked.connect(self.deleteProject)
         self.projectTab.pushButton_10.clicked.connect(self.SaveProject)
+        self.projectTab.lineEdit.textChanged.connect(
+            lambda x: self.search_saved_projects(self.projectTab.lineEdit.text()))
 
     def establish_calls(self):
         self.projectTab.pushButton_10.setEnabled(False)
@@ -237,7 +239,8 @@ class project_tab_controller:
                 self.projectTab.lineEdit_3.setText("")
                 self.fillBnryPropEmpty()
                 listItems = self.projectTab.listWidget.selectedItems()
-                if not listItems: return
+                if not listItems:
+                    return
                 for item in listItems:
                     self.projectTab.listWidget.takeItem(self.projectTab.listWidget.row(item))
 
@@ -245,3 +248,14 @@ class project_tab_controller:
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+
+    def search_saved_projects(self, text):
+        if len(text) is not 0:
+            search_result = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchContains)
+            for item in range(self.projectTab.listWidget.count()):
+                self.projectTab.listWidget.item(item).setHidden(True)
+            for item in search_result:
+                item.setHidden(False)
+        else:
+            for item in range(self.projectTab.listWidget.count()):
+                self.projectTab.listWidget.item(item).setHidden(False)
