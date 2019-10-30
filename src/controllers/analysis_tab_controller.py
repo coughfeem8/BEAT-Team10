@@ -1,3 +1,5 @@
+import json
+
 from PyQt5 import QtCore, QtWidgets
 import pop
 import base64
@@ -149,8 +151,12 @@ class analysis_tab_controller:
             if cursor is not None:
                 value = {'string':text,'varaddress':hex(cursor["vaddr"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
         if value is not None:
-            y = str(value)
-            self.analysisTab.poi_content_area_textEdit.setPlainText(y)
+            display = ""
+            for key in value:
+                if key is "string":
+                    value[key] = value[key].decode("utf-8")
+                display += f"{key}: {value[key]}\n"
+            self.analysisTab.poi_content_area_textEdit.setPlainText(display)
 
     def search_POI(self, text):
         if len(text) is not 0:
