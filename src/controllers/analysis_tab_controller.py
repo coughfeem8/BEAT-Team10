@@ -1,5 +1,4 @@
 import json
-
 from PyQt5 import QtCore, QtWidgets
 import pop
 import base64
@@ -154,7 +153,7 @@ class analysis_tab_controller:
             display = ""
             for key in value:
                 if key is "string":
-                    value[key] = value[key].decode("utf-8")
+                    value[key] = base64.decodebytes(value[key]).decode('utf-8')
                 display += f"{key}: {value[key]}\n"
             self.analysisTab.poi_content_area_textEdit.setPlainText(display)
 
