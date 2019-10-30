@@ -77,6 +77,7 @@ class Tab2(QtWidgets.QWidget):
         self.search_bar_lineEdit = QtWidgets.QLineEdit(self)
         self.search_bar_lineEdit.setFrame(True)
         self.search_bar_lineEdit.setObjectName("search_bar_lineEdit")
+        self.search_bar_lineEdit.addAction(QtGui.QIcon("resources/search.png"), QtWidgets.QLineEdit.LeadingPosition)
         self.gridLayout_6.addWidget(self.search_bar_lineEdit, 1, 1, 1, 1)
 
         self.poi_listWidget = QtWidgets.QListWidget(self)

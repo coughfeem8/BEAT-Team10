@@ -1,8 +1,5 @@
-import xmlschema
-import xmltodict
 import dicttoxml
-import view.poi
-import pop
+from PyQt5 import QtCore
 from model import plugin
 from xml.dom.minidom import parseString
 
@@ -20,6 +17,8 @@ class poi_tab_controller:
         self.poi_tab.comboBox_2.currentIndexChanged.connect(lambda x: self.filterPOIs(cplg=self.poi_tab.comboBox.currentText(),
                                                                              type=self.poi_tab.comboBox_2.currentText()))
         self.poi_tab.pushButton_11.clicked.connect(self.instantiateAddPOIWindow)
+        self.poi_tab.lineEdit_4.textChanged.connect(
+            lambda x: self.search_def_POI(self.poi_tab.lineEdit_4.text()))
 
     def establish_calls(self):
         self.setPlugins()
@@ -38,6 +37,7 @@ class poi_tab_controller:
                 self.poi_tab.comboBox_2.addItem(i["type"])
 
     def filterPOIs(self, cplg, type):
+        self.poi_tab.listWidget_2.clear()
         doc = plugin.pluginConnection(cplg)
         for i in doc["plugin"]["point_of_interest"]["item"]:
             if type != "All":
@@ -71,3 +71,14 @@ class poi_tab_controller:
         wr.write(dom.toprettyxml())
         wr.close()
         self.filterPOIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))
+
+    def search_def_POI(self, text):
+        if len(text) is not 0:
+            search_result = self.poi_tab.listWidget_2.findItems(text, QtCore.Qt.MatchContains)
+            for item in range(self.poi_tab.listWidget_2.count()):
+                self.poi_tab.listWidget_2.item(item).setHidden(True)
+            for item in search_result:
+                item.setHidden(False)
+        else:
+            for item in range(self.poi_tab.listWidget_2.count()):
+                self.poi_tab.listWidget_2.item(item).setHidden(False)

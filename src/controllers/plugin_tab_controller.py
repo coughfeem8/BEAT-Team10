@@ -13,6 +13,8 @@ class plugin_tab_controller:
         self.plugin_tab.ButtonDPVPluginStructure.clicked.connect(self.BrowseStruct)
         self.plugin_tab.ButtonDPVBDataset.clicked.connect(self.BrowseDataSet)
         self.plugin_tab.listWidget.itemSelectionChanged.connect(self.itemActivated)
+        self.plugin_tab.lineEdit.textChanged.connect(
+            lambda x: self.search_installed_plugins(self.plugin_tab.lineEdit.text()))
 
     def establish_calls(self):
         self.setPlugins()
@@ -73,3 +75,14 @@ class plugin_tab_controller:
                 lastText = self.plugin_tab.DVPPointOfInterest.toPlainText()
                 new = lastText + i["type"] + " " + i["name"] + "\n"
                 self.plugin_tab.DVPPointOfInterest.setText(new)
+
+    def search_installed_plugins(self, text):
+        if len(text) is not 0:
+            search_result = self.plugin_tab.listWidget.findItems(text, QtCore.Qt.MatchContains)
+            for item in range(self.plugin_tab.listWidget.count()):
+                self.plugin_tab.listWidget.item(item).setHidden(True)
+            for item in search_result:
+                item.setHidden(False)
+        else:
+            for item in range(self.plugin_tab.listWidget.count()):
+                self.plugin_tab.listWidget.item(item).setHidden(False)

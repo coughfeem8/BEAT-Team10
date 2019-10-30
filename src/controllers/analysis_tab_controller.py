@@ -20,6 +20,8 @@ class analysis_tab_controller:
         self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
+        self.analysisTab.search_bar_lineEdit.textChanged.connect(
+            lambda x: self.search_POI(self.analysisTab.search_bar_lineEdit.text()))
 
     def establish_calls(self):
         self.setPlugins()
@@ -149,6 +151,17 @@ class analysis_tab_controller:
         if value is not None:
             y = str(value)
             self.analysisTab.poi_content_area_textEdit.setPlainText(y)
+
+    def search_POI(self, text):
+        if len(text) is not 0:
+            search_result = self.analysisTab.poi_listWidget.findItems(text, QtCore.Qt.MatchContains)
+            for item in range(self.analysisTab.poi_listWidget.count()):
+                self.analysisTab.poi_listWidget.item(item).setHidden(True)
+            for item in search_result:
+                item.setHidden(False)
+        else:
+            for item in range(self.analysisTab.poi_listWidget.count()):
+                self.analysisTab.poi_listWidget.item(item).setHidden(False)
 
     def open_comment(self):
 
