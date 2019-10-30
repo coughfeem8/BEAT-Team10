@@ -1,7 +1,6 @@
-import xmlschema
-import xmltodict
+
 import dicttoxml
-import view.poi
+
 from view import pop
 from model import plugin
 from PyQt5 import QtCore, QtWidgets, QtGui
