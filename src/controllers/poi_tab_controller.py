@@ -2,8 +2,9 @@ import xmlschema
 import xmltodict
 import dicttoxml
 import view.poi
-import pop
+from view import pop
 from model import plugin
+from PyQt5 import QtCore, QtWidgets, QtGui
 from xml.dom.minidom import parseString
 
 
@@ -20,6 +21,7 @@ class poi_tab_controller:
         self.poi_tab.comboBox_2.currentIndexChanged.connect(lambda x: self.filterPOIs(cplg=self.poi_tab.comboBox.currentText(),
                                                                              type=self.poi_tab.comboBox_2.currentText()))
         self.poi_tab.pushButton_11.clicked.connect(self.instantiateAddPOIWindow)
+        self.poi_tab.pushButton_2.clicked.connect(lambda x: self.deletePOI(poi=self.poi_tab.listWidget_2.selectedItems()))
 
     def establish_calls(self):
         self.setPlugins()
@@ -38,6 +40,7 @@ class poi_tab_controller:
                 self.poi_tab.comboBox_2.addItem(i["type"])
 
     def filterPOIs(self, cplg, type):
+        self.poi_tab.listWidget_2.clear()
         doc = plugin.pluginConnection(cplg)
         for i in doc["plugin"]["point_of_interest"]["item"]:
             if type != "All":
@@ -56,9 +59,10 @@ class poi_tab_controller:
                 if poiName[0].decode() == i["name"]:
                     self.poi_tab.textEdit.setText(i["name"] + " " + i["type"])
 
+
     def instantiateAddPOIWindow(self):
-        pop = pop.addPOIDialog(self)
-        text, out, type = pop.exec_()
+        pop1 = pop.addPOIDialog(self.poi_tab)
+        text, out, type = pop1.exec_()
         newpoi = {"name": text, "type": type, "pythonOutput": out}
         doc = plugin.pluginConnection(self.poi_tab.comboBox.currentText)
         pl = plugin.getPluginFile(self.poi_tab.comboBox.currentText)

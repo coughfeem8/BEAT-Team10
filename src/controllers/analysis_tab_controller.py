@@ -1,7 +1,6 @@
-from PyQt5 import QtCore, QtWidgets
-import pop
+from PyQt5 import QtCore, QtWidgets, QtGui
+from view import pop
 import base64
-import r2pipe
 from model import analysis, dbconnection, plugin, r2connection
 from model.singleton import Singleton
 
@@ -20,6 +19,7 @@ class analysis_tab_controller:
         self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
+        self.analysisTab.dynamic_stop_button.clicked.connect(self.stepup)
 
     def establish_calls(self):
         self.analysisTab.terminal_output_textEdit.setReadOnly(True)
@@ -129,6 +129,7 @@ class analysis_tab_controller:
     def detailed_poi(self, item):
         value = dbconnection.searchByItem(item)
         if value is not None:
+            del value["_id"]
             y = str(value)
             self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
@@ -162,29 +163,41 @@ class analysis_tab_controller:
         if text is not "":
             lastText = self.analysisTab.terminal_output_textEdit.toPlainText()
             self.analysisTab.terminal_output_textEdit.setText(lastText + text + "\n")
+            self.analysisTab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
 
 
     def breakpoint_check(self):
-        poisChecked = []
 
-        r2 = r2connection.open(Singleton.getPath())
+        text, okPressed = QtWidgets.QInputDialog.getText(self.analysisTab, "Dynamic Analysis", "Args to pass:",
+                                                         QtWidgets.QLineEdit.Normal, "")
+        if okPressed:
+            poisChecked = []
+            global r2
+            r2 = r2connection.open(Singleton.getPath())
+            self.terminal(r2.cmd("aaa"))
+            self.terminal(r2.cmd("doo %s" %text))
 
-        self.terminal(r2.cmd("aaa"))
-        self.terminal(r2.cmd("doo 12345"))
+            for i in range(self.analysisTab.poi_listWidget.count()):
+                item = self.analysisTab.poi_listWidget.item(i)
+                if item.checkState() == QtCore.Qt.Checked:
+                    poisChecked.append(item)
+            for ix in poisChecked:
+                value = dbconnection.searchByItem(ix)
+                oc = value["ocurrence"]
+                for o in oc:
+                    r2breakpoint = 'db ' + o
 
-        for i in range(self.analysisTab.poi_listWidget.count()):
-            item = self.analysisTab.poi_listWidget.item(i)
-            if item.checkState() == QtCore.Qt.Checked:
-                poisChecked.append(item)
-        for ix in poisChecked:
-            value = dbconnection.searchByItem(ix)
-            oc = value["ocurrence"]
-            for o in oc:
-                #print(o)
-                r2breakpoint = 'db ' + o
-                #print(r2breakpoint)
-                self.terminal(r2.cmd(r2breakpoint))
-                #print(type(x))
+                    self.terminal(r2.cmd(r2breakpoint))
 
-        r2.quit()
-
+    def stepup(self):
+        try:
+            self.terminal(r2.cmd("dc"))
+            self.terminal(r2.cmd("dso"))
+        except NameError:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("Run Dynamic Analysis")
+            msg.setText("Run a dynamic analysis first")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.exec_()
+            return
