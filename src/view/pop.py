@@ -178,6 +178,8 @@ class outputFieldDialog(QtWidgets.QDialog):
         self.label_2.setText(_translate("Dialog", "Description"))
         self.label_3.setText(_translate("Dialog", "Location"))
 
+
+
     def exec_(self):
         super(outputFieldDialog, self).exec_()
         return self.returnVal

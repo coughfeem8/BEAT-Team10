@@ -63,11 +63,35 @@ class poi_tab_controller:
     def instantiateAddPOIWindow(self):
         pop1 = pop.addPOIDialog(self.poi_tab)
         text, out, type = pop1.exec_()
+        if text is "":
+            return
+
         newpoi = {"name": text, "type": type, "pythonOutput": out}
         doc = plugin.pluginConnection(self.poi_tab.comboBox.currentText)
         pl = plugin.getPluginFile(self.poi_tab.comboBox.currentText)
         old = doc["plugin"]["point_of_interest"]["item"]
         old.append(newpoi)
+        doc["plugin"]["point_of_interest"] = old
+        xml = dicttoxml.dicttoxml(doc, attr_type=False, root=False)
+        dom = parseString(xml)
+        wr = open('plugins/%s' % pl, 'w')
+        wr.write(dom.toprettyxml())
+        wr.close()
+        self.filterPOIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))
+
+    def deletePOI(self, poi):
+        if not poi:
+            return
+        poiName = [item.text().encode("ascii") for item in poi]
+        doc = plugin.pluginConnection(self.poi_tab.comboBox.currentText)
+        old = doc["plugin"]["point_of_interest"]["item"]
+        pl = plugin.getPluginFile(self.poi_tab.comboBox.currentText)
+        name = poiName[0].decode()
+        i = 0
+        for point in doc["plugin"]["point_of_interest"]["item"]:
+            if name == point["name"]:
+                del doc["plugin"]["point_of_interest"]["item"][i]
+            i += 1
         doc["plugin"]["point_of_interest"] = old
         xml = dicttoxml.dicttoxml(doc, attr_type=False, root=False)
         dom = parseString(xml)

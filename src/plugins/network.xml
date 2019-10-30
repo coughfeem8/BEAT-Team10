@@ -113,15 +113,5 @@
 			<type>String</type>
 			<pythonOutput/>
 		</item>
-		<item>
-			<name>Str</name>
-			<type>String</type>
-			<pythonOutput/>
-		</item>
-		<item>
-			<name>Ic</name>
-			<type>String</type>
-			<pythonOutput/>
-		</item>
 	</point_of_interest>
 </plugin>
