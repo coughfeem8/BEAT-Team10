@@ -50,16 +50,21 @@ class analysis_tab_controller:
         self.analysisTab.poi_listWidget.clear()
         rlocal = analysis.staticAll(Singleton.getPath())
         try:
+            print("were here")
             if self.analysisTab.poi_comboBox.currentText() == "All":
-
+                print("were in all now")
                 strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
 
                 functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                print(functions)
+                print("functions apparently printed")
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
+                    print(item.text())
+                    print("Text test")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Functions":
@@ -67,6 +72,7 @@ class analysis_tab_controller:
                 functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
+                    print(item.text())
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Strings":
