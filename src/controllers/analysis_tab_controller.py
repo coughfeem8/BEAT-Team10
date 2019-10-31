@@ -172,7 +172,6 @@ class analysis_tab_controller:
                                                          QtWidgets.QLineEdit.Normal, "")
         if okPressed:
             poisChecked = []
-            global r2
             r2 = r2connection.open(Singleton.getPath())
             self.terminal(r2.cmd("aaa"))
             self.terminal(r2.cmd("doo %s" %text))
@@ -189,31 +188,18 @@ class analysis_tab_controller:
 
                     self.terminal(r2.cmd(r2breakpoint))
 
+            global thread
+            thread = test.AThread(rlocal=r2,terminal=self.analysisTab)
+            thread.start()
+
     def stepup(self):
         try:
-            self.terminal(r2.cmd("dc"))
-            self.terminal(r2.cmd("dso"))
-            messageAddr = r2.cmd("dr rsi")  # Memory location to what recv received is in register rsi.
-
-            lookInBuff = "pxj @" + messageAddr  # create command to get contents of memory where recv received a message.
-
-            messageArr = r2.cmdj(lookInBuff)  # get contents of memory where recv received a message.
-
-            byteStr = ""  # variable that will hold hex values of message
-
-            # Loop over byte array and remove each hex value (ie each letter sent in message)
-            for i in range(len(messageArr)):
-
-                # If found 0 byte...then is end of message in memory.
-                if messageArr[i] == 0:
-                    break
-                # building byte string.
-                byteStr = byteStr + str(hex(messageArr[i]))[2:] + " "
-        except NameError:
+            thread.terminate()
+        except Exception as e:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setWindowTitle("Run Dynamic Analysis")
-            msg.setText("Run a dynamic analysis first")
+            msg.setText(str(e))
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             msg.exec_()
             return
