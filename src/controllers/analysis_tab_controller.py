@@ -82,6 +82,7 @@ class analysis_tab_controller:
             msg.setText(str(e))
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+        rlocal.quit()
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def poi_comboBox_change(self, text):
@@ -189,17 +190,18 @@ class analysis_tab_controller:
                     self.terminal(r2.cmd(r2breakpoint))
 
             global thread
-            thread = test.AThread(rlocal=r2,terminal=self.analysisTab)
+            thread = analysis.AThread(rlocal=r2)
+            thread.textSignal.connect(lambda x:self.terminal(x))
             thread.start()
 
     def stepup(self):
         try:
             thread.terminate()
-        except Exception as e:
+        except:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setWindowTitle("Run Dynamic Analysis")
-            msg.setText(str(e))
+            msg.setText("Run Dynamic First")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             msg.exec_()
             return
