@@ -1,11 +1,10 @@
-import r2pipe
 from model.singleton import Singleton
-from model import plugin, dbconnection
-import base64
+from model import plugin, dbconnection, r2connection
+import base64, binascii
 from PyQt5 import QtCore
 
 def staticAll(path):
-    rlocal = r2pipe.open(path)
+    rlocal = r2connection.open(path)
     rlocal.cmd("aaa")
     return rlocal
 
@@ -26,13 +25,15 @@ def staticStrings(rlocal, cplugin):
         for i in strplg:
             if i.upper() in text.decode().upper():
                 x = rlocal.cmdj("axtj %s" % string["vaddr"])
-                ocurrence = []
+                tmp = text.decode()
                 for str in x:
-                    ocurrence.append(hex(str["from"]))
-                items.append(text.decode())
-                string["ocurrence"] = ocurrence
-                string["comment"] = ""
-                strDB.insert_one(string)
+                    string["string"]= tmp +" "+hex(str["from"])
+                    items.append(string["string"])
+                    string["from"] = hex(str["from"])
+                    string["comment"] = ""
+                    if "_id" in string:
+                        del string["_id"]
+                    strDB.insert_one(string)
                 break
     return items
 
@@ -50,26 +51,26 @@ def staticFunctions(rlocal, cplugin):
 
         if fc["name"] in funcplg:
             function = rlocal.cmdj("axtj %s" % fc["name"])
-            ocurrence = []
+            tmp = fc["name"]
             for f in function:
-                ocurrence.append(hex(f["from"]))
-            items.append(fc["name"])
-            fc["ocurrence"] = ocurrence
-            fc["comment"] = ""
-            funcDB.insert_one(fc)
+                fc["name"] = tmp +" "+ hex(f["from"])
+                items.append(fc["name"])
+                fc["comment"] = ""
+                fc["from"] = hex(f["from"])
+                if "_id" in fc:
+                    del fc["_id"]
+                funcDB.insert_one(fc)
 
     return items
 
 
-
-
 class AThread(QtCore.QThread):
     textSignal = QtCore.pyqtSignal(str)
+    stopSignal = QtCore.pyqtSignal()
 
     def __init__(self, rlocal):
         super(AThread, self).__init__()
         self.rlocal = rlocal
-
 
     def run(self):
         while True:
@@ -96,7 +97,9 @@ class AThread(QtCore.QThread):
                 if messageArr[i] == 0:
                     break
                 # building byte string.
-                byteStr = byteStr + str(hex(messageArr[i]))[2:] + " "
+                byteStr = byteStr + str(hex(messageArr[i]))[2:]
 
-            if "ff ff ff ff" not in byteStr:
-                self.textSignal.emit(byteStr)
+            if "ffffffff" not in byteStr:
+                print(byteStr)
+                self.textSignal.emit(binascii.unhexlify(byteStr))
+        self.stopSignal.emit()

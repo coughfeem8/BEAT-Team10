@@ -7,8 +7,9 @@ from model.singleton import Singleton
 
 class analysis_tab_controller:
 
-    def __init__(self, analysisTab):
+    def __init__(self, analysisTab, mainA):
         self.analysisTab = analysisTab
+        self.mainA = mainA
 
     def establish_connections(self):
         self.analysisTab.static_run_button.clicked.connect(self.static_ran)
@@ -156,7 +157,7 @@ class analysis_tab_controller:
             self.detailed_poi(item)
 
     def open_output(self):
-        popUp = pop.outputFieldDialog(self)
+        popUp = pop.outputFieldDialog(self.analysisTab)
         text = popUp.exec_()
         print(text)
 
@@ -166,6 +167,8 @@ class analysis_tab_controller:
             self.analysisTab.terminal_output_textEdit.setText(lastText + text + "\n")
             self.analysisTab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
 
+    def setStopTitle(self):
+        self.mainA.setWindowTitle("BEAT | "+Singleton.getProject())
 
     def breakpoint_check(self):
 
@@ -173,8 +176,7 @@ class analysis_tab_controller:
                                                          QtWidgets.QLineEdit.Normal, "")
         if okPressed:
             poisChecked = []
-            r2 = r2connection.open(Singleton.getPath())
-            self.terminal(r2.cmd("aaa"))
+            r2 = analysis.staticAll(Singleton.getPath())
             self.terminal(r2.cmd("doo %s" %text))
 
             for i in range(self.analysisTab.poi_listWidget.count()):
@@ -183,20 +185,22 @@ class analysis_tab_controller:
                     poisChecked.append(item)
             for ix in poisChecked:
                 value = dbconnection.searchByItem(ix)
-                oc = value["ocurrence"]
-                for o in oc:
-                    r2breakpoint = 'db ' + o
+                oc = value["from"]
+                r2breakpoint = 'db ' + oc
 
-                    self.terminal(r2.cmd(r2breakpoint))
+                self.terminal(r2.cmd(r2breakpoint))
 
             global thread
+            self.mainA.setWindowTitle("BEAT | Running " + Singleton.getProject())
             thread = analysis.AThread(rlocal=r2)
             thread.textSignal.connect(lambda x:self.terminal(x))
+            thread.stopSignal.connect(self.setStopTitle)
             thread.start()
 
     def stepup(self):
         try:
             thread.terminate()
+            self.setStopTitle()
         except:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
