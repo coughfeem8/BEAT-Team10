@@ -1,9 +1,7 @@
-import json
-from PyQt5 import QtCore, QtWidgets
-import pop
+from PyQt5 import QtCore, QtWidgets, QtGui
+from view import pop
 import base64
-import r2pipe
-from model import analysis, dbconnection, plugin
+from model import analysis, dbconnection, plugin, r2connection
 from model.singleton import Singleton
 
 
@@ -21,10 +19,10 @@ class analysis_tab_controller:
         self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
-        self.analysisTab.search_bar_lineEdit.textChanged.connect(
-            lambda x: self.search_POI(self.analysisTab.search_bar_lineEdit.text()))
+        self.analysisTab.dynamic_stop_button.clicked.connect(self.stepup)
 
     def establish_calls(self):
+        self.analysisTab.terminal_output_textEdit.setReadOnly(True)
         self.setPlugins()
 
     def setPlugins(self):
@@ -53,21 +51,16 @@ class analysis_tab_controller:
         self.analysisTab.poi_listWidget.clear()
         rlocal = analysis.staticAll(Singleton.getPath())
         try:
-            print("were here")
             if self.analysisTab.poi_comboBox.currentText() == "All":
-                print("were in all now")
+
                 strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
 
                 functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
-                print(functions)
-                print("functions apparently printed")
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
-                    print(item.text())
-                    print("Text test")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Functions":
@@ -75,7 +68,6 @@ class analysis_tab_controller:
                 functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
-                    print(item.text())
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Strings":
@@ -135,64 +127,29 @@ class analysis_tab_controller:
                 self.analysisTab.poi_listWidget.addItem(item)
 
     def detailed_poi(self, item):
-        s = Singleton.getProject()
-        projectDb = dbconnection.getCollection(s)
-        value = None
-        if item.toolTip() == "Functions":
-            projInfo = projectDb["functions"]
-            cursor = projInfo.find_one({"name": item.text()})
-            if cursor is not None:
-                value = {'name':cursor["name"], 'signature':cursor["signature"],'varaddress':hex(cursor["offset"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
-        elif item.toolTip() == "Strings":
-            projInfo = projectDb["string"]
-            text = base64.b64encode(item.text().encode())
-            cursor = projInfo.find_one({"string": text.decode()})
-            if cursor is not None:
-                value = {'string':text,'varaddress':hex(cursor["vaddr"]), 'ocurrence':cursor["ocurrence"], 'comment':cursor["comment"]}
+        value = dbconnection.searchByItem(item)
         if value is not None:
-            display = ""
-            for key in value:
-                if key is "string":
-                    value[key] = base64.decodebytes(value[key]).decode('utf-8')
-                display += f"{key}: {value[key]}\n"
-            self.analysisTab.poi_content_area_textEdit.setPlainText(display)
-
-    def search_POI(self, text):
-        if len(text) is not 0:
-            search_result = self.analysisTab.poi_listWidget.findItems(text, QtCore.Qt.MatchContains)
-            for item in range(self.analysisTab.poi_listWidget.count()):
-                self.analysisTab.poi_listWidget.item(item).setHidden(True)
-            for item in search_result:
-                item.setHidden(False)
-        else:
-            for item in range(self.analysisTab.poi_listWidget.count()):
-                self.analysisTab.poi_listWidget.item(item).setHidden(False)
+            del value["_id"]
+            y = str(value)
+            self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
     def open_comment(self):
-
-        item = self.analysisTab.poi_listWidget.currentItem()
         s = Singleton.getProject()
-        projectDB = dbconnection.getCollection(s)
-        value = None
+        item = self.analysisTab.poi_listWidget.currentItem()
+        value = dbconnection.searchByItem(item)
+        projectDb = dbconnection.getCollection(s)
         if item.toolTip() == "Functions":
-            dbInfo = projectDB["functions"]
-            cursor = dbInfo.find_one({"name": item.text()})
-            if cursor is not  None:
-                value = cursor["_id"]
-                cmt = cursor["comment"]
+            dbInfo = projectDb["function"]
         elif item.toolTip() == "Strings":
-            dbInfo = projectDB["string"]
-            text = base64.b64encode(item.text().encode())
-            cursor = dbInfo.find_one({"string": text.decode()})
-            if cursor is not None:
-                value = cursor["_id"]
-                cmt = cursor["comment"]
+            dbInfo = projectDb["string"]
         if value is not None:
+            id = value["_id"]
+            cmt = value["comment"]
             if cmt is None:
                 cmt = ""
             popUp = pop.commentDialog(self.analysisTab, cmt)
             comm = popUp.exec_()
-            index = {"_id": value}
+            index = {"_id": id}
             newValue = {"$set": {"comment": comm}}
             dbInfo.update_one(index, newValue)
             self.detailed_poi(item)
@@ -202,7 +159,45 @@ class analysis_tab_controller:
         text = popUp.exec_()
         print(text)
 
+    def terminal(self, text):
+        if text is not "":
+            lastText = self.analysisTab.terminal_output_textEdit.toPlainText()
+            self.analysisTab.terminal_output_textEdit.setText(lastText + text + "\n")
+            self.analysisTab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
+
+
     def breakpoint_check(self):
-        for i in range(self.analysisTab.poi_listWidget.count()):
-            item = self.analysisTab.poi_listWidget.item(i)
-            print(f"{i} {item.text()} {item.checkState()}")
+
+        text, okPressed = QtWidgets.QInputDialog.getText(self.analysisTab, "Dynamic Analysis", "Args to pass:",
+                                                         QtWidgets.QLineEdit.Normal, "")
+        if okPressed:
+            poisChecked = []
+            global r2
+            r2 = r2connection.open(Singleton.getPath())
+            self.terminal(r2.cmd("aaa"))
+            self.terminal(r2.cmd("doo %s" %text))
+
+            for i in range(self.analysisTab.poi_listWidget.count()):
+                item = self.analysisTab.poi_listWidget.item(i)
+                if item.checkState() == QtCore.Qt.Checked:
+                    poisChecked.append(item)
+            for ix in poisChecked:
+                value = dbconnection.searchByItem(ix)
+                oc = value["ocurrence"]
+                for o in oc:
+                    r2breakpoint = 'db ' + o
+
+                    self.terminal(r2.cmd(r2breakpoint))
+
+    def stepup(self):
+        try:
+            self.terminal(r2.cmd("dc"))
+            self.terminal(r2.cmd("dso"))
+        except NameError:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("Run Dynamic Analysis")
+            msg.setText("Run a dynamic analysis first")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg.exec_()
+            return

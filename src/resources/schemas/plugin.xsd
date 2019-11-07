@@ -13,7 +13,9 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
-                <xs:element name="address" type="xs:unsignedInt"
+                <xs:element name="address" type="xs:unsignedInt"/>
+                <xs:element name="type" type="xs:string"/>
+                <xs:element name=""
                 <xs:element ref="attribute"/>
             </xs:sequence>
         </xs:complexType>

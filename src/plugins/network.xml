@@ -1,3 +1,4 @@
+<?xml version="1.0" ?>
 <plugin>
 	<name>Network Plugin</name>
 	<description>Network related POIs</description>
@@ -99,16 +100,6 @@
 		</item>
 		<item>
 			<name>Socket</name>
-			<type>String</type>
-			<pythonOutput/>
-		</item>
-		<item>
-			<name>123</name>
-			<type>String</type>
-			<pythonOutput/>
-		</item>
-		<item>
-			<name>456</name>
 			<type>String</type>
 			<pythonOutput/>
 		</item>
