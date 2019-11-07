@@ -130,8 +130,12 @@ class analysis_tab_controller:
         value = dbconnection.searchByItem(item)
         if value is not None:
             del value["_id"]
-            y = str(value)
-            self.analysisTab.poi_content_area_textEdit.setPlainText(y)
+            detailed_poi = ""
+            for key in value:
+                if key is "string":
+                    value[key] = base64.b64decode(value[key]).decode()
+                detailed_poi += f"{key}: {value[key]}\n"
+            self.analysisTab.poi_content_area_textEdit.setPlainText(detailed_poi)
 
     def open_comment(self):
         s = Singleton.getProject()
@@ -153,6 +157,9 @@ class analysis_tab_controller:
             newValue = {"$set": {"comment": comm}}
             dbInfo.update_one(index, newValue)
             self.detailed_poi(item)
+            new_font = QtGui.QFont()
+            new_font.setBold(True)
+            item.setFont(new_font)
 
     def open_output(self):
         popUp = pop.outputFieldDialog(self)
