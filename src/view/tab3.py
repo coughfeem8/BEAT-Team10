@@ -63,26 +63,6 @@ class Tab3(QtWidgets.QWidget):
         self.DPVLeft = QtWidgets.QFormLayout()
         self.DPVLeft.setObjectName("DPVLeft")
 
-        self.LabelDPVPluginStructure = QtWidgets.QLabel(self.DPVContents)
-        self.LabelDPVPluginStructure.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.LabelDPVPluginStructure.setObjectName("LabelDPVPluginStructure")
-        self.DPVLeft.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.LabelDPVPluginStructure)
-
-        self.DPVPluginStructure = QtWidgets.QLineEdit(self.DPVContents)
-        self.DPVPluginStructure.setAlignment(QtCore.Qt.AlignCenter)
-        self.DPVPluginStructure.setObjectName("DPVPluginStructure")
-        self.DPVLeft.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.DPVPluginStructure)
-
-        self.LabelDPVPluginDataSet = QtWidgets.QLabel(self.DPVContents)
-        self.LabelDPVPluginDataSet.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.LabelDPVPluginDataSet.setObjectName("LabelDPVPluginDataSet")
-        self.DPVLeft.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.LabelDPVPluginDataSet)
-
-        self.DPVPluginDataSet = QtWidgets.QLineEdit(self.DPVContents)
-        self.DPVPluginDataSet.setAlignment(QtCore.Qt.AlignCenter)
-        self.DPVPluginDataSet.setObjectName("DPVPluginDataSet")
-        self.DPVLeft.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.DPVPluginDataSet)
-
         self.LabelDPVPluginName = QtWidgets.QLabel(self.DPVContents)
         self.LabelDPVPluginName.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.LabelDPVPluginName.setObjectName("LabelDPVPluginName")
@@ -107,9 +87,8 @@ class Tab3(QtWidgets.QWidget):
         self.LabelDPVOutputField.setObjectName("LabelDPVOutputField")
         self.DPVLeft.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.LabelDPVOutputField)
 
-        self.DPVDefaultOutputField = QtWidgets.QComboBox(self.DPVContents)
-        self.DPVDefaultOutputField.setCurrentText("")
-        self.DPVDefaultOutputField.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
+        self.DPVDefaultOutputField = QtWidgets.QLineEdit(self.DPVContents)
+        self.DPVDefaultOutputField.setAlignment(QtCore.Qt.AlignCenter)
         self.DPVDefaultOutputField.setObjectName("DPVDefaultOutputField")
         self.DPVLeft.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.DPVDefaultOutputField)
 
@@ -126,13 +105,6 @@ class Tab3(QtWidgets.QWidget):
         self.DPVRight = QtWidgets.QVBoxLayout()
         self.DPVRight.setContentsMargins(-1, -1, -1, 0)
         self.DPVRight.setObjectName("DPVRight")
-
-        self.ButtonDPVPluginStructure = QtWidgets.QPushButton(self.DPVContents)
-        self.ButtonDPVPluginStructure.setObjectName("self.ButtonDPVPluginStructure")
-        self.DPVRight.addWidget(self.ButtonDPVPluginStructure, 0, QtCore.Qt.AlignTop)
-        self.ButtonDPVBDataset = QtWidgets.QPushButton(self.DPVContents)
-        self.ButtonDPVBDataset.setObjectName("self.ButtonDPVBDataset")
-        self.DPVRight.addWidget(self.ButtonDPVBDataset)
 
         self.spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.DPVRight.addItem(self.spacerItem1)
@@ -164,14 +136,11 @@ class Tab3(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
 
         self.LabelDetailedPLuginView.setText(_translate("self", "Detailed Plugin View"))
-        self.LabelDPVPluginStructure.setText(_translate("self", "Plugin Structure"))
-        self.LabelDPVPluginDataSet.setText(_translate("self", "Plugin Predetermined Data Set"))
+
         self.LabelDPVPluginName.setText(_translate("self", "Plugin Name"))
         self.LabelDPVPLuginDescription.setText(_translate("self", "Plugin Description"))
         self.LabelDPVOutputField.setText(_translate("self", "Default Output Field"))
         self.LabelDPVPointOfInterest.setText(_translate("self", "Points Of Interest"))
-        self.ButtonDPVPluginStructure.setText(_translate("self", "Browse"))
-        self.ButtonDPVBDataset.setText(_translate("self", "Browse"))
         self.ButtonDeletePlugin.setText(_translate("self", "Delete"))
         self.ButtonSavePlugin.setText(_translate("self", "Save"))
 

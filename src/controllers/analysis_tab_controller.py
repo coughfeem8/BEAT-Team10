@@ -1,49 +1,40 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from view import pop
 import base64
-from model import analysis, dbconnection, plugin, r2connection
+from model import analysis, dbconnection, plugin
 from model.singleton import Singleton
 
 
 class analysis_tab_controller:
 
-    def __init__(self, analysisTab):
+    def __init__(self, analysisTab, mainA):
         self.analysisTab = analysisTab
+        self.main = mainA
 
     def establish_connections(self):
-        self.analysisTab.static_run_button.clicked.connect(self.static_ran)
+        self.analysisTab.static_run_button.clicked.connect(self.static)
         self.analysisTab.poi_comboBox.currentIndexChanged.connect(
             lambda x: self.poi_comboBox_change(text=self.analysisTab.poi_comboBox.currentText()))
         self.analysisTab.poi_listWidget.itemClicked.connect(
             lambda x: self.detailed_poi(self.analysisTab.poi_listWidget.currentItem()))
-        self.analysisTab.dynamic_run_button.clicked.connect(self.breakpoint_check)
-        self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
-        self.analysisTab.output_PushButton.clicked.connect(self.open_output)
-        self.analysisTab.dynamic_stop_button.clicked.connect(self.stepup)
+        self.analysisTab.dynamic_run_button.clicked.connect(self.dynamic)
+        self.analysisTab.comment_PushButton.clicked.connect(self.comment)
+        #self.analysisTab.output_PushButton.clicked.connect(self.open_output)
+        self.analysisTab.dynamic_stop_button.clicked.connect(self.stop)
 
     def establish_calls(self):
-        self.analysisTab.terminal_output_textEdit.setReadOnly(True)
         self.setPlugins()
+        self.analysisTab.terminal_output_textEdit.setReadOnly(True)
 
     def setPlugins(self):
-        for pl in plugin.getInstalledPlugins():
+        for pl in plugin.getInstalled():
             self.analysisTab.plugin_comboBox.addItem(pl)
 
-    def set_item(self, text, type):
-        item = QtWidgets.QListWidgetItem(text)
-        item.setCheckState(QtCore.Qt.Checked)
-        item.setToolTip(type)
-        return item
-
-    def static_ran(self):
+    def static(self):
         s = Singleton.getProject()
         if (s == "BEAT"):
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setWindowTitle("Run Static Analysis")
-            msg.setText("Please select a project")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msg.exec_()
+            x = pop.errorDialog(self.analysisTab,"Please select a project","Static Analysis Error")
+            x.exec_()
             return
 
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -53,45 +44,75 @@ class analysis_tab_controller:
         try:
             if self.analysisTab.poi_comboBox.currentText() == "All":
 
-                strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                strings = analysis.staticStrings(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
 
-                functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                functions = analysis.staticFunctions(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Functions":
 
-                functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                functions = analysis.staticFunctions(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Strings":
 
-                strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                strings = analysis.staticStrings(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
 
         except Exception as e:
-            msg = QtWidgets.QMessageBox()
-            msg.setText(str(e))
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            retval = msg.exec_()
+            x = pop.errorDialog(self.analysisTab,str(e), "Static Analysis Error")
+            x.exec_()
+        rlocal.quit()
         QtWidgets.QApplication.restoreOverrideCursor()
+
+    def dynamic(self):
+        text, okPressed = QtWidgets.QInputDialog.getText(self.analysisTab, "Dynamic Analysis", "Args to pass:",
+                                                         QtWidgets.QLineEdit.Normal, "")
+
+        if okPressed:
+            poisChecked = []
+            r2 = analysis.staticAll(Singleton.getPath())
+            self.terminal(r2.cmd("doo %s" %text))
+
+            for i in range(self.analysisTab.poi_listWidget.count()):
+                item = self.analysisTab.poi_listWidget.item(i)
+                if item.checkState() == QtCore.Qt.Checked:
+                    poisChecked.append(item)
+            for ix in poisChecked:
+                value = dbconnection.searchByItem(ix)
+                oc = value["from"]
+                r2breakpoint = 'db ' + oc
+
+                self.terminal(r2.cmd(r2breakpoint))
+
+            global thread
+            self.main.setWindowTitle("BEAT | Running " + Singleton.getProject())
+            thread = analysis.AThread(rlocal=r2)
+            thread.textSignal.connect(lambda x:self.terminal(x))
+            thread.stopSignal.connect(self.setStopTitle)
+            thread.start()
+
+    def stop(self):
+        try:
+            thread.terminate()
+            self.setStopTitle()
+        except:
+            x = pop.errorDialog(self.analysisTab,"Run a dynamic analysis first", "Dynamic Analysis Error")
+            x.exec_()
 
     def poi_comboBox_change(self, text):
         s = Singleton.getProject()
         if s == "BEAT":
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setWindowTitle("Run Static Analysis")
-            msg.setText("Please select a project")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            msg = pop.errorDialog(self.analysisTab,"Please select a project first", "Static Analysis Error")
             msg.exec_()
             return
 
@@ -130,41 +151,36 @@ class analysis_tab_controller:
         value = dbconnection.searchByItem(item)
         if value is not None:
             del value["_id"]
-            detailed_poi = ""
-            for key in value:
-                if key is "string":
-                    value[key] = base64.b64decode(value[key]).decode()
-                detailed_poi += f"{key}: {value[key]}\n"
-            self.analysisTab.poi_content_area_textEdit.setPlainText(detailed_poi)
+            y = str(value)
+            self.analysisTab.poi_content_area_textEdit.setPlainText(y)
 
-    def open_comment(self):
-        s = Singleton.getProject()
-        item = self.analysisTab.poi_listWidget.currentItem()
-        value = dbconnection.searchByItem(item)
-        projectDb = dbconnection.getCollection(s)
-        if item.toolTip() == "Functions":
-            dbInfo = projectDb["function"]
-        elif item.toolTip() == "Strings":
-            dbInfo = projectDb["string"]
-        if value is not None:
-            id = value["_id"]
-            cmt = value["comment"]
-            if cmt is None:
-                cmt = ""
-            popUp = pop.commentDialog(self.analysisTab, cmt)
-            comm = popUp.exec_()
-            index = {"_id": id}
-            newValue = {"$set": {"comment": comm}}
-            dbInfo.update_one(index, newValue)
-            self.detailed_poi(item)
-            new_font = QtGui.QFont()
-            new_font.setBold(True)
-            item.setFont(new_font)
+    def comment(self):
+        def open_comment(self):
+            s = Singleton.getProject()
+            item = self.analysisTab.poi_listWidget.currentItem()
+            value = dbconnection.searchByItem(item)
+            projectDb = dbconnection.getCollection(s)
+            if item.toolTip() == "Functions":
+                dbInfo = projectDb["function"]
+            elif item.toolTip() == "Strings":
+                dbInfo = projectDb["string"]
+            if value is not None:
+                id = value["_id"]
+                cmt = value["comment"]
+                if cmt is None:
+                    cmt = ""
+                popUp = pop.commentDialog(self.analysisTab, cmt)
+                comm = popUp.exec_()
+                index = {"_id": id}
+                newValue = {"$set": {"comment": comm}}
+                dbInfo.update_one(index, newValue)
+                self.detailed_poi(item)
 
-    def open_output(self):
-        popUp = pop.outputFieldDialog(self)
-        text = popUp.exec_()
-        print(text)
+    def set_item(self, text, type):
+        item = QtWidgets.QListWidgetItem(text)
+        item.setCheckState(QtCore.Qt.Checked)
+        item.setToolTip(type)
+        return item
 
     def terminal(self, text):
         if text is not "":
@@ -172,39 +188,5 @@ class analysis_tab_controller:
             self.analysisTab.terminal_output_textEdit.setText(lastText + text + "\n")
             self.analysisTab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
 
-
-    def breakpoint_check(self):
-
-        text, okPressed = QtWidgets.QInputDialog.getText(self.analysisTab, "Dynamic Analysis", "Args to pass:",
-                                                         QtWidgets.QLineEdit.Normal, "")
-        if okPressed:
-            poisChecked = []
-            global r2
-            r2 = r2connection.open(Singleton.getPath())
-            self.terminal(r2.cmd("aaa"))
-            self.terminal(r2.cmd("doo %s" %text))
-
-            for i in range(self.analysisTab.poi_listWidget.count()):
-                item = self.analysisTab.poi_listWidget.item(i)
-                if item.checkState() == QtCore.Qt.Checked:
-                    poisChecked.append(item)
-            for ix in poisChecked:
-                value = dbconnection.searchByItem(ix)
-                oc = value["ocurrence"]
-                for o in oc:
-                    r2breakpoint = 'db ' + o
-
-                    self.terminal(r2.cmd(r2breakpoint))
-
-    def stepup(self):
-        try:
-            self.terminal(r2.cmd("dc"))
-            self.terminal(r2.cmd("dso"))
-        except NameError:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setWindowTitle("Run Dynamic Analysis")
-            msg.setText("Run a dynamic analysis first")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msg.exec_()
-            return
+    def setStopTitle(self):
+        self.main.setWindowTitle("BEAT | "+Singleton.getProject())

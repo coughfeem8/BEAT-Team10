@@ -12,6 +12,11 @@ def getDB():
 def dropDB(name):
     mongoClient.drop_database(name)
 
+def listCOllections(db):
+    dbs = mongoClient[db]
+    cursor = dbs.list_collection_names()
+    return cursor
+
 def getCollection(db):
     projectDb = mongoClient[db]
     return projectDb
@@ -25,12 +30,12 @@ def searchByItem(item):
         cursor = projInfo.find_one({"name": item.text()})
         if cursor is not None:
             value = {"_id":cursor["_id"],'name': cursor["name"], 'signature': cursor["signature"], 'varaddress': hex(cursor["offset"]),
-                     'ocurrence': cursor["ocurrence"], 'comment': cursor["comment"]}
+                     'from': cursor["from"], 'comment': cursor["comment"]}
     elif item.toolTip() == "Strings":
         projInfo = projectDb["string"]
-        text = base64.b64encode(item.text().encode())
-        cursor = projInfo.find_one({"string": text.decode()})
+        #text = base64.b64encode(item.text().encode())
+        cursor = projInfo.find_one({"string": item.text()})
         if cursor is not None:
-            value = {"_id":cursor["_id"],'string': text, 'varaddress': hex(cursor["vaddr"]), 'ocurrence': cursor["ocurrence"],
+            value = {"_id":cursor["_id"],'string': cursor["string"], 'varaddress': hex(cursor["vaddr"]), 'from': cursor["from"],
                      'comment': cursor["comment"]}
     return value

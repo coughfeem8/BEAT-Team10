@@ -45,7 +45,6 @@ class commentDialog(QtWidgets.QDialog):
         self.returnVal = ""
         self.accept()
 
-
 class analysisResultDialog(QtWidgets.QDialog):
     def __init__(self, parent):
         QtWidgets.QDialog.__init__(self, parent)
@@ -272,3 +271,14 @@ class addPOIDialog(QtWidgets.QDialog):
 
     def getCurrentIndex(self):
         print(self.comboBox_2.currentText())
+
+class errorDialog(QtWidgets.QMessageBox):
+    def __init__(self, parent, text, title):
+        QtWidgets.QMessageBox.__init__(self, parent)
+        self.setWindowTitle(title)
+        self.setText(text)
+        self.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+    def exec_(self):
+        super(errorDialog, self).exec_()
+        return
