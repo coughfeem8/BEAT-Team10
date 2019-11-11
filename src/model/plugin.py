@@ -18,3 +18,17 @@ def getTypes(type, current):
             if type == ash["type"]:
                 list.append(ash["name"])
     return list
+
+def getName(plugin):
+    projectDb = dbconnection.getCollection("plugin")
+    x = dbconnection.listCOllections("plugin")
+    for i in x:
+        if plugin == i:
+            projInfo = projectDb[i]
+            cursor = projInfo.find()
+            return cursor
+
+def getPOI(plugin):
+    cursor = getName(plugin)
+    for i in cursor:
+        return i["poi"]

@@ -5,9 +5,10 @@ from model import analysis, dbconnection, plugin
 from model.singleton import Singleton
 
 
-class analysis_tab_controller:
+class analysis_tab_controller(QtCore.QObject):
 
     def __init__(self, analysisTab, mainA):
+        super().__init__()
         self.analysisTab = analysisTab
         self.main = mainA
 
@@ -27,6 +28,7 @@ class analysis_tab_controller:
         self.analysisTab.terminal_output_textEdit.setReadOnly(True)
 
     def setPlugins(self):
+        self.analysisTab.plugin_comboBox.clear()
         for pl in plugin.getInstalled():
             self.analysisTab.plugin_comboBox.addItem(pl)
 

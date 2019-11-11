@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+import xmlschema, xmltodict
 
 class commentDialog(QtWidgets.QDialog):
     def __init__(self, parent, text):
@@ -178,7 +179,6 @@ class outputFieldDialog(QtWidgets.QDialog):
         self.label_3.setText(_translate("Dialog", "Location"))
 
 
-
     def exec_(self):
         super(outputFieldDialog, self).exec_()
         return self.returnVal
@@ -194,83 +194,92 @@ class outputFieldDialog(QtWidgets.QDialog):
 class addPOIDialog(QtWidgets.QDialog):
     def __init__(self, parent):
         QtWidgets.QDialog.__init__(self,parent)
-        self.resize(402, 236)
-        self.horizontalLayoutWidget = QtWidgets.QWidget(self)
-        self.horizontalLayoutWidget.setGeometry(QtCore.QRect(120, 180, 168, 31))
-        self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
-        self.horizontalLayout = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget)
-        self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton_2 = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout.addWidget(self.pushButton_2)
-        self.pushButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout.addWidget(self.pushButton)
-        self.formLayoutWidget = QtWidgets.QWidget(self)
-        self.formLayoutWidget.setGeometry(QtCore.QRect(10, 40, 381, 112))
-        self.formLayoutWidget.setObjectName("formLayoutWidget")
-        self.formLayout = QtWidgets.QFormLayout(self.formLayoutWidget)
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.formLayout.setObjectName("formLayout")
-        self.label = QtWidgets.QLabel(self.formLayoutWidget)
-        self.label.setObjectName("label")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
-        self.lineEdit = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.resize(400, 458)
+        self.buttonBox = QtWidgets.QDialogButtonBox(self)
+        self.buttonBox.setGeometry(QtCore.QRect(30, 420, 341, 32))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.groupBox = QtWidgets.QGroupBox(self)
+        self.groupBox.setGeometry(QtCore.QRect(19, 9, 361, 101))
+        self.groupBox.setObjectName("groupBox")
+        self.lineEdit = QtWidgets.QLineEdit(self.groupBox)
+        self.lineEdit.setGeometry(QtCore.QRect(10, 50, 281, 25))
         self.lineEdit.setObjectName("lineEdit")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit)
-        self.label_4 = QtWidgets.QLabel(self.formLayoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_4)
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.pushButton = QtWidgets.QPushButton(self.groupBox)
+        self.pushButton.setGeometry(QtCore.QRect(300, 50, 51, 21))
+        self.pushButton.setObjectName("pushButton")
+        self.groupBox_2 = QtWidgets.QGroupBox(self)
+        self.groupBox_2.setGeometry(QtCore.QRect(20, 120, 361, 291))
+        self.groupBox_2.setObjectName("groupBox_2")
+        self.label = QtWidgets.QLabel(self.groupBox_2)
+        self.label.setGeometry(QtCore.QRect(20, 40, 54, 17))
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.groupBox_2)
+        self.label_2.setGeometry(QtCore.QRect(20, 80, 54, 17))
+        self.label_2.setObjectName("label_2")
+        self.lineEdit_2 = QtWidgets.QLineEdit(self.groupBox_2)
+        self.lineEdit_2.setGeometry(QtCore.QRect(90, 40, 251, 25))
         self.lineEdit_2.setObjectName("lineEdit_2")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_2)
-        self.comboBox_2 = QtWidgets.QComboBox(self.formLayoutWidget)
-        self.comboBox_2.setMaximumSize(QtCore.QSize(185, 16777215))
-        self.comboBox_2.setObjectName("comboBox_2")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.comboBox_2)
-        self.label_3 = QtWidgets.QLabel(self.formLayoutWidget)
+        self.comboBox = QtWidgets.QComboBox(self.groupBox_2)
+        self.comboBox.setGeometry(QtCore.QRect(90, 80, 121, 25))
+        self.comboBox.setObjectName("comboBox")
+        self.groupBox_3 = QtWidgets.QGroupBox(self.groupBox_2)
+        self.groupBox_3.setGeometry(QtCore.QRect(20, 120, 331, 161))
+        self.groupBox_3.setObjectName("groupBox_3")
+        self.label_3 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_3.setGeometry(QtCore.QRect(10, 40, 71, 17))
         self.label_3.setObjectName("label_3")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_3)
+        self.label_4 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_4.setGeometry(QtCore.QRect(10, 80, 81, 17))
+        self.label_4.setObjectName("label_4")
+        self.lineEdit_3 = QtWidgets.QLineEdit(self.groupBox_3)
+        self.lineEdit_3.setGeometry(QtCore.QRect(100, 40, 221, 25))
+        self.lineEdit_3.setObjectName("lineEdit_3")
+        self.lineEdit_4 = QtWidgets.QLineEdit(self.groupBox_3)
+        self.lineEdit_4.setGeometry(QtCore.QRect(100, 80, 221, 25))
+        self.lineEdit_4.setObjectName("lineEdit_4")
 
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "Add Point of Interest"))
-        _translate = QtCore.QCoreApplication.translate
-        self.setWindowTitle(_translate("Dialog","Add Point of Interest"))
-        self.pushButton.setText(_translate("Dialog", "Save"))
-        self.pushButton.clicked.connect(self.saveText)
-        self.pushButton_2.setText(_translate("Dialog", "Cancel"))
-        self.pushButton_2.clicked.connect(self.clearText)
-        self.label.setText(_translate("Dialog","Name"))
-        self.label_4.setText(_translate("Dialog","Output"))
-        self.label_3.setText(_translate("Dialog","Type"))
-        self.comboBox_2.addItem("")
-        self.comboBox_2.addItem("")
-        self.comboBox_2.setItemText(0,_translate("Dialog","String"))
-        self.comboBox_2.setItemText(1, _translate("Dialog", "Function"))
-        self.comboBox_2.currentIndexChanged.connect(self.getCurrentIndex)
+        self.groupBox.setTitle(_translate("Dialog", "Add POI in bulk"))
+        self.pushButton.setText(_translate("Dialog", "Search"))
+        self.groupBox_2.setTitle(_translate("Dialog", "Add single POI"))
+        self.label.setText(_translate("Dialog", "Name"))
+        self.label_2.setText(_translate("Dialog", "Type"))
+        self.comboBox.addItem("Function")
+        self.comboBox.addItem("String")
+        self.groupBox_3.setTitle(_translate("Dialog", "Attributes"))
+        self.label_3.setText(_translate("Dialog", "Parameters"))
+        self.label_4.setText(_translate("Dialog", "Return Type"))
+        self.comboBox.currentIndexChanged.connect(lambda x: self.checkType(self.comboBox.currentText()))
+        self.pushButton.clicked.connect(self.checkSchema)
+
+    def checkType(self, type):
+        if type == "String":
+            self.groupBox_3.hide()
+        else:
+            self.groupBox_3.show()
+
+    def checkSchema(self):
+        options = QtWidgets.QFileDialog.Options()
+        options |= QtWidgets.QFileDialog.DontUseNativeDialog
+        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML", "",
+                                                            "XML Files (*.xml)", options=options)
+        if fileName:
+            schema = xmlschema.XMLSchema('./plugins/schema.xsd')
+            try:
+                schema.validate(fileName)
+            except Exception as e:
+                print(str(e))
+
 
 
 
     def exec_(self):
         super(addPOIDialog, self).exec_()
-        return self.lineEdit.text(), self.lineEdit_2.text(), self.comboBox_2.currentText()
 
-    def saveText(self):
-        if self.lineEdit.text() is "":
-            msg = QtWidgets.QMessageBox()
-            msg.setWindowTitle("Error")
-            msg.setText("Name can't be empty.")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            retval = msg.exec_()
-            return
-        self.accept()
 
-    def clearText(self):
-        self.accept()
-
-    def getCurrentIndex(self):
-        print(self.comboBox_2.currentText())
 
 class errorDialog(QtWidgets.QMessageBox):
     def __init__(self, parent, text, title):

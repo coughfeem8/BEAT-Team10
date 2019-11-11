@@ -25,6 +25,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.addTab(self.ProjectTab, "")
 
         self.analysisTab = tab2.Tab2(self, self)
+
         self.tabWidget.addTab(self.analysisTab, "")
 
         self.pluginTab = tab3.Tab3(self, self)
@@ -48,10 +49,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.plugin_controller.establish_connections()
         self.plugin_controller.establish_calls()
 
-        #self.poi_controller = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
-        #self.poi_controller.establish_connections()
-        #self.poi_controller.establish_calls()
+        self.poi_controller = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
+        self.poi_controller.establish_connections()
+        self.poi_controller.establish_calls()
 
+        self.plugin_controller.pluginSignal.connect(self.analysis_controller.setPlugins)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)

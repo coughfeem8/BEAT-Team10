@@ -1,22 +1,29 @@
 from model import plugin, dbconnection
 from model.singleton import Singleton
+from controllers import analysis_tab_controller, poi_tab_controller
 from view import pop
 from PyQt5 import QtWidgets, QtCore
 
-class plugin_tab_controller:
+class plugin_tab_controller(QtCore.QObject):
+
+    pluginSignal = QtCore.pyqtSignal()
 
     def __init__(self, plugin_tab):
+        super().__init__()
         self.plugin_tab = plugin_tab
         self.plugin = ""
 
     def establish_connections(self):
         self.plugin_tab.pushButton_7.clicked.connect(self.createPlugin)
+        self.plugin_tab.ButtonSavePlugin.clicked.connect(self.savePlugin)
+        self.plugin_tab.ButtonDeletePlugin.clicked.connect(self.deletePlugin)
         self.plugin_tab.listWidget.itemSelectionChanged.connect(self.itemActivated)
 
     def establish_calls(self):
         self.setPlugins()
 
     def setPlugins(self):
+        self.plugin_tab.listWidget.clear()
         for pl in plugin.getInstalled():
             self.plugin_tab.listWidget.addItem(pl)
 
@@ -25,10 +32,12 @@ class plugin_tab_controller:
                                                          QtWidgets.QLineEdit.Normal, "")
         if okPressed and text != '':
             dbnames = dbconnection.getCollection("plugin")
-            if text in dbnames:
-                x= pop.errorDialog(self.plugin_tab,"Plugin with that name already exists","Error Creating Plugin")
-                x.exec_()
-                return
+            coll = dbnames.list_collections()
+            for i in coll:
+                if text in i:
+                    x= pop.errorDialog(self.plugin_tab,"Plugin with that name already exists","Error Creating Plugin")
+                    x.exec_()
+                    return
             self.plugin_tab.DPVPluginDescription.setText("")
             self.plugin_tab.DPVPluginName.setText(text)
             self.plugin_tab.DVPPointOfInterest.setText("")
@@ -40,11 +49,13 @@ class plugin_tab_controller:
     def savePlugin(self):
         pluginDB = dbconnection.getCollection("plugin")
         plgCllc = pluginDB[self.plugin_tab.DPVPluginName.text()]
-        info = {"name": self.plugin_tab.DPVPluginName.text(), "desc": self.plugin_tab.DPVPluginDescription.text(),
-                "poi": "", "output": self.plugin_tab.DPVDefaultOutputField.text()}
+        info = {"name": self.plugin_tab.DPVPluginName.text(), "desc": self.plugin_tab.DPVPluginDescription.toPlainText(),
+                "poi": {"item":""}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
         plgCllc.insert(info, check_keys=False)
         x = pop.errorDialog(self.plugin_tab,"Plugin Saved", "Save Plugin")
         x.exec_()
+        self.pluginSignal.emit()
+
 
     def deletePlugin(self):
         if self.plugin != "":
@@ -70,23 +81,21 @@ class plugin_tab_controller:
 
     def itemActivated(self):
         if self.plugin_tab.listWidget.count() != 0:
-            plugin = self.plugin_tab.listWidget.selectedItems()
-            pluginName = [item.text().encode("ascii") for item in plugin]
+            pluginS = self.plugin_tab.listWidget.selectedItems()
+            pluginName = [item.text().encode("ascii") for item in pluginS]
             if pluginName:
                 try:
-                    self.plugin = pluginName
-                    pluginDB = dbconnection.getCollection("plugin")
-                    plgCllc = pluginDB[pluginName]
-                    cursor = plgCllc.find()
-                    for pl in cursor:
-                        print(pl["name"])
-                        self.plugin_tab.DPVPluginName.setText(pl["name"])
-                        self.plugin_tab.DPVPluginDescription.setText(pl["desc"])
-                        self.plugin_tab.DPVDefaultOutputField.setText(pl["output"]["functionSource"])
-                        for i in pl["poi"]["item"]:
-                            lastText = self.plugin_tab.DVPPointOfInterest.toPlainText()
-                            new = lastText + i["type"] + " " + i["name"] + "\n"
-                            self.plugin_tab.DVPPointOfInterest.setText(new)
+                    self.plugin = pluginName[0].decode()
+                    cursor = plugin.getName(self.plugin)
+                    if cursor:
+                        for pl in cursor:
+                            self.plugin_tab.DPVPluginName.setText(pl["name"])
+                            self.plugin_tab.DPVPluginDescription.setText(pl["desc"])
+                            self.plugin_tab.DPVDefaultOutputField.setText(pl["output"])
+                            for i in pl["poi"]["item"]:
+                                lastText = self.plugin_tab.DVPPointOfInterest.toPlainText()
+                                new = lastText + i["type"] + " " + i["name"] + "\n"
+                                self.plugin_tab.DVPPointOfInterest.setText(new)
                 except Exception as e:
                     x = pop.errorDialog(self.plugin_tab,str(e),"Error")
                     x.exec_()
