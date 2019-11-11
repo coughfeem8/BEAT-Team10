@@ -151,6 +151,8 @@ class project_tab_controller:
             retval = msg.exec_()
             self.projectTab.pushButton_8.setEnabled(False)
             self.projectTab.pushButton_10.setEnabled(False)
+            for item_at in range(self.projectTab.listWidget.count()):
+                self.projectTab.listWidget.item(item_at).setFlags(self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
         else:
             msg = QtWidgets.QMessageBox()
             msg.setText("Please select a Binary File")
@@ -181,6 +183,8 @@ class project_tab_controller:
             self.projectTab.pushButton_8.setEnabled(True)
             self.projectTab.pushButton_10.setEnabled(True)
             self.projectTab.textEdit_2.setReadOnly(False)
+            for item_at in range(self.projectTab.listWidget.count()):
+                self.projectTab.listWidget.item(item_at).setFlags(self.projectTab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
 
     def itemActivated_event(self):
         if self.projectTab.listWidget.count() != 0:
@@ -238,12 +242,15 @@ class project_tab_controller:
                 self.projectTab.textEdit_2.setText("")
                 self.projectTab.lineEdit_3.setText("")
                 self.fillBnryPropEmpty()
+                self.projectTab.pushButton_8.setEnabled(False)
+                self.projectTab.pushButton_10.setEnabled(False)
+                for item_at in range(self.projectTab.listWidget.count()):
+                    self.projectTab.listWidget.item(item_at).setFlags(self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
                 listItems = self.projectTab.listWidget.selectedItems()
                 if not listItems:
                     return
                 for item in listItems:
                     self.projectTab.listWidget.takeItem(self.projectTab.listWidget.row(item))
-
         else:
             msg.setText("Please select a project")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)

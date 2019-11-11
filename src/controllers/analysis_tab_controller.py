@@ -20,6 +20,8 @@ class analysis_tab_controller:
         self.analysisTab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysisTab.output_PushButton.clicked.connect(self.open_output)
         self.analysisTab.dynamic_stop_button.clicked.connect(self.stepup)
+        self.analysisTab.search_bar_lineEdit.textChanged.connect(
+            lambda x: self.search_filtered_pois(self.analysisTab.search_bar_lineEdit.text()))
 
     def establish_calls(self):
         self.analysisTab.terminal_output_textEdit.setReadOnly(True)
@@ -125,6 +127,17 @@ class analysis_tab_controller:
                 text = base64.b64decode(db["string"])
                 item = self.set_item(text.decode(), "Strings")
                 self.analysisTab.poi_listWidget.addItem(item)
+
+    def search_filtered_pois(self, text):
+        if len(text) is not 0:
+            search_result = self.analysisTab.poi_listWidget.findItems(text, QtCore.Qt.MatchContains)
+            for item in range(self.analysisTab.poi_listWidget.count()):
+                self.analysisTab.poi_listWidget.item(item).setHidden(True)
+            for item in search_result:
+                item.setHidden(False)
+        else:
+            for item in range(self.analysisTab.poi_listWidget.count()):
+                self.analysisTab.poi_listWidget.item(item).setHidden(False)
 
     def detailed_poi(self, item):
         value = dbconnection.searchByItem(item)
