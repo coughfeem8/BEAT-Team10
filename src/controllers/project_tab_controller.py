@@ -1,6 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
-import pymongo
 from os import walk
 from model.singleton import Singleton
 from model import dbconnection

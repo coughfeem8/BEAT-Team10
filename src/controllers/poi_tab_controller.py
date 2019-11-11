@@ -1,11 +1,8 @@
-import xmlschema
-import xmltodict
 import dicttoxml
 from view import pop
 from model import plugin
-from PyQt5 import QtCore, QtWidgets, QtGui
 from xml.dom.minidom import parseString
-
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 class poi_tab_controller:
 
@@ -21,6 +18,8 @@ class poi_tab_controller:
                                                                              type=self.poi_tab.comboBox_2.currentText()))
         self.poi_tab.pushButton_11.clicked.connect(self.instantiateAddPOIWindow)
         self.poi_tab.pushButton_2.clicked.connect(lambda x: self.deletePOI(poi=self.poi_tab.listWidget_2.selectedItems()))
+        self.poi_tab.lineEdit_4.textChanged.connect(
+            lambda x: self.search_installed_pois(self.poi_tab.lineEdit_4.text()))
 
     def establish_calls(self):
         self.setPlugins()
@@ -97,5 +96,16 @@ class poi_tab_controller:
         wr = open('plugins/%s' % pl, 'w')
         wr.write(dom.toprettyxml())
         wr.close()
-        self.poi_tab.textEdit.setText("");
+        self.poi_tab.textEdit.setText("")
         self.filterPOIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))
+
+    def search_installed_pois(self, text):
+        if len(text) is not 0:
+            search_result = self.poi_tab.listWidget_2.findItems(text, QtCore.Qt.MatchContains)
+            for item in range(self.poi_tab.listWidget_2.count()):
+                self.poi_tab.listWidget_2.item(item).setHidden(True)
+            for item in search_result:
+                item.setHidden(False)
+        else:
+            for item in range(self.poi_tab.listWidget_2.count()):
+                self.poi_tab.listWidget_2.item(item).setHidden(False)
