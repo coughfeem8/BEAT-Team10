@@ -46,4 +46,4 @@ class poi_tab_controller:
 
     def addPOI(self):
         popAdd = pop.addPOIDialog(self.poi_tab)
-        popAdd.exec_()
+        print(popAdd.exec_())

@@ -51,10 +51,17 @@ class plugin_tab_controller(QtCore.QObject):
         plgCllc = pluginDB[self.plugin_tab.DPVPluginName.text()]
         info = {"name": self.plugin_tab.DPVPluginName.text(), "desc": self.plugin_tab.DPVPluginDescription.toPlainText(),
                 "poi": {"item":""}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
-        plgCllc.insert(info, check_keys=False)
-        x = pop.errorDialog(self.plugin_tab,"Plugin Saved", "Save Plugin")
-        x.exec_()
-        self.pluginSignal.emit()
+        plg = plugin.getName(self.plugin_tab.DPVPluginName.text())
+        if not plg:
+            for i in plg:
+                if i["name"] == self.plugin_tab.DPVPluginName.text():
+                    x = pop.errorDialog(self,"Plugin already exists", "Error Plugin")
+                    x.exec_()
+                    return
+                plgCllc.insert(info, check_keys=False)
+                x = pop.errorDialog(self.plugin_tab,"Plugin Saved", "Save Plugin")
+                x.exec_()
+                self.pluginSignal.emit()
 
 
     def deletePlugin(self):

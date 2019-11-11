@@ -194,14 +194,9 @@ class outputFieldDialog(QtWidgets.QDialog):
 class addPOIDialog(QtWidgets.QDialog):
     def __init__(self, parent):
         QtWidgets.QDialog.__init__(self,parent)
-        self.resize(400, 458)
-        self.buttonBox = QtWidgets.QDialogButtonBox(self)
-        self.buttonBox.setGeometry(QtCore.QRect(30, 420, 341, 32))
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
+        self.resize(400, 512)
         self.groupBox = QtWidgets.QGroupBox(self)
-        self.groupBox.setGeometry(QtCore.QRect(19, 9, 361, 101))
+        self.groupBox.setGeometry(QtCore.QRect(19, 9, 361, 141))
         self.groupBox.setObjectName("groupBox")
         self.lineEdit = QtWidgets.QLineEdit(self.groupBox)
         self.lineEdit.setGeometry(QtCore.QRect(10, 50, 281, 25))
@@ -209,8 +204,13 @@ class addPOIDialog(QtWidgets.QDialog):
         self.pushButton = QtWidgets.QPushButton(self.groupBox)
         self.pushButton.setGeometry(QtCore.QRect(300, 50, 51, 21))
         self.pushButton.setObjectName("pushButton")
+        self.buttonBox_2 = QtWidgets.QDialogButtonBox(self.groupBox)
+        self.buttonBox_2.setGeometry(QtCore.QRect(10, 90, 341, 32))
+        self.buttonBox_2.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox_2.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox_2.setObjectName("buttonBox_2")
         self.groupBox_2 = QtWidgets.QGroupBox(self)
-        self.groupBox_2.setGeometry(QtCore.QRect(20, 120, 361, 291))
+        self.groupBox_2.setGeometry(QtCore.QRect(20, 160, 361, 341))
         self.groupBox_2.setObjectName("groupBox_2")
         self.label = QtWidgets.QLabel(self.groupBox_2)
         self.label.setGeometry(QtCore.QRect(20, 40, 54, 17))
@@ -239,6 +239,19 @@ class addPOIDialog(QtWidgets.QDialog):
         self.lineEdit_4 = QtWidgets.QLineEdit(self.groupBox_3)
         self.lineEdit_4.setGeometry(QtCore.QRect(100, 80, 221, 25))
         self.lineEdit_4.setObjectName("lineEdit_4")
+        self.label_5 = QtWidgets.QLabel(self.groupBox_3)
+        self.label_5.setGeometry(QtCore.QRect(10, 120, 81, 17))
+        self.label_5.setObjectName("label_5")
+        self.lineEdit_5 = QtWidgets.QLineEdit(self.groupBox_3)
+        self.lineEdit_5.setGeometry(QtCore.QRect(100, 120, 221, 25))
+        self.lineEdit_5.setObjectName("lineEdit_5")
+        self.buttonBox_3 = QtWidgets.QDialogButtonBox(self.groupBox_2)
+        self.buttonBox_3.setGeometry(QtCore.QRect(10, 290, 341, 32))
+        self.buttonBox_3.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox_3.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox_3.setObjectName("buttonBox_3")
+
+
 
         _translate = QtCore.QCoreApplication.translate
         self.setWindowTitle(_translate("Dialog", "Add Point of Interest"))
@@ -252,8 +265,16 @@ class addPOIDialog(QtWidgets.QDialog):
         self.groupBox_3.setTitle(_translate("Dialog", "Attributes"))
         self.label_3.setText(_translate("Dialog", "Parameters"))
         self.label_4.setText(_translate("Dialog", "Return Type"))
+        self.label_5.setText(_translate("Dialog", "Output"))
+
+
+        self.pois = []
         self.comboBox.currentIndexChanged.connect(lambda x: self.checkType(self.comboBox.currentText()))
         self.pushButton.clicked.connect(self.checkSchema)
+        self.buttonBox_2.accepted.connect(self.accept)
+        self.buttonBox_2.rejected.connect(self.reject)
+        self.buttonBox_3.rejected.connect(self.reject)
+        self.buttonBox_3.accepted.connect(self.acceptSingle)
 
     def checkType(self, type):
         if type == "String":
@@ -270,14 +291,29 @@ class addPOIDialog(QtWidgets.QDialog):
             schema = xmlschema.XMLSchema('./plugins/schema.xsd')
             try:
                 schema.validate(fileName)
+                self.lineEdit.setText(fileName)
+                with open(fileName) as fd:
+                    doc = xmltodict.parse(fd.read())
+                    self.pois = doc["point_of_interest"]
             except Exception as e:
-                print(str(e))
+                x = errorDialog(self,str(e),"Error")
+                x.exec_()
 
+    def acceptSingle(self):
+        if self.comboBox.currentText() == "String":
+            doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{},"pythonOutput":""}}
+            self.pois = doc
+        elif self.comboBox.currentText() == "Function":
+            doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{"parameters":self.lineEdit_3.text(),"retur":self.lineEdit_4.text()}
+                           ,"pythonOutput":self.lineEdit_5.text()}}
+            self.pois = doc
+        self.accept()
 
 
 
     def exec_(self):
         super(addPOIDialog, self).exec_()
+        return self.pois
 
 
 
