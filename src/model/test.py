@@ -1,10 +1,5 @@
 from os import walk
 import xmltodict
-from model import plugin, dbconnection
+from model import plugin, dbconnection, r2connection
 
 dbconnection.dropDB("plugin")
-
-
-#x = plugin.getName("Network")
-#for i in x:
-#    print(i)

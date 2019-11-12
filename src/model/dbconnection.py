@@ -33,7 +33,6 @@ def searchByItem(item):
                      'from': cursor["from"], 'comment': cursor["comment"]}
     elif item.toolTip() == "Strings":
         projInfo = projectDb["string"]
-        #text = base64.b64encode(item.text().encode())
         cursor = projInfo.find_one({"string": item.text()})
         if cursor is not None:
             value = {"_id":cursor["_id"],'string': cursor["string"], 'varaddress': hex(cursor["vaddr"]), 'from': cursor["from"],

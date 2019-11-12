@@ -32,3 +32,14 @@ def getPOI(plugin):
     cursor = getName(plugin)
     for i in cursor:
         return i["poi"]
+
+def updatePOI(list, current):
+    print(list)
+    pluginDB = dbconnection.getCollection("plugin")
+    myCol = pluginDB[current]
+
+    query = {"name": current}
+    newValues = {"$set": {"poi":list}}
+    myCol.update_one(query,newValues)
+    for x in myCol.find():
+        print(x)

@@ -300,16 +300,18 @@ class addPOIDialog(QtWidgets.QDialog):
                 x.exec_()
 
     def acceptSingle(self):
-        if self.comboBox.currentText() == "String":
-            doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{},"pythonOutput":""}}
-            self.pois = doc
-        elif self.comboBox.currentText() == "Function":
-            doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{"parameters":self.lineEdit_3.text(),"retur":self.lineEdit_4.text()}
-                           ,"pythonOutput":self.lineEdit_5.text()}}
-            self.pois = doc
-        self.accept()
-
-
+        if self.lineEdit_2.text() != "":
+            if self.comboBox.currentText() == "String":
+                doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{},"pythonOutput":""}}
+                self.pois = doc
+            elif self.comboBox.currentText() == "Function":
+                doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{"parameters":self.lineEdit_3.text(),"retur":self.lineEdit_4.text()}
+                               ,"pythonOutput":self.lineEdit_5.text()}}
+                self.pois = doc
+            self.accept()
+        else:
+            e = errorDialog(self, "Name must be filled", "Error")
+            e.exec_()
 
     def exec_(self):
         super(addPOIDialog, self).exec_()

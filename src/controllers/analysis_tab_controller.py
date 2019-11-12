@@ -132,8 +132,8 @@ class analysis_tab_controller(QtCore.QObject):
             projInfo = projectDb["string"]
             cursor = projInfo.find()
             for db in cursor:
-                text = base64.b64decode(db["string"])
-                item = self.set_item(text.decode(), "Strings")
+                text = db["string"]
+                item = self.set_item(text, "Strings")
                 self.analysisTab.poi_listWidget.addItem(item)
 
         elif text == "All":
@@ -145,8 +145,8 @@ class analysis_tab_controller(QtCore.QObject):
             projInfo = projectDb["string"]
             cursor = projInfo.find()
             for db in cursor:
-                text = base64.b64decode(db["string"])
-                item = self.set_item(text.decode(), "Strings")
+                text = db["string"]
+                item = self.set_item(text, "Strings")
                 self.analysisTab.poi_listWidget.addItem(item)
 
     def detailed_poi(self, item):

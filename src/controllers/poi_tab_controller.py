@@ -16,6 +16,7 @@ class poi_tab_controller:
 
     def establish_connections(self):
         self.poi_tab.pushButton_11.clicked.connect(self.addPOI)
+        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fillPOI(self.poi_tab.comboBox.currentText()))
 
     def establish_calls(self):
         self.setPlugins()
@@ -46,4 +47,12 @@ class poi_tab_controller:
 
     def addPOI(self):
         popAdd = pop.addPOIDialog(self.poi_tab)
-        print(popAdd.exec_())
+        pois = popAdd.exec_()
+        doc = plugin.getName(self.poi_tab.comboBox.currentText())
+        if doc:
+            for i in doc:
+                i["poi"].update(pois)
+                print(i["poi"])
+                plugin.updatePOI(i["poi"], i["name"])
+                self.fillPOI(self.poi_tab.comboBox.currentText())
+

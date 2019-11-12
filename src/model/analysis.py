@@ -73,7 +73,6 @@ class AThread(QtCore.QThread):
 
     def run(self):
         while True:
-
             x = self.rlocal.cmd("dc")
 
             if "Cannot continue, run ood?" in x:
@@ -81,6 +80,8 @@ class AThread(QtCore.QThread):
             self.textSignal.emit(x)
             y = self.rlocal.cmd("dso")
             self.textSignal.emit(y)
+
+
             messageAddr = self.rlocal.cmd("dr rsi")  # Memory location to what recv received is in register rsi.
 
             lookInBuff = "pxj @" + messageAddr  # create command to get contents of memory where recv received a message.
@@ -99,6 +100,5 @@ class AThread(QtCore.QThread):
                 byteStr = byteStr + str(hex(messageArr[i]))[2:]
 
             if "ffffffff" not in byteStr:
-                print(byteStr)
-                self.textSignal.emit(binascii.unhexlify(byteStr))
+                self.textSignal.emit(byteStr)
         self.stopSignal.emit()
