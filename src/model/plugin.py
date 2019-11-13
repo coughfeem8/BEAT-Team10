@@ -33,6 +33,16 @@ def getPOI(plugin):
     for i in cursor:
         return i["poi"]
 
+def getOutput(item, current):
+    pluginDB = dbconnection.getCollection("plugin")
+    currentColl = pluginDB[current]
+    cursor = currentColl.find()
+    for y in cursor:
+        poi = y["poi"]["item"]
+        for ash in poi:
+            if ash["name"] in item:
+                return ash["pythonOutput"]
+
 def updatePOI(list, current):
     print(list)
     pluginDB = dbconnection.getCollection("plugin")

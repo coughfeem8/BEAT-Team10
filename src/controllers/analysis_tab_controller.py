@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from view import pop
-import base64
+import subprocess
 from model import analysis, dbconnection, plugin
 from model.singleton import Singleton
 
@@ -22,6 +22,7 @@ class analysis_tab_controller(QtCore.QObject):
         self.analysisTab.comment_PushButton.clicked.connect(self.comment)
         #self.analysisTab.output_PushButton.clicked.connect(self.open_output)
         self.analysisTab.dynamic_stop_button.clicked.connect(self.stop)
+        self.analysisTab.output_PushButton.clicked.connect(self.output)
 
     def establish_calls(self):
         self.setPlugins()
@@ -192,3 +193,24 @@ class analysis_tab_controller(QtCore.QObject):
 
     def setStopTitle(self):
         self.main.setWindowTitle("BEAT | "+Singleton.getProject())
+
+    def output(self):
+        poisChecked = []
+        for i in range(self.analysisTab.poi_listWidget.count()):
+            item = self.analysisTab.poi_listWidget.item(i)
+            if item.checkState() == QtCore.Qt.Checked:
+                value = dbconnection.searchByItem(item)
+                #print(value)
+                if item.toolTip() == "Functions":
+                    output = plugin.getOutput(value["name"],self.analysisTab.plugin_comboBox.currentText())
+                    tmp = {"name":value["name"],"from":value["from"], "output":output }
+                elif item.toolTip() == "Strings":
+                    output = value['string']
+                    tmp = {"name":value['string'], "from": value["from"], "output":output}
+
+                poisChecked.append(tmp)
+        #tmp = (**poisChecked)
+        try:
+            x = subprocess.call(["python", "./plugins/output.py"] + poisChecked)
+        except Exception as e:
+            pop.errorDialog(self.analysisTab,str(e), "Error")

@@ -1,0 +1,18 @@
+<!ELEMENT plugin (name,description, point_of_interest, output)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT point_of_interest (variables, strings, functions, struct, protocol)>
+<!ELEMENT variables (type,value,section)>
+<!ELEMENT type (#PCDATA)>
+<!ELEMENT value (#PCDATA)>
+<!ELEMENT section (#PCDATA)>
+<!ELEMENT strings (value, section)>
+<!ELEMENT functions (name,parameters,return)>
+<!ELEMENT parameters (#PCDATA)>
+<!ELEMENT return (#PCDATA)>
+<!ELEMENT struct (section, members)
+<!ELEMENT members (#PCDATA)>
+<!ELEMENT protocol (section, stru, size)
+<!ELEMENT stru (#PCDATA)>
+<!ELEMENT size (#PCDATA)>
+<!ELEMENT output (name,

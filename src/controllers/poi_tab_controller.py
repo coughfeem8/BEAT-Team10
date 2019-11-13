@@ -51,8 +51,9 @@ class poi_tab_controller:
         doc = plugin.getName(self.poi_tab.comboBox.currentText())
         if doc:
             for i in doc:
-                i["poi"].update(pois)
+                tmp = i["poi"]
+                tmp.update(pois)
                 print(i["poi"])
-                plugin.updatePOI(i["poi"], i["name"])
+                #plugin.updatePOI(i["poi"], i["name"])
                 self.fillPOI(self.poi_tab.comboBox.currentText())
 
