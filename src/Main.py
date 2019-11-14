@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
 from model import Plugin
-from controllers import project_tab_controller, analysis_tab_controller, poi_tab_controller, plugin_tab_controller , doc_tab_controller
+from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController , doc_tab_controller
 
 
 
