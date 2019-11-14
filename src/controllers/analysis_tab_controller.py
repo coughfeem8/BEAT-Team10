@@ -3,12 +3,13 @@ from view import pop
 import base64
 from model import analysis, dbconnection, plugin, r2connection
 from model.singleton import Singleton
-
+from . import poi_formatter
 
 class analysis_tab_controller:
 
     def __init__(self, analysisTab):
         self.analysisTab = analysisTab
+        self.analysisTab.poi_content_area_textEdit.setStyleSheet('')
 
     def establish_connections(self):
         self.analysisTab.static_run_button.clicked.connect(self.static_ran)
@@ -129,9 +130,11 @@ class analysis_tab_controller:
     def detailed_poi(self, item):
         value = dbconnection.searchByItem(item)
         if value is not None:
+            print(value)
             del value["_id"]
-            y = str(value)
-            self.analysisTab.poi_content_area_textEdit.setPlainText(y)
+            #y = str(value)
+            y = value
+            self.analysisTab.poi_content_area_textEdit.setHtml(poi_formatter.format(y))
 
     def open_comment(self):
         s = Singleton.getProject()
