@@ -5,12 +5,12 @@ import json
 import sys
 
 try:
-        import fcntl
+    import fcntl
 except ImportError:
-        fcntl = None
+    fcntl = None
 
 
-class open():
+class Open:
     def __init__(self, filename='', flags=[], radare2home=None):
         self._cmd = self._cmd_process
         if radare2home is not None:

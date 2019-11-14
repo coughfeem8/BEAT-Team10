@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
-from view import tab1, tab2, tab3, tab4, tab5
-from model.singleton import Singleton
-from model import plugin
-from controllers import project_tab_controller, analysis_tab_controller, poi_tab_controller, plugin_tab_controller
+from view import Tab1, Tab2, Tab3, Tab4, Tab5
+from model.Singleton import Singleton
+from model import Plugin
+from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -13,9 +13,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
 
         MainWindow.setWindowTitle("BEAT")
         s = Singleton()
-        s.setProject("BEAT")
+        s.set_project("BEAT")
 
-        plugin.setPlugins()
+        Plugin.set_plugins()
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -23,34 +23,34 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 794, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        self.ProjectTab = tab1.Tab1(self, MainWindow)
+        self.ProjectTab = Tab1.Tab1(self, MainWindow)
         self.tabWidget.addTab(self.ProjectTab, "")
 
-        self.analysisTab = tab2.Tab2(self, self)
+        self.analysisTab = Tab2.Tab2(self, self)
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = tab3.Tab3(self, self)
+        self.pluginTab = Tab3.Tab3(self, self)
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = tab4.Tab4(self, self)
+        self.pointsOfInterestTab = Tab4.Tab4(self, self)
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = tab5.Tab5(self, self)
+        self.documentationTab = Tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
 
-        self.project_controller = project_tab_controller.project_tab_controller(self.ProjectTab, MainWindow)
+        self.project_controller = ProjectTabController.ProjectTabController(self.ProjectTab, MainWindow)
         self.project_controller.establish_connections()
         self.project_controller.establish_calls()
 
-        self.analysis_controller = analysis_tab_controller.analysis_tab_controller(self.analysisTab)
+        self.analysis_controller = AnalysisTabController.AnalysisTabController(self.analysisTab)
         self.analysis_controller.establish_connections()
         self.analysis_controller.establish_calls()
 
-        self.plugin_controller = plugin_tab_controller.plugin_tab_controller(self.pluginTab)
+        self.plugin_controller = PluginTabController.PluginTabController(self.pluginTab)
         self.plugin_controller.establish_connections()
         self.plugin_controller.establish_calls()
 
-        self.poi_controller = poi_tab_controller.poi_tab_controller(self.pointsOfInterestTab)
+        self.poi_controller = POITabController.POITabController(self.pointsOfInterestTab)
         self.poi_controller.establish_connections()
         self.poi_controller.establish_calls()
 

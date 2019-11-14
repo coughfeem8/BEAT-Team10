@@ -1,27 +1,27 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
 from os import walk
-from model.singleton import Singleton
-from model import dbconnection
+from model.Singleton import Singleton
+from model import DBConnection
 
 
-class project_tab_controller:
+class ProjectTabController:
 
-    def __init__(self, projectTab, mainA):
-        global mainWin
-        mainWin = mainA
-        global activeProject
+    def __init__(self, project_tab, main):
+        global main_win
+        main_win = main
+        global active_project
         global saved
         saved = False
         self.nameProject = ""
-        self.projectTab = projectTab
+        self.projectTab = project_tab
 
     def establish_connections(self):
-        self.projectTab.listWidget.itemSelectionChanged.connect(self.itemActivated_event)
-        self.projectTab.pushButton_7.clicked.connect(self.createProject)
-        self.projectTab.pushButton_8.clicked.connect(self.BrowseBnryFiles)
-        self.projectTab.pushButton_9.clicked.connect(self.deleteProject)
-        self.projectTab.pushButton_10.clicked.connect(self.SaveProject)
+        self.projectTab.listWidget.itemSelectionChanged.connect(self.item_activated_event)
+        self.projectTab.pushButton_7.clicked.connect(self.create_project)
+        self.projectTab.pushButton_8.clicked.connect(self.browse_binary_files)
+        self.projectTab.pushButton_9.clicked.connect(self.delete_project)
+        self.projectTab.pushButton_10.clicked.connect(self.save_project)
         self.projectTab.lineEdit.textChanged.connect(
             lambda x: self.search_saved_projects(self.projectTab.lineEdit.text()))
 
@@ -30,20 +30,20 @@ class project_tab_controller:
         self.projectTab.pushButton_8.setEnabled(False)
         self.projectTab.lineEdit_2.setReadOnly(True)
         self.projectTab.textEdit_2.setReadOnly(True)
-        self.searchProjects()
-        self.fillBnryPropEmpty()
-        self.setPlugins()
+        self.search_projects()
+        self.fill_binary_prop_empty()
+        self.set_plugins()
 
-    def setPlugins(self):
+    def set_plugins(self):
         f = []
-        for (dirpath, dirnames, filenames) in walk('./plugins'):
+        for (dir_path, dir_names, filenames) in walk('./plugins'):
             for name in filenames:
                 if name.endswith('.xml'):
                     f.append(name)
             break
-        Singleton.setPlugins(f)
+        Singleton.set_plugins(f)
 
-    def fillBnryPropEmpty(self):
+    def fill_binary_prop_empty(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
                       "Pic", "Endian"]
 
@@ -65,64 +65,64 @@ class project_tab_controller:
             self.projectTab.tableWidget.setItem(x, 0, item)
             self.projectTab.tableWidget.setItem(x, 1, empty)
 
-    def fillBnryProp(self, r2BinInfo):
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["os"])
+    def fill_binary_prop(self, r2_bin_info):
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["os"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(0, 1, item)
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["arch"])
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["arch"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(1, 1, item)
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["core"]["type"])
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["core"]["type"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(2, 1, item)
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["machine"])
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["machine"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(3, 1, item)
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["class"])
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["class"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(4, 1, item)
-        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["bits"]))
+        item = QtWidgets.QTableWidgetItem(str(r2_bin_info["bin"]["bits"]))
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(5, 1, item)
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["lang"])
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["lang"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(6, 1, item)
-        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["canary"]))
+        item = QtWidgets.QTableWidgetItem(str(r2_bin_info["bin"]["canary"]))
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(7, 1, item)
-        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["crypto"]))
+        item = QtWidgets.QTableWidgetItem(str(r2_bin_info["bin"]["crypto"]))
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(8, 1, item)
-        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["nx"]))
+        item = QtWidgets.QTableWidgetItem(str(r2_bin_info["bin"]["nx"]))
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(9, 1, item)
-        item = QtWidgets.QTableWidgetItem(str(r2BinInfo["bin"]["pic"]))
+        item = QtWidgets.QTableWidgetItem(str(r2_bin_info["bin"]["pic"]))
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(10, 1, item)
-        item = QtWidgets.QTableWidgetItem(r2BinInfo["bin"]["endian"])
+        item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["endian"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.projectTab.tableWidget.setItem(11, 1, item)
 
-    def BrowseBnryFiles(self):
+    def browse_binary_files(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self.projectTab, "Browse Binary File", "",
-                                                            "Binary Files (*.exe | *.elf | *.out)", options=options)
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.projectTab, "Browse Binary File", "",
+                                                             "Binary Files (*.exe | *.elf | *.out)", options=options)
 
-        if fileName:
+        if file_name:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
             try:
-                global r2BinInfo
-                self.projectTab.lineEdit_3.setText(fileName)
-                rlocal = r2pipe.open(fileName)
-                r2BinInfo = rlocal.cmdj("ij")
+                global r2_bin_info
+                self.projectTab.lineEdit_3.setText(file_name)
+                rlocal = r2pipe.open(file_name)
+                r2_bin_info = rlocal.cmdj("ij")
 
-                if r2BinInfo["core"]["format"] == "any":
+                if r2_bin_info["core"]["format"] == "any":
                     msg = QtWidgets.QMessageBox()
                     msg.setText("Error")
                     return
 
-                self.fillBnryProp(r2BinInfo)
+                self.fill_binary_prop(r2_bin_info)
 
             except Exception as e:
                 msg = QtWidgets.QMessageBox()
@@ -131,17 +131,17 @@ class project_tab_controller:
                 retval = msg.exec_()
             QtWidgets.QApplication.restoreOverrideCursor()
 
-    def SaveProject(self):
+    def save_project(self):
         if self.projectTab.lineEdit_3.text() != "":
             saved = False
-            projectDb = dbconnection.getCollection(self.nameProject)
+            projectDb = DBConnection.get_collection(self.nameProject)
             projInfo = projectDb["projectInfo"]
             info = {"ProjectName": self.projectTab.lineEdit_2.text(),
                     "ProjectDescription": self.projectTab.textEdit_2.toPlainText(),
                     "BnyFilePath": self.projectTab.lineEdit_3.text()}
-            insertInfo = projInfo.insert(info, check_keys=False)
-            binInfo = projectDb["binaryInfo"]
-            insertObj = binInfo.insert(r2BinInfo, check_keys=False)
+            insert_info = projInfo.insert(info, check_keys=False)
+            bin_info = projectDb["binaryInfo"]
+            insert_obj = bin_info.insert(r2_bin_info, check_keys=False)
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("Save Project")
@@ -151,18 +151,20 @@ class project_tab_controller:
             self.projectTab.pushButton_8.setEnabled(False)
             self.projectTab.pushButton_10.setEnabled(False)
             for item_at in range(self.projectTab.listWidget.count()):
-                self.projectTab.listWidget.item(item_at).setFlags(self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
+                self.projectTab.listWidget.item(item_at).setFlags(
+                    self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
         else:
             msg = QtWidgets.QMessageBox()
             msg.setText("Please select a Binary File")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
 
-    def createProject(self):
-        text, okPressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:", QtWidgets.QLineEdit.Normal, "")
-        if okPressed and text != '':
-            dbnames = dbconnection.getDB()
-            if text in dbnames:
+    def create_project(self):
+        text, ok_pressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:",
+                                                          QtWidgets.QLineEdit.Normal, "")
+        if ok_pressed and text != '':
+            db_names = DBConnection.get_db()
+            if text in db_names:
                 msg = QtWidgets.QMessageBox()
                 msg.setWindowTitle("Error")
                 msg.setText("Project with that name already exists")
@@ -172,7 +174,7 @@ class project_tab_controller:
             self.projectTab.lineEdit_2.setText(text)
             self.projectTab.textEdit_2.setText("")
             self.projectTab.lineEdit_3.setText("")
-            self.fillBnryPropEmpty()
+            self.fill_binary_prop_empty()
             self.nameProject = text
             self.projectTab.listWidget.addItem(text)
             item = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
@@ -183,33 +185,34 @@ class project_tab_controller:
             self.projectTab.pushButton_10.setEnabled(True)
             self.projectTab.textEdit_2.setReadOnly(False)
             for item_at in range(self.projectTab.listWidget.count()):
-                self.projectTab.listWidget.item(item_at).setFlags(self.projectTab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
+                self.projectTab.listWidget.item(item_at).setFlags(
+                    self.projectTab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
 
-    def itemActivated_event(self):
+    def item_activated_event(self):
         if self.projectTab.listWidget.count() != 0:
             project = self.projectTab.listWidget.selectedItems()
-            projectName = [item.text().encode("ascii") for item in project]
-            if projectName:
-                self.nameProject = str(projectName[0], 'utf-8')
+            project_name = [item.text().encode("ascii") for item in project]
+            if project_name:
+                self.nameProject = str(project_name[0], 'utf-8')
                 try:
-                    Singleton.setProject(self.nameProject)
-                    projectDb = dbconnection.getCollection(self.nameProject)
-                    projInfo = projectDb["projectInfo"]
-                    binInfo = projectDb["binaryInfo"]
-                    cursor = projInfo.find()
+                    Singleton.set_project(self.nameProject)
+                    project_db = DBConnection.get_collection(self.nameProject)
+                    project_info = project_db["projectInfo"]
+                    bin_info = project_db["binaryInfo"]
+                    cursor = project_info.find()
                     for db in cursor:
                         self.projectTab.textEdit_2.setPlainText(db['ProjectDescription'])
                         self.projectTab.lineEdit_2.setText(db['ProjectName'])
                         self.projectTab.lineEdit_3.setText(db['BnyFilePath'])
-                        Singleton.setPath(db['BnyFilePath'])
-                    cursorBin = binInfo.find()
-                    for db in cursorBin:
-                        self.fillBnryPropEmpty()
-                        self.fillBnryProp(db)
-                    if (saved):
-                        mainWin.setWindowTitle("* " + self.nameProject)
+                        Singleton.set_path(db['BnyFilePath'])
+                    cursor_bin = bin_info.find()
+                    for db in cursor_bin:
+                        self.fill_binary_prop_empty()
+                        self.fill_binary_prop(db)
+                    if saved:
+                        main_win.setWindowTitle("* " + self.nameProject)
                     else:
-                        mainWin.setWindowTitle("BEAT | " + self.nameProject)
+                        main_win.setWindowTitle("BEAT | " + self.nameProject)
 
                 except Exception as e:
                     msg = QtWidgets.QMessageBox()
@@ -217,34 +220,35 @@ class project_tab_controller:
                     msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
                     retval = msg.exec_()
 
-    def searchProjects(self):
-        cursor = dbconnection.getDB()
+    def search_projects(self):
+        cursor = DBConnection.get_db()
         self.projectTab.listWidget.clear()
         for db in cursor:
             if db not in ['admin', 'local', 'config']:
                 self.projectTab.listWidget.addItem(db)
 
-    def deleteProject(self):
+    def delete_project(self):
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setWindowTitle("Delete Project")
         if self.nameProject != "":
-            buttonReply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message',
-                                                         "Do you like to erase Project %s ?" % self.nameProject,
-                                                         QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                                         QtWidgets.QMessageBox.No)
-            if buttonReply == QtWidgets.QMessageBox.Yes:
+            button_reply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message',
+                                                          "Do you like to erase Project %s ?" % self.nameProject,
+                                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                          QtWidgets.QMessageBox.No)
+            if button_reply == QtWidgets.QMessageBox.Yes:
 
-                dbconnection.dropDB(self.nameProject)
+                DBConnection.drop_db(self.nameProject)
 
                 self.projectTab.lineEdit_2.setText("")
                 self.projectTab.textEdit_2.setText("")
                 self.projectTab.lineEdit_3.setText("")
-                self.fillBnryPropEmpty()
+                self.fill_binary_prop_empty()
                 self.projectTab.pushButton_8.setEnabled(False)
                 self.projectTab.pushButton_10.setEnabled(False)
                 for item_at in range(self.projectTab.listWidget.count()):
-                    self.projectTab.listWidget.item(item_at).setFlags(self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
+                    self.projectTab.listWidget.item(item_at).setFlags(
+                        self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
                 listItems = self.projectTab.listWidget.selectedItems()
                 if not listItems:
                     return

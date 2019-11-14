@@ -27,10 +27,10 @@ ansi_escape = re.compile(r'''
 ''', re.VERBOSE)
 
 
-class open():
+class Open:
 
     def __init__(self, filename='', flags=[], radare2home=None):
-        super(open, self).__init__()
+        super(Open, self).__init__()
 
         if filename:
             self._cmd = self._cmd_process

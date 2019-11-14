@@ -1,14 +1,15 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
-from view import pop
 import base64
-from model import analysis, dbconnection, plugin, r2connection
-from model.singleton import Singleton
+from model import Analysis, DBConnection, Plugin, r2Connection
+from model.Singleton import Singleton
+from view.pop.CommentDialog import CommentDialog
+from view.pop.OutputFieldDialog import OutputFieldDialog
 
 
-class analysis_tab_controller:
+class AnalysisTabController:
 
-    def __init__(self, analysisTab):
-        self.analysisTab = analysisTab
+    def __init__(self, analysis_tab):
+        self.analysisTab = analysis_tab
 
     def establish_connections(self):
         self.analysisTab.static_run_button.clicked.connect(self.static_ran)
@@ -25,10 +26,10 @@ class analysis_tab_controller:
 
     def establish_calls(self):
         self.analysisTab.terminal_output_textEdit.setReadOnly(True)
-        self.setPlugins()
+        self.set_plugins()
 
-    def setPlugins(self):
-        for pl in plugin.getInstalledPlugins():
+    def set_plugins(self):
+        for pl in Plugin.get_installed_plugins():
             self.analysisTab.plugin_comboBox.addItem(pl)
 
     def set_item(self, text, type):
@@ -38,8 +39,7 @@ class analysis_tab_controller:
         return item
 
     def static_ran(self):
-        s = Singleton.getProject()
-        if (s == "BEAT"):
+        if Singleton.get_project() == "BEAT":
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setWindowTitle("Run Static Analysis")
@@ -51,30 +51,30 @@ class analysis_tab_controller:
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
         self.analysisTab.poi_listWidget.clear()
-        rlocal = analysis.staticAll(Singleton.getPath())
+        rlocal = Analysis.static_all(Singleton.get_path())
         try:
             if self.analysisTab.poi_comboBox.currentText() == "All":
 
-                strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                strings = Analysis.static_strings(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
 
-                functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                functions = Analysis.static_functions(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Functions":
 
-                functions = analysis.staticFunctions(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                functions = Analysis.static_functions(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     self.analysisTab.poi_listWidget.addItem(item)
 
             elif self.analysisTab.poi_comboBox.currentText() == "Strings":
 
-                strings = analysis.staticStrings(rlocal,self.analysisTab.plugin_comboBox.currentText())
+                strings = Analysis.static_strings(rlocal, self.analysisTab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     self.analysisTab.poi_listWidget.addItem(item)
@@ -87,8 +87,7 @@ class analysis_tab_controller:
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def poi_comboBox_change(self, text):
-        s = Singleton.getProject()
-        if s == "BEAT":
+        if Singleton.get_project() == "BEAT":
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
             msg.setWindowTitle("Run Static Analysis")
@@ -99,30 +98,30 @@ class analysis_tab_controller:
 
         self.analysisTab.poi_listWidget.clear()
 
-        projectDb = dbconnection.getCollection(s)
+        project_db = DBConnection.get_collection(Singleton.get_project())
 
         if text == "Functions":
-            projInfo = projectDb["functions"]
-            cursor = projInfo.find()
+            project_info = project_db["functions"]
+            cursor = project_info.find()
             for db in cursor:
                 item = self.set_item(db["name"], "Functions")
                 self.analysisTab.poi_listWidget.addItem(item)
         elif text == "Strings":
-            projInfo = projectDb["string"]
-            cursor = projInfo.find()
+            project_info = project_db["string"]
+            cursor = project_info.find()
             for db in cursor:
                 text = base64.b64decode(db["string"])
                 item = self.set_item(text.decode(), "Strings")
                 self.analysisTab.poi_listWidget.addItem(item)
 
         elif text == "All":
-            projInfo = projectDb["functions"]
-            cursor = projInfo.find()
+            project_info = project_db["functions"]
+            cursor = project_info.find()
             for db in cursor:
                 item = self.set_item(db["name"], "Functions")
                 self.analysisTab.poi_listWidget.addItem(item)
-            projInfo = projectDb["string"]
-            cursor = projInfo.find()
+            project_info = project_db["string"]
+            cursor = project_info.find()
             for db in cursor:
                 text = base64.b64decode(db["string"])
                 item = self.set_item(text.decode(), "Strings")
@@ -140,7 +139,7 @@ class analysis_tab_controller:
                 self.analysisTab.poi_listWidget.item(item).setHidden(False)
 
     def detailed_poi(self, item):
-        value = dbconnection.searchByItem(item)
+        value = DBConnection.search_by_item(item)
         if value is not None:
             del value["_id"]
             detailed_poi = ""
@@ -151,58 +150,56 @@ class analysis_tab_controller:
             self.analysisTab.poi_content_area_textEdit.setPlainText(detailed_poi)
 
     def open_comment(self):
-        s = Singleton.getProject()
         item = self.analysisTab.poi_listWidget.currentItem()
-        value = dbconnection.searchByItem(item)
-        projectDb = dbconnection.getCollection(s)
+        value = DBConnection.search_by_item(item)
+        project_db = DBConnection.get_collection(Singleton.get_project())
         if item.toolTip() == "Functions":
-            dbInfo = projectDb["function"]
+            db_info = project_db["function"]
         elif item.toolTip() == "Strings":
-            dbInfo = projectDb["string"]
+            db_info = project_db["string"]
         if value is not None:
             id = value["_id"]
             cmt = value["comment"]
             if cmt is None:
                 cmt = ""
-            popUp = pop.commentDialog(self.analysisTab, cmt)
-            comm = popUp.exec_()
+            pop_up = CommentDialog(self.analysisTab, cmt)
+            comm = pop_up.exec_()
             index = {"_id": id}
-            newValue = {"$set": {"comment": comm}}
-            dbInfo.update_one(index, newValue)
+            new_value = {"$set": {"comment": comm}}
+            db_info.update_one(index, new_value)
             self.detailed_poi(item)
             new_font = QtGui.QFont()
             new_font.setBold(True)
             item.setFont(new_font)
 
     def open_output(self):
-        popUp = pop.outputFieldDialog(self)
-        text = popUp.exec_()
+        pop_up = OutputFieldDialog(self)
+        text = pop_up.exec_()
         print(text)
 
     def terminal(self, text):
         if text is not "":
-            lastText = self.analysisTab.terminal_output_textEdit.toPlainText()
-            self.analysisTab.terminal_output_textEdit.setText(lastText + text + "\n")
+            last_text = self.analysisTab.terminal_output_textEdit.toPlainText()
+            self.analysisTab.terminal_output_textEdit.setText(last_text + text + "\n")
             self.analysisTab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
-
 
     def breakpoint_check(self):
 
-        text, okPressed = QtWidgets.QInputDialog.getText(self.analysisTab, "Dynamic Analysis", "Args to pass:",
+        text, ok_pressed = QtWidgets.QInputDialog.getText(self.analysisTab, "Dynamic Analysis", "Args to pass:",
                                                          QtWidgets.QLineEdit.Normal, "")
-        if okPressed:
-            poisChecked = []
+        if ok_pressed:
+            pois_checked = []
             global r2
-            r2 = r2connection.open(Singleton.getPath())
+            r2 = r2Connection.Open(Singleton.get_path())
             self.terminal(r2.cmd("aaa"))
             self.terminal(r2.cmd("doo %s" %text))
 
             for i in range(self.analysisTab.poi_listWidget.count()):
                 item = self.analysisTab.poi_listWidget.item(i)
                 if item.checkState() == QtCore.Qt.Checked:
-                    poisChecked.append(item)
-            for ix in poisChecked:
-                value = dbconnection.searchByItem(ix)
+                    pois_checked.append(item)
+            for ix in pois_checked:
+                value = DBConnection.search_by_item(ix)
                 oc = value["ocurrence"]
                 for o in oc:
                     r2breakpoint = 'db ' + o
