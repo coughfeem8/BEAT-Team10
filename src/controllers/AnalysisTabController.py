@@ -4,12 +4,13 @@ from model import Analysis, DBConnection, Plugin, r2Connection
 from model.Singleton import Singleton
 from view.pop.CommentDialog import CommentDialog
 from view.pop.OutputFieldDialog import OutputFieldDialog
-
+from . import poi_formatter
 
 class AnalysisTabController:
 
-    def __init__(self, analysis_tab):
-        self.analysisTab = analysis_tab
+    def __init__(self, analysisTab):
+        self.analysisTab = analysisTab
+        self.analysisTab.poi_content_area_textEdit.setStyleSheet('')
 
     def establish_connections(self):
         self.analysisTab.static_run_button.clicked.connect(self.static_ran)
@@ -142,12 +143,9 @@ class AnalysisTabController:
         value = DBConnection.search_by_item(item)
         if value is not None:
             del value["_id"]
-            detailed_poi = ""
-            for key in value:
-                if key is "string":
-                    value[key] = base64.b64decode(value[key]).decode()
-                detailed_poi += f"{key}: {value[key]}\n"
-            self.analysisTab.poi_content_area_textEdit.setPlainText(detailed_poi)
+            #y = str(value)
+            y = value
+            self.analysisTab.poi_content_area_textEdit.setHtml(poi_formatter.format(y))
 
     def open_comment(self):
         item = self.analysisTab.poi_listWidget.currentItem()
@@ -182,6 +180,7 @@ class AnalysisTabController:
             last_text = self.analysisTab.terminal_output_textEdit.toPlainText()
             self.analysisTab.terminal_output_textEdit.setText(last_text + text + "\n")
             self.analysisTab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
+
 
     def breakpoint_check(self):
 

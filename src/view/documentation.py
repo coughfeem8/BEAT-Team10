@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'documentation.ui'
+#
+# Created by: PyQt5 UI code generator 5.9.2
+#
+# WARNING! All changes made in this file will be lost!
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Tab5(QtWidgets.QWidget):
-    def __init__(self, parent, main):
-        QtWidgets.QWidget.__init__(self, parent)
-        Frame = QtWidgets.QFrame(self)
+class Ui_Frame(object):
+    def setupUi(self, Frame):
         Frame.setObjectName("Frame")
         Frame.resize(770, 586)
         self.horizontalLayout = QtWidgets.QHBoxLayout(Frame)
@@ -34,3 +39,4 @@ class Tab5(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
         Frame.setWindowTitle(_translate("Frame", "Frame"))
         self.doc_label.setText(_translate("Frame", "Documentation"))
+
