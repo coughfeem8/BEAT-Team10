@@ -1,11 +1,11 @@
-import r2pipe
 from model.Singleton import Singleton
-from model import Plugin, DBConnection
+from model import Plugin, DBConnection, r2Connection
 import base64
+from PyQt5 import QtCore
 
 
-def static_all(path):
-    rlocal = r2pipe.open(path)
+def staticAll(path):
+    rlocal = r2Connection.open(path)
     rlocal.cmd("aaa")
     return rlocal
 
@@ -27,13 +27,15 @@ def static_strings(rlocal, cplugin):
         for i in str_plg:
             if i.upper() in text.decode().upper():
                 x = rlocal.cmdj("axtj %s" % string["vaddr"])
-                ocurrence = []
+                tmp = text.decode()
                 for str in x:
-                    ocurrence.append(hex(str["from"]))
-                items.append(text.decode())
-                string["ocurrence"] = ocurrence
-                string["comment"] = ""
-                str_db.insert_one(string)
+                    string["string"] = tmp + " " + hex(str["from"])
+                    items.append(string["string"])
+                    string["from"] = hex(str["from"])
+                    string["comment"] = ""
+                    if "_id" in string:
+                        del string["_id"]
+                    str_db.insert_one(string)
                 break
     return items
 
@@ -52,18 +54,53 @@ def static_functions(rlocal, cplugin):
 
         if fc["name"] in func_plg:
             function = rlocal.cmdj("axtj %s" % fc["name"])
-            ocurrence = []
+            tmp = fc["name"]
             for f in function:
-                ocurrence.append(hex(f["from"]))
-            items.append(fc["name"])
-            fc["ocurrence"] = ocurrence
-            fc["comment"] = ""
-            func_db.insert_one(fc)
-
+                fc["name"] = tmp + " " + hex(f["from"])
+                items.append(fc["name"])
+                fc["comment"] = ""
+                fc["from"] = hex(f["from"])
+                if "_id" in fc:
+                    del fc["_id"]
+                func_db.insert_one(fc)
     return items
 
 
-def add_breakpoints_functions(list, rlocal):
-    for i in range(len(list)):
-        r2breakpoint = 'db' + hex(list[i]["from"])
-        rlocal.cmd(r2breakpoint)
+class DynamicThread(QtCore.QThread):
+    text_signal = QtCore.pyqtSignal(str)
+    stop_signal = QtCore.pyqtSignal()
+
+    def __init__(self, rlocal):
+        super(DynamicThread, self).__init__()
+        self.rlocal = rlocal
+
+    def run(self):
+        while True:
+            x = self.rlocal.cmd("dc")
+
+            if "Cannot continue, run ood?" in x:
+                break
+            self.text_signal.emit(x)
+            y = self.rlocal.cmd("dso")
+            self.text_signal.emit(y)
+
+            messageAddr = self.rlocal.cmd("dr rsi")  # Memory location to what recv received is in register rsi.
+
+            lookInBuff = "pxj @" + messageAddr  # create command to get contents of memory where recv received a message.
+
+            messageArr = self.rlocal.cmdj(lookInBuff)  # get contents of memory where recv received a message.
+
+            byteStr = ""  # variable that will hold hex values of message
+
+            # Loop over byte array and remove each hex value (ie each letter sent in message)
+            for i in range(len(messageArr)):
+
+                # If found 0 byte...then is end of message in memory.
+                if messageArr[i] == 0:
+                    break
+                # building byte string.
+                byteStr = byteStr + str(hex(messageArr[i]))[2:]
+
+            if "ffffffff" not in byteStr:
+                self.text_signal.emit(byteStr)
+        self.stop_signal.emit()

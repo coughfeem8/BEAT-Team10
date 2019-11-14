@@ -1,48 +1,40 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-from model import Plugin
+from model import Plugin, DBConnection
+from view.pop import ErrorDialog
 import xmlschema
 
 
 class PluginTabController:
 
+    plugin_signal = QtCore.pyqtSignal()
+
     def __init__(self, plugin_tab):
         self.plugin_tab = plugin_tab
+        self.plugin = ""
 
     def establish_connections(self):
         self.plugin_tab.pushButton_7.clicked.connect(self.create_plugin)
-        self.plugin_tab.ButtonDPVPluginStructure.clicked.connect(self.browse_struct)
-        self.plugin_tab.ButtonDPVBDataset.clicked.connect(self.browse_dataset)
         self.plugin_tab.listWidget.itemSelectionChanged.connect(self.item_activated)
-        self.plugin_tab.lineEdit.textChanged.connect(
-            lambda x: self.search_installed_plugins(self.plugin_tab.lineEdit.text()))
+        self.plugin_tab.ButtonSavePlugin.clicked.connect(self.save_plugin)
+        self.plugin_tab.ButtonDeletePlugin.clicked.connect(self.delete_plugin)
 
     def establish_calls(self):
         self.set_plugins()
 
     def set_plugins(self):
+        self.plugin_tab.listWidget.clear()
         for pl in Plugin.get_installed_plugins():
             self.plugin_tab.listWidget.addItem(pl)
-
-    def browse_struct(self):
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.plugin_tab, "Browse XML Schema", "",
-                                                             "XML Schemas Files (*.xsd)", options=options)
-        if file_name:
-            self.plugin_tab.DPVPluginStructure.setText(file_name)
-
-    def browse_dataset(self):
-        options = QtWidgets.QFileDialog.Options()
-        options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.plugin_tab, "Browse XML File", "",
-                                                             "XML Files (*.xml)", options=options)
-        if file_name:
-            self.plugin_tab.DPVPluginDataSet.setText(file_name)
 
     def create_plugin(self):
         text, ok_pressed = QtWidgets.QInputDialog.getText(self.plugin_tab, "Create New Plugin", "Name of Plugin:",
                                                           QtWidgets.QLineEdit.Normal, "")
-        print(text)
+        if ok_pressed and text != "":
+            coll = DBConnection.list_collections("plugin")
+            for i in coll:
+                if text in i:
+                    x = ErrorDialog(self.plugin_tab,"Plugin with that name already exists","Error Creating Plugin")
+                    x.e
 
     def delete_plugin(self):
         msg = QtWidgets.QMessageBox()

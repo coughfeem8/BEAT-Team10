@@ -1,51 +1,51 @@
-import xmltodict
-from os import walk
-from model.Singleton import Singleton
-
-
-def plugin_connection(current):
-    for pl in Singleton.get_plugins():
-        with open('plugins/%s' % pl) as fd:
-            doc = xmltodict.parse(fd.read())
-            if doc["plugin"]["name"] == current:
-                break
-    return doc
-
-
-def get_plugin_file(current):
-    for pl in Singleton.get_plugins():
-        with open('plugins/%s' % pl) as fd:
-            doc = xmltodict.parse(fd.read())
-            if doc["plugin"]["name"] == current:
-                break
-    return pl
-
+from model import DBConnection
 
 def get_installed_plugins():
     plugins = []
-    for pl in Singleton.get_plugins():
-        with open('plugins/%s' % pl) as fd:
-            doc = xmltodict.parse(fd.read())
-            i = doc["plugin"]["name"]
-            plugins.append(i)
+    x = DBConnection.list_collections("plugin")
+    for i in x:
+        plugins.append(i)
     return plugins
 
-
 def plugin_types(type, current):
-    plugin = plugin_connection(current)
-    items = []
+    list = []
+    pluginDB = DBConnection.get_collection("plugin")
+    currentColl = pluginDB[current]
+    cursor = currentColl.find()
+    for y in cursor:
+        poi = y["poi"]["item"]
+        for ash in poi:
+            if type == ash["type"]:
+                list.append(ash["name"])
+    return list
 
-    for i in plugin["plugin"]["point_of_interest"]["item"]:
-        if type == i["type"]:
-            items.append(i["name"])
-    return items
+def get_name(plugin):
+    plugin_db = DBConnection.get_collection("plugin")
+    x = DBConnection.list_collections("plugin")
+    for i in x:
+        if plugin == i:
+            info = plugin_db[i]
+            cursor = info.find()
+            return cursor
 
+def get_poi(plugin):
+    cursor = get_name(plugin)
+    for i in cursor:
+        return i["poi"]
 
-def set_plugins():
-    f = []
-    for (dirpath, dirnames, filenames) in walk('./plugins'):
-        for name in filenames:
-            if name.endswith('.xml'):
-                f.append(name)
-        break
-    Singleton.set_plugins(f)
+def get_output(item, current):
+    plugin_db = DBConnection.get_collection("plugin")
+    coll = plugin_db[current]
+    cursor = coll.find()
+    for y in cursor:
+        poi = y["poi"]["item"]
+        for ash in poi:
+            if ash["name"] in item:
+                return ash["pythonOutput"]
+
+def update_poi(list,current):
+    plugin_db = DBConnection.get_collection("plugin")
+    col = plugin_db[current]
+    query = {"name": current}
+    newValues = {"$set": {"poi":list}}
+    col.update_one(query,newValues)

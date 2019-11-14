@@ -1,14 +1,7 @@
 import time
 import json
 import os, sys
-import re
 from subprocess import Popen, PIPE, STDOUT
-
-
-
-from urllib.request import urlopen
-from urllib.error import URLError
-
 
 try:
         import fcntl
