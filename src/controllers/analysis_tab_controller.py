@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 from view import pop
-import subprocess
+import subprocess, os, sys
 from model import analysis, dbconnection, plugin
 from model.singleton import Singleton
 
@@ -209,8 +209,17 @@ class analysis_tab_controller(QtCore.QObject):
                     tmp = {"name":value['string'], "from": value["from"], "output":output}
 
                 poisChecked.append(tmp)
-        #tmp = (**poisChecked)
+
+
         try:
-            x = subprocess.call(["python", "./plugins/output.py"] + poisChecked)
+
+            poisChecked.insert(0,"./plugins/output.py")
+            pipe = subprocess.Popen(["python", poisChecked[0]],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+            pipe.stdin.write("Hello")
+            print(pipe.communicate()[0])
+            pipe.stdin.close()
+
+        except FileNotFoundError:
+            print("not found")
         except Exception as e:
             pop.errorDialog(self.analysisTab,str(e), "Error")
