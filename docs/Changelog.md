@@ -1,30 +1,45 @@
- - v3.6 - Added Comments for POIs
- - v3.5.2 - Fixed error with plugin combobox in Tab2 view
- - v3.5.1 - Fixed error with Project controller connections
- - v3.5 - Added Filter of POIs dependeing on Plugin and Plugin functionality
- - v3.4.2 - Removed Analysis Button
- - v3.4.1 - Minor code clean-up in analysis controller
- - v3.4 - Tab3, Tab4 and Tab5 fully MVCd
- - v3.3.1 - Tab1 Save and Browse buttons disabled
- - v3.3 - Tab1 fully MVCd
- - v3.2 - Tab2 fully MVCd
- - v3.1 - Functionally fo tab2 moved to contorller
- - v3.0.1 - Fixed DataBase Calls
- - v3.0 - Full Static Analysis working
- - v2.7.1 - Fixed detailed display error, added breakpoint assignment
- - v2.7 - Reworked list to differentiate between checking a box, and clicking
- - v2.6 - Added Detailed POI
- - v2.5 - Added variable extraction
- - v2.4 - All POI added to mongo database
- - v2.3 - Static analysis run for all POI
- - v1.4 - Redesigned tab4 design and gui
- - v1.3.2 - Fixed errors on text from all xml/xsd
- - v1.3.1 - Function for Tab4 rename
- - v1.3 - Added XmlSchema to the system
- - v1.2.1 - Moving Files to new folder designs
- - v1.2 - Added Schemas to project
- - v1.1.1 - Added try-catch functions
- - v1.1 - Tab1 finished
- - v1.0.1 - Added requirements and Mongo Interaction
- - v1.0 - Added connection to Radare2 and Mongo
+ - v5.0 - Created Dynamic Thread to run Dynamic Analysis separate (Nov 15)
+ - v4.5 - Created script to generate docs for DOC tab (Nov 14)
+ - v4.4 - Created dynamic text for detailed POI view (Nov 13)
+ - v4.3 - MVC'd pop class, & reformatted code to comply with PEP 8 standards (Nov 13)
+ - v4.2.1 - Fixed search bar in POI controller (Nov 11)
+ - v4.2 - MVC POI tab (Nov 9)
+ - v4.1.1 - Fixed issues saving, deleting and proj desc (Nov 8)
+ - v4.1 - Added bold to POIs with comments (Nov 7)
+ - v4.0 - Created custom R2PIPE (Nov 5)
+ - v3.9 - Added terminal fucntion (Oct 31)
+ - v3.8.2  - Fix string value on detailed POI info (Oct 30)
+ - v3.8.1 - Redid displaying of detailed POI info (Oct 30)
+ - v3.8 - Added search functionality for analysis, plugin, and poi tabs (Oct 30)
+ - v3.7 - Added search functionality for projects (Oct 29)
+ - v3.6 - Added Comments for POIs (Oct 25)
+ - v3.5.2 - Fixed error with plugin combobox in Tab2 view (Oct 22)
+ - v3.5.1 - Fixed error with Project controller connections (Oct 22)
+ - v3.5 - Added Filter of POIs dependeing on Plugin and Plugin functionality (Oct 22)
+ - v3.4.2 - Removed Analysis Button (Oct 19)
+ - v3.4.1 - Minor code clean-up in analysis controller (Oct 19)
+ - v3.4 - Tab3, Tab4 and Tab5 fully MVCd (Oct 19)
+ - v3.3.1 - Tab1 Save and Browse buttons disabled (Oct 18)
+ - v3.3 - Tab1 fully MVCd (Oct 17)
+ - v3.2 - Tab2 fully MVCd (Oct 17)
+ - v3.1 - Functionally fo tab2 moved to contorller (Oct 17)
+ - v3.0.1 - Fixed DataBase Calls (Oct 17)
+ - v3.0 - Full Static Analysis working (Oct 16)
+ - v2.5.1 - Fixed detailed display error, added breakpoint assignment (Oct 13)
+ - v2.5 - Reworked list to differentiate between checking a box, and clicking (Oct 12)
+ - v2.4 - Added Detailed POI (Oct 10)
+ - v2.3 - Added variable extraction (Oct 9)
+ - v2.2 - All POI added to mongo database (Oct 8)
+ - v2.1 - Static analysis run for all POI (Oct 7)
+ - v2.0 - Added Singleton (Oct 7)
+ - v1.4 - Redesigned tab4 design and gui (Oct 5)
+ - v1.3.2 - Fixed errors on text from all xml/xsd (Oct 1)
+ - v1.3.1 - Function for Tab4 rename (Spet 28)
+ - v1.3 - Added XmlSchema to the system (Sept 26)
+ - v1.2.1 - Moving Files to new folder designs (Sept 13)
+ - v1.2 - Added Schemas to project (Sept 10)
+ - v1.1.1 - Added try-catch functions (Sept 4)
+ - v1.1 - Tab1 finished (Sept 4)
+ - v1.0.1 - Added requirements and Mongo Interaction (Sept 3)
+ - v1.0 - Added connection to Radare2 and Mongo (Sept 3)
  
