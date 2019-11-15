@@ -12,94 +12,50 @@ class POITabController:
         self.poi_tab.comboBox_2.addItem("All")
 
     def establish_connections(self):
-        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fill_POIs(
-            cplg=self.poi_tab.comboBox.currentText()))
-        self.poi_tab.listWidget_2.itemSelectionChanged.connect(self.item_activated_plugin)
-        self.poi_tab.comboBox_2.currentIndexChanged.connect(
-            lambda x: self.filter_POIs(cplg=self.poi_tab.comboBox.currentText(),
-                                       type=self.poi_tab.comboBox_2.currentText()))
-        self.poi_tab.pushButton_11.clicked.connect(self.instantiate_add_poi_window)
-        self.poi_tab.pushButton_2.clicked.connect(
-            lambda x: self.delete_POI(poi=self.poi_tab.listWidget_2.selectedItems()))
+        self.poi_tab.pushButton_11.clicked.connect(self.addPOI)
+        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fillPOI(self.poi_tab.comboBox.currentText()))
         self.poi_tab.lineEdit_4.textChanged.connect(
             lambda x: self.search_installed_pois(self.poi_tab.lineEdit_4.text()))
 
     def establish_calls(self):
         self.set_plugins()
 
+
     def set_plugins(self):
+        self.poi_tab.comboBox.clear()
         for pl in Plugin.get_installed_plugins():
             self.poi_tab.comboBox.addItem(pl)
 
-    def fill_POIs(self, cplg):
-        doc = Plugin.plugin_connection(cplg)
+    def fillPOI(self, current):
+        doc = Plugin.getPOI(current)
         types = []
-        for i in doc["plugin"]["point_of_interest"]["item"]:
-            self.poi_tab.listWidget_2.addItem(str(i["name"]))
+        for i in doc["item"]:
+            self.poi_tab.listWidget_2.addItem(i["name"])
             if i["type"] not in types:
                 types.append(i["type"])
                 self.poi_tab.comboBox_2.addItem(i["type"])
 
-    def filter_POIs(self, cplg, type):
+    def filterPOI(self, current, type):
         self.poi_tab.listWidget_2.clear()
-        doc = Plugin.plugin_connection(cplg)
-        for i in doc["plugin"]["point_of_interest"]["item"]:
+        doc = Plugin.getPOI(current)
+        for i in doc["item"]:
             if type != "All":
-                print(i)
                 if i["type"] == type:
-                    self.poi_tab.listWidget_2.addItem(str(i["name"]))
+                    self.poi_tab.listWidget_2.addItem(i["name"])
             else:
-                self.poi_tab.listWidget_2.addItem(str(i["name"]))
+                self.poi_tab.listWidget_2.addItem(i["name"])
 
-    def item_activated_plugin(self):
-        poi_select = self.poi_tab.listWidget_2.selectedItems()
-        poi_name = [item.text().encode("ascii") for item in poi_select]
-        doc = Plugin.plugin_connection(self.poi_tab.comboBox.currentText)
-        if poi_name:
-            for i in doc["plugin"]["point_of_interest"]["item"]:
-                if poi_name[0].decode() == i["name"]:
-                    self.poi_tab.textEdit.setText(i["name"] + " " + i["type"])
-
-    def instantiate_add_poi_window(self):
-        pop = AddPOIDialog(self.poi_tab)
-        text, out, type = pop.exec_()
-        if text is "":
-            return
-
-        new_poi = {"name": text, "type": type, "pythonOutput": out}
-        doc = Plugin.plugin_connection(self.poi_tab.comboBox.currentText)
-        pl = Plugin.get_plugin_file(self.poi_tab.comboBox.currentText)
-        old = doc["plugin"]["point_of_interest"]["item"]
-        old.append(new_poi)
-        doc["plugin"]["point_of_interest"] = old
-        xml = dicttoxml.dicttoxml(doc, attr_type=False, root=False)
-        dom = parseString(xml)
-        wr = open('plugins/%s' % pl, 'w')
-        wr.write(dom.toprettyxml())
-        wr.close()
-        self.filter_POIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))
-
-    def delete_POI(self, poi):
-        if not poi:
-            return
-        poi_name = [item.text().encode("ascii") for item in poi]
-        doc = Plugin.plugin_connection(self.poi_tab.comboBox.currentText)
-        old = doc["plugin"]["point_of_interest"]["item"]
-        pl = Plugin.get_plugin_file(self.poi_tab.comboBox.currentText)
-        name = poi_name[0].decode()
-        i = 0
-        for point in doc["plugin"]["point_of_interest"]["item"]:
-            if name == point["name"]:
-                del doc["plugin"]["point_of_interest"]["item"][i]
-            i += 1
-        doc["plugin"]["point_of_interest"] = old
-        xml = dicttoxml.dicttoxml(doc, attr_type=False, root=False)
-        dom = parseString(xml)
-        wr = open('plugins/%s' % pl, 'w')
-        wr.write(dom.toprettyxml())
-        wr.close()
-        self.poi_tab.textEdit.setText("")
-        self.filter_POIs(str(self.poi_tab.comboBox.currentText()), str(self.poi_tab.comboBox_2.currentText()))
+    def addPOI(self):
+        popAdd = AddPOIDialog(self.poi_tab)
+        pois = popAdd.exec_()
+        doc = Plugin.getName(self.poi_tab.comboBox.currentText())
+        if doc:
+            for i in doc:
+                tmp = i["poi"]
+                tmp.update(pois)
+                print(i["poi"])
+                #plugin.updatePOI(i["poi"], i["name"])
+                self.fillPOI(self.poi_tab.comboBox.currentText())
 
     def search_installed_pois(self, text):
         if len(text) is not 0:

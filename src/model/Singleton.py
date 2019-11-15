@@ -2,7 +2,6 @@ class Singleton:
     __instance = None
     project = ""
     filepath = ""
-    plugins = []
 
     @staticmethod
     def get_instance():
@@ -27,13 +26,6 @@ class Singleton:
     def set_path(path):
         Singleton.filepath = path
 
-    @staticmethod
-    def set_plugins(list):
-        Singleton.plugins = list
-
-    @staticmethod
-    def get_plugins():
-        return Singleton.plugins
 
     def __init__(self):
         """ Virtually private constructor. """
