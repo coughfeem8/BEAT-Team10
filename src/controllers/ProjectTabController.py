@@ -203,7 +203,7 @@ class ProjectTabController:
         cursor = DBConnection.get_db()
         self.projectTab.listWidget.clear()
         for db in cursor:
-            if db not in ['admin', 'local', 'config']:
+            if db not in ['admin', 'local', 'config', 'plugin']:
                 self.projectTab.listWidget.addItem(db)
 
     def delete_project(self):

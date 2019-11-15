@@ -54,7 +54,7 @@ class POITabController:
                 tmp = i["poi"]
                 tmp.update(pois)
                 print(i["poi"])
-                #plugin.updatePOI(i["poi"], i["name"])
+                Plugin.updatePOI(i["poi"], i["name"])
                 self.fillPOI(self.poi_tab.comboBox.currentText())
 
     def search_installed_pois(self, text):

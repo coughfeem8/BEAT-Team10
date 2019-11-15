@@ -8,5 +8,5 @@ class ErrorDialog(QtWidgets.QMessageBox):
         self.setStandardButtons(QtWidgets.QMessageBox.Ok)
 
     def exec_(self):
-        super(errorDialog, self).exec_()
+        super(ErrorDialog, self).exec_()
         return

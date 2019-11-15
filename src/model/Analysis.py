@@ -61,6 +61,7 @@ def static_functions(rlocal, cplugin):
                 fc["name"] = tmp + " " + hex(f["from"])
                 items.append(fc["name"])
                 fc["comment"] = ""
+                fc["runs"] = []
                 fc["from"] = hex(f["from"])
                 if "_id" in fc:
                     del fc["_id"]
@@ -71,40 +72,71 @@ def static_functions(rlocal, cplugin):
 
 class dynamic_thread(QtCore.QThread):
     textSignal = QtCore.pyqtSignal(str)
+    listSignal = QtCore.pyqtSignal(dict)
     stopSignal = QtCore.pyqtSignal()
 
-    def __init__(self, rlocal):
+    def __init__(self, rlocal, pois):
         super(dynamic_thread, self).__init__()
         self.rlocal = rlocal
+        self.pois = pois
 
     def run(self):
+       for poi in self.pois:
+           fr = poi["from"]
+           r2Breakpoint = 'db '+fr
+           self.rlocal.cmd(r2Breakpoint)
+
+           x = self.rlocal.cmd("dc")
+           poi["rtnPara"] =  self.checkPara()
+           if "Cannot continue, run ood?" in x:
+               break
+           self.textSignal.emit(x)
+           y = self.rlocal.cmd("dso")
+           self.textSignal.emit(y)
+
+           messageAddr = self.rlocal.cmd("dr rsi")
+           lookInBuff = "pxj @" + messageAddr
+           messageArr = self.rlocal.cmdj(lookInBuff)
+           byteStr = ""
+
+           for i in range(len(messageArr)):
+               if messageArr[i] == 0:
+                   break
+               byteStr = byteStr + str(hex(messageArr[i]))[2:]
+
+           if "ffffffff" not in byteStr:
+               poi["rtnFnc"] = byteStr
+           else:
+               poi["rtnFnc"] = "No Value"
+           self.listSignal.emit(poi)
+
+    def stop(self):
+        self.rlocal.quit()
+
+    def checkPara(self):
+        self.rlocal.cmd("s")
+        i=0
+        ValPara = []
+        seen = []
         while True:
-            x = self.rlocal.cmd("dc")
+            i+=1
+            code = self.rlocal.cmdj('pdj '+ str(-i))
+            if code[0]['type'] == 'mov' or code[0]['type'] == 'lea':
+                split_cmd = code[0]['opcode'].replace(',', '').split()
+                if len(split_cmd) < 2:
+                    pass
+                elif not (split_cmd[1] in seen):
+                    if split_cmd[1] == 'qword':
+                        x = " ".join(split_cmd[2:-1]).replace('[', '').replace(']', '')
+                        value = self.rlocal.cmd('dr '+x)
 
-            if "Cannot continue, run ood?" in x:
+                    elif split_cmd[1].__contains__("word"):
+                        pass
+                    else:
+                        x = split_cmd[1]
+                        value = self.rlocal.cmd('dr '+x)
+                        seen.append(split_cmd[1])
+                ValPara.append(value)
+            else:
                 break
-            self.textSignal.emit(x)
-            y = self.rlocal.cmd("dso")
-            self.textSignal.emit(y)
-
-
-            messageAddr = self.rlocal.cmd("dr rsi")  # Memory location to what recv received is in register rsi.
-
-            lookInBuff = "pxj @" + messageAddr  # create command to get contents of memory where recv received a message.
-
-            messageArr = self.rlocal.cmdj(lookInBuff)  # get contents of memory where recv received a message.
-
-            byteStr = ""  # variable that will hold hex values of message
-
-            # Loop over byte array and remove each hex value (ie each letter sent in message)
-            for i in range(len(messageArr)):
-
-                # If found 0 byte...then is end of message in memory.
-                if messageArr[i] == 0:
-                    break
-                # building byte string.
-                byteStr = byteStr + str(hex(messageArr[i]))[2:]
-
-            if "ffffffff" not in byteStr:
-                self.textSignal.emit(byteStr)
-        self.stopSignal.emit()
+        return ValPara

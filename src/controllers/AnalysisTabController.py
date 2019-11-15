@@ -186,26 +186,30 @@ class AnalysisTabController:
 
         if okPressed:
             poisChecked = []
+
             r2 = Analysis.static_all(Singleton.get_path())
             self.terminal(r2.cmd("doo %s" % text))
 
             for i in range(self.analysisTab.poi_listWidget.count()):
                 item = self.analysisTab.poi_listWidget.item(i)
                 if item.checkState() == QtCore.Qt.Checked:
-                    poisChecked.append(item)
-            for ix in poisChecked:
-                value = DBConnection.search_by_item(ix)
-                oc = value["from"]
-                r2breakpoint = 'db ' + oc
+                    if item.toolTip() == "Functions":
+                        value = DBConnection.search_by_item(item)
+                        poi = {"name":item.text(),"from":value["from"],"type":item.toolTip(),"rtnPara":[],"rtnFnc":""}
+                        poisChecked.append(poi)
 
-                self.terminal(r2.cmd(r2breakpoint))
+            sort = sorted(poisChecked, key= lambda i: i["from"])
 
             global thread
             self.main.setWindowTitle("BEAT | Running " + Singleton.get_project())
-            thread = Analysis.dynamic_thread(rlocal=r2)
+            thread = Analysis.dynamic_thread(rlocal=r2, pois=sort)
             thread.textSignal.connect(lambda x: self.terminal(x))
             thread.stopSignal.connect(self.setStopTitle)
+            thread.listSignal.connect(lambda x: self.print(x))
             thread.start()
+
+    def print(self, text):
+        print(text)
 
     def stop(self):
         try:

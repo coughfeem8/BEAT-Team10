@@ -17,8 +17,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         s = Singleton()
         s.set_project("BEAT")
 
-        Plugin.set_plugins()
-
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
@@ -44,7 +42,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.project_controller.establish_connections()
         self.project_controller.establish_calls()
 
-        self.analysis_controller = AnalysisTabController.AnalysisTabController(self.analysisTab)
+        self.analysis_controller = AnalysisTabController.AnalysisTabController(self.analysisTab, MainWindow)
         self.analysis_controller.establish_connections()
         self.analysis_controller.establish_calls()
 

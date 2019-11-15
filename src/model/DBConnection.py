@@ -24,6 +24,17 @@ def get_collection(db):
     project_db = mongoClient[db]
     return project_db
 
+def search_by_name(name, type):
+    s = Singleton.get_project()
+    project_db = get_collection(s)
+    value = None
+    if type == "Functions":
+        project_info = project_db["functions"]
+        cursor = project_info.find_one({"name": name})
+        if cursor is not None:
+            value = {"_id": cursor["_id"], 'name': cursor["name"], 'signature': cursor["signature"],
+                     'varaddress': hex(cursor["offset"]), 'from': cursor["from"], 'comment': cursor["comment"]}
+    return value
 
 def search_by_item(item):
     s = Singleton.get_project()
