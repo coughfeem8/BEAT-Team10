@@ -1,11 +1,11 @@
+from PyQt5 import QtCore
 from model.Singleton import Singleton
 from model import Plugin, DBConnection, r2Connection
 import base64
-from PyQt5 import QtCore
 
 
-def staticAll(path):
-    rlocal = r2Connection.open(path)
+def static_all(path):
+    rlocal = r2Connection.Open(path)
     rlocal.cmd("aaa")
     return rlocal
 
@@ -44,8 +44,10 @@ def static_functions(rlocal, cplugin):
     items = []
     s = Singleton.get_project()
     project_db = DBConnection.get_collection(s)
+
     if project_db["functions"]:
         project_db.drop_collection("functions")
+
     func_db = project_db["functions"]
     func_all = rlocal.cmdj("aflj")
     func_plg = Plugin.plugin_types("Function", cplugin)
@@ -63,15 +65,16 @@ def static_functions(rlocal, cplugin):
                 if "_id" in fc:
                     del fc["_id"]
                 func_db.insert_one(fc)
+
     return items
 
 
-class DynamicThread(QtCore.QThread):
-    text_signal = QtCore.pyqtSignal(str)
-    stop_signal = QtCore.pyqtSignal()
+class dynamic_thread(QtCore.QThread):
+    textSignal = QtCore.pyqtSignal(str)
+    stopSignal = QtCore.pyqtSignal()
 
     def __init__(self, rlocal):
-        super(DynamicThread, self).__init__()
+        super(dynamic_thread, self).__init__()
         self.rlocal = rlocal
 
     def run(self):
@@ -80,9 +83,10 @@ class DynamicThread(QtCore.QThread):
 
             if "Cannot continue, run ood?" in x:
                 break
-            self.text_signal.emit(x)
+            self.textSignal.emit(x)
             y = self.rlocal.cmd("dso")
-            self.text_signal.emit(y)
+            self.textSignal.emit(y)
+
 
             messageAddr = self.rlocal.cmd("dr rsi")  # Memory location to what recv received is in register rsi.
 
@@ -102,5 +106,5 @@ class DynamicThread(QtCore.QThread):
                 byteStr = byteStr + str(hex(messageArr[i]))[2:]
 
             if "ffffffff" not in byteStr:
-                self.text_signal.emit(byteStr)
-        self.stop_signal.emit()
+                self.textSignal.emit(byteStr)
+        self.stopSignal.emit()

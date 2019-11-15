@@ -1,8 +1,10 @@
 from PyQt5 import QtCore, QtWidgets
+
 from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
 from model import Plugin
-from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController
+from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController , doc_tab_controller
+
 
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
@@ -54,8 +56,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.poi_controller.establish_connections()
         self.poi_controller.establish_calls()
 
-        self.plugin_controller.pluginSignal.connect(self.analysis_controller.setPlugins)
-        self.plugin_controller.pluginSignal.connect(self.poi_controller.setPlugins)
+        self.doc_controller = doc_tab_controller.doc_tab_controller(self.documentationTab)
+        self.doc_controller.establish_connections()
+        self.doc_controller.establish_calls()
+
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)

@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import r2pipe
-from os import walk
+from view.pop.ErrorDialog import ErrorDialog
 from model.Singleton import Singleton
 from model import DBConnection
 
@@ -8,12 +8,7 @@ from model import DBConnection
 class ProjectTabController:
 
     def __init__(self, project_tab, main):
-        global main_win
-        main_win = main
-        global active_project
-        global saved
-        saved = False
-        self.nameProject = ""
+        self.main = main
         self.projectTab = project_tab
 
     def establish_connections(self):
@@ -32,16 +27,7 @@ class ProjectTabController:
         self.projectTab.textEdit_2.setReadOnly(True)
         self.search_projects()
         self.fill_binary_prop_empty()
-        self.set_plugins()
 
-    def set_plugins(self):
-        f = []
-        for (dir_path, dir_names, filenames) in walk('./plugins'):
-            for name in filenames:
-                if name.endswith('.xml'):
-                    f.append(name)
-            break
-        Singleton.set_plugins(f)
 
     def fill_binary_prop_empty(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
@@ -125,10 +111,8 @@ class ProjectTabController:
                 self.fill_binary_prop(r2_bin_info)
 
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setText(str(e))
-                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                retval = msg.exec_()
+                x = ErrorDialog(self.projectTab, str(e), "Error")
+                x.exec_()
             QtWidgets.QApplication.restoreOverrideCursor()
 
     def save_project(self):
@@ -209,16 +193,11 @@ class ProjectTabController:
                     for db in cursor_bin:
                         self.fill_binary_prop_empty()
                         self.fill_binary_prop(db)
-                    if saved:
-                        main_win.setWindowTitle("* " + self.nameProject)
-                    else:
-                        main_win.setWindowTitle("BEAT | " + self.nameProject)
+                    self.main.setWindowTitle("BEAT | "+Singleton.get_project())
 
                 except Exception as e:
-                    msg = QtWidgets.QMessageBox()
-                    msg.setText(str(e))
-                    msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                    retval = msg.exec_()
+                    msg = ErrorDialog(self.projectTab,str(e),"Error")
+                    msg.exec()
 
     def search_projects(self):
         cursor = DBConnection.get_db()
