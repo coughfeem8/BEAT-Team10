@@ -1,8 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import r2pipe
 from view.pop.ErrorDialog import ErrorDialog
 from model.Singleton import Singleton
-from model import DBConnection
+from model import DBConnection, r2Connection
 
 
 class ProjectTabController:
@@ -100,7 +99,7 @@ class ProjectTabController:
             try:
                 global r2_bin_info
                 self.projectTab.lineEdit_3.setText(file_name)
-                rlocal = r2pipe.open(file_name)
+                rlocal = r2Connection.Open(file_name)
                 r2_bin_info = rlocal.cmdj("ij")
 
                 if r2_bin_info["core"]["format"] == "any":

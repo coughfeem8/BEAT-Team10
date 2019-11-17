@@ -58,6 +58,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.doc_controller.establish_connections()
         self.doc_controller.establish_calls()
 
+        self.plugin_controller.pluginSignal.connect(self.analysis_controller.set_plugins)
+        self.plugin_controller.pluginSignal.connect(self.poi_controller.set_plugins)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)

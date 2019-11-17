@@ -3,11 +3,12 @@ from model import Plugin, DBConnection
 from view.pop.ErrorDialog import ErrorDialog
 
 
-class PluginTabController:
+class PluginTabController(QtCore.QObject):
 
     pluginSignal = QtCore.pyqtSignal()
 
     def __init__(self, plugin_tab):
+        super().__init__()
         self.plugin_tab = plugin_tab
         self.plugin = ""
 
@@ -102,7 +103,7 @@ class PluginTabController:
                                 new = lastText + i["type"] + " " + i["name"] + "\n"
                                 self.plugin_tab.DVPPointOfInterest.setText(new)
                 except Exception as e:
-                    x = pop.errorDialog(self.plugin_tab,str(e),"Error")
+                    x = ErrorDialog(self.plugin_tab,str(e),"Error")
                     x.exec_()
 
     def search_installed_plugins(self, text):

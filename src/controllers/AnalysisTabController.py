@@ -13,6 +13,7 @@ class AnalysisTabController:
         self.analysisTab = analysisTab
         self.analysisTab.poi_content_area_textEdit.setStyleSheet('')
         self.main = main
+        self.run = 0
 
     def establish_connections(self):
         self.analysisTab.static_run_button.clicked.connect(self.static)
@@ -141,15 +142,16 @@ class AnalysisTabController:
         value = DBConnection.search_by_item(item)
         if value is not None:
             del value["_id"]
-            y = value
-            self.analysisTab.poi_content_area_textEdit.setHtml(poi_formatter.format(y))
+            y = str(value)
+            self.analysisTab.poi_content_area_textEdit.setText(y)
+            #self.analysisTab.poi_content_area_textEdit.setHtml(poi_formatter.format(y))
 
     def open_comment(self):
         item = self.analysisTab.poi_listWidget.currentItem()
         value = DBConnection.search_by_item(item)
         project_db = DBConnection.get_collection(Singleton.get_project())
         if item.toolTip() == "Functions":
-            db_info = project_db["function"]
+            db_info = project_db["functions"]
         elif item.toolTip() == "Strings":
             db_info = project_db["string"]
         if value is not None:
@@ -185,6 +187,7 @@ class AnalysisTabController:
                                                          QtWidgets.QLineEdit.Normal, "")
 
         if okPressed:
+            self.run += 1
             poisChecked = []
 
             r2 = Analysis.static_all(Singleton.get_path())
@@ -205,11 +208,23 @@ class AnalysisTabController:
             thread = Analysis.dynamic_thread(rlocal=r2, pois=sort)
             thread.textSignal.connect(lambda x: self.terminal(x))
             thread.stopSignal.connect(self.setStopTitle)
-            thread.listSignal.connect(lambda x: self.print(x))
+            thread.listSignal.connect(lambda x: self.returnFnc(x))
             thread.start()
 
-    def print(self, text):
-        print(text)
+    def returnFnc(self, text):
+
+        value = DBConnection.search_by_name(text["name"],"Functions")
+        project_db = DBConnection.get_collection(Singleton.get_project())
+        db_info = project_db["functions"]
+        if value is not None:
+            id = value["_id"]
+
+            index = {"_id": id}
+            runs = value["runs"]
+            run = {"rtnPara":text["rtnPara"],"rtnFnc":text["rtnFnc"]}
+            runs.append(run)
+            new_value = {"$set": {"runs": runs}}
+            db_info.update_one(index, new_value)
 
     def stop(self):
         try:

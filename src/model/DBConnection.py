@@ -33,7 +33,7 @@ def search_by_name(name, type):
         cursor = project_info.find_one({"name": name})
         if cursor is not None:
             value = {"_id": cursor["_id"], 'name': cursor["name"], 'signature': cursor["signature"],
-                     'varaddress': hex(cursor["offset"]), 'from': cursor["from"], 'comment': cursor["comment"]}
+                     'varaddress': hex(cursor["offset"]), 'from': cursor["from"], 'comment': cursor["comment"], 'runs':cursor["runs"]}
     return value
 
 def search_by_item(item):
@@ -45,7 +45,7 @@ def search_by_item(item):
         cursor = project_info.find_one({"name": item.text()})
         if cursor is not None:
             value = {"_id":cursor["_id"],'name': cursor["name"], 'signature': cursor["signature"], 'varaddress': hex(cursor["offset"]),
-                     'from': cursor["from"], 'comment': cursor["comment"]}
+                     'from': cursor["from"], 'comment': cursor["comment"],"runs": cursor["runs"]}
     elif item.toolTip() == "Strings":
         project_info = project_db["string"]
         cursor = project_info.find_one({"string": item.text()})

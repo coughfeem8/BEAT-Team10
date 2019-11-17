@@ -1,7 +1,5 @@
-import dicttoxml
 from view.pop.AddPOIDialog import AddPOIDialog
 from model import Plugin
-from xml.dom.minidom import parseString
 from PyQt5 import QtCore, QtWidgets, QtGui
 
 

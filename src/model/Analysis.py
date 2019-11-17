@@ -23,11 +23,11 @@ def static_strings(rlocal, cplugin):
 
     str_db = project_db["string"]
     for string in strings:
-        text = base64.b64decode(string["string"])
+        text = string["string"]
         for i in str_plg:
-            if i.upper() in text.decode().upper():
+            if i.upper() in text.upper():
                 x = rlocal.cmdj("axtj %s" % string["vaddr"])
-                tmp = text.decode()
+                tmp = text
                 for str in x:
                     string["string"] = tmp + " " + hex(str["from"])
                     items.append(string["string"])
