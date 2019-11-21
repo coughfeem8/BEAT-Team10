@@ -55,6 +55,9 @@ class POITabController:
                 Plugin.updatePOI(i["poi"], i["name"])
                 self.fillPOI(self.poi_tab.comboBox.currentText())
 
+    def deletePOI(self):
+        pass
+
     def search_installed_pois(self, text):
         if len(text) is not 0:
             search_result = self.poi_tab.listWidget_2.findItems(text, QtCore.Qt.MatchContains)

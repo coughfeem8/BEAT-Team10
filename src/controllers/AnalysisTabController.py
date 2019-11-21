@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
-import base64
+import subprocess
 from model import Analysis, DBConnection, Plugin, r2Connection
 from model.Singleton import Singleton
 from view.pop.ErrorDialog import ErrorDialog
@@ -170,9 +170,27 @@ class AnalysisTabController:
             item.setFont(new_font)
 
     def open_output(self):
-        pop_up = OutputFieldDialog(self.analysisTab)
-        text = pop_up.exec_()
-        print(text)
+        try:
+            cmd = ["python3", "./plugins/output.py"]
+            pois =[]
+            for i in range(self.analysisTab.poi_listWidget.count()):
+                item = self.analysisTab.poi_listWidget.item(i)
+                if item.checkState() == QtCore.Qt.Checked:
+                    value = DBConnection.search_by_item(item)
+                    out = Plugin.getOutput(item.text(),self.analysisTab.plugin_comboBox.currentText())
+                    poi = {"name":item.text(),"from":value["from"],"out":out}
+                    pois.append(poi)
+            sort = sorted(pois, key=lambda i: i["from"])
+            for s in sort:
+                cmd.append(str(s))
+            #print(cmd)
+            subprocess.call(cmd)
+            #proc.w
+            x = ErrorDialog(self.analysisTab, "Finished creating output", "Ouput")
+            x.exec_()
+        except Exception as e:
+            x = ErrorDialog(self.analysisTab,str(e),"Error in Ouput")
+            x.exec_()
 
     def terminal(self, text):
         if text is not "":
