@@ -44,6 +44,14 @@ def getOutput(item, current):
             if ash["name"] in item:
                 return ash["pythonOutput"]
 
+def getFile(current):
+    pluginDB = DBConnection.get_collection("plugin")
+    coll = pluginDB[current]
+    cursor = coll.find()
+    for y in cursor:
+        out = y["output"]
+        return out
+
 def updatePOI(list, current):
     pluginDB = DBConnection.get_collection("plugin")
     myCol = pluginDB[current]

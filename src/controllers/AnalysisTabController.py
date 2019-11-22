@@ -171,7 +171,8 @@ class AnalysisTabController:
 
     def open_output(self):
         try:
-            cmd = ["python3", "./plugins/output.py"]
+            plugin = Plugin.getFile(self.analysisTab.plugin_comboBox.currentText())
+            cmd = ["python3", plugin]
             pois =[]
             for i in range(self.analysisTab.poi_listWidget.count()):
                 item = self.analysisTab.poi_listWidget.item(i)
@@ -184,9 +185,18 @@ class AnalysisTabController:
             for s in sort:
                 cmd.append(str(s))
             #print(cmd)
-            subprocess.call(cmd)
+            subprocess.check_call(cmd)
             #proc.w
             x = ErrorDialog(self.analysisTab, "Finished creating output", "Ouput")
+            x.exec_()
+        except subprocess.CalledProcessError as e:
+            text = ""
+            if e.returncode == 1:
+                text = "Error executing %s file" %plugin
+            elif e.returncode == 2:
+                text = "%s file not found" %plugin
+
+            x = ErrorDialog(self.analysisTab, text, "Error in Ouput")
             x.exec_()
         except Exception as e:
             x = ErrorDialog(self.analysisTab,str(e),"Error in Ouput")
