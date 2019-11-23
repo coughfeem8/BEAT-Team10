@@ -1,11 +1,10 @@
 import xml.etree.cElementTree as ET
 from xml.dom import minidom
 import base64
-import json
 import re
 
 
-def format(poi):
+def format_poi(poi):
     html = ET.Element('html')
     head = ET.SubElement(html, 'head')
     style = ET.SubElement(head, 'style')
@@ -27,20 +26,19 @@ def format(poi):
     if 'string' in poi.keys():
         format_string(poi, content)
     elif 'name' in poi.keys():
-        format_func(poi,content)
+        format_func(poi, content)
 
     prettify(html)
     return prettify(html)
 
 
-
-def format_string(poi,parent):
-    head_row = ET.SubElement(parent,'tr')
-    for th in ['Data','Value']:
+def format_string(poi, parent):
+    head_row = ET.SubElement(parent, 'tr')
+    for th in ['Data', 'Value']:
         col = ET.SubElement(head_row, 'th')
         col.text = th
     for item in poi.keys():
-        if  not item == '_id':
+        if not item == '_id':
             row = ET.SubElement(parent, 'tr')
             data_style = ET.SubElement(row, 'td')
             val_style = ET.SubElement(row, 'td')
@@ -55,7 +53,7 @@ def format_string(poi,parent):
             data.text = item
 
 
-def format_func(poi,parent):
+def format_func(poi, parent):
     head_row = ET.SubElement(parent, 'tr')
     for th in ['Data', 'Value']:
         col = ET.SubElement(head_row, 'th')
@@ -95,7 +93,6 @@ def format_signature(sig, parent):
         data.text = item
 
 
-
 def prettify(elem):
     """Return a pretty-printed XML string for the Element.
     """
@@ -103,7 +100,8 @@ def prettify(elem):
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
 
+
 def base64_decode(base64_str):
     byte_str = base64_str.encode()
-    str = base64.b64decode(byte_str)
-    return str
+    decoded_str = base64.b64decode(byte_str)
+    return decoded_str

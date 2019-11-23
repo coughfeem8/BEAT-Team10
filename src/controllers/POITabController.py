@@ -10,22 +10,21 @@ class POITabController:
         self.poi_tab.comboBox_2.addItem("All")
 
     def establish_connections(self):
-        self.poi_tab.pushButton_11.clicked.connect(self.addPOI)
-        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fillPOI(self.poi_tab.comboBox.currentText()))
+        self.poi_tab.pushButton_11.clicked.connect(self.add_poi)
+        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fill_poi(self.poi_tab.comboBox.currentText()))
         self.poi_tab.lineEdit_4.textChanged.connect(
             lambda x: self.search_installed_pois(self.poi_tab.lineEdit_4.text()))
 
     def establish_calls(self):
         self.set_plugins()
 
-
     def set_plugins(self):
         self.poi_tab.comboBox.clear()
         for pl in Plugin.get_installed_plugins():
             self.poi_tab.comboBox.addItem(pl)
 
-    def fillPOI(self, current):
-        doc = Plugin.getPOI(current)
+    def fill_poi(self, current):
+        doc = Plugin.get_poi(current)
         types = []
         for i in doc["item"]:
             self.poi_tab.listWidget_2.addItem(i["name"])
@@ -33,29 +32,29 @@ class POITabController:
                 types.append(i["type"])
                 self.poi_tab.comboBox_2.addItem(i["type"])
 
-    def filterPOI(self, current, type):
+    def filter_poi(self, current, poi_type):
         self.poi_tab.listWidget_2.clear()
-        doc = Plugin.getPOI(current)
+        doc = Plugin.get_poi(current)
         for i in doc["item"]:
-            if type != "All":
-                if i["type"] == type:
+            if poi_type != "All":
+                if i["type"] == poi_type:
                     self.poi_tab.listWidget_2.addItem(i["name"])
             else:
                 self.poi_tab.listWidget_2.addItem(i["name"])
 
-    def addPOI(self):
-        popAdd = AddPOIDialog(self.poi_tab)
-        pois = popAdd.exec_()
-        doc = Plugin.getName(self.poi_tab.comboBox.currentText())
+    def add_poi(self):
+        add_poi_pop_up = AddPOIDialog(self.poi_tab)
+        pois = add_poi_pop_up.exec_()
+        doc = Plugin.get_name(self.poi_tab.comboBox.currentText())
         if doc:
             for i in doc:
                 tmp = i["poi"]
                 tmp.update(pois)
                 print(i["poi"])
-                Plugin.updatePOI(i["poi"], i["name"])
-                self.fillPOI(self.poi_tab.comboBox.currentText())
+                Plugin.update_poi(i["poi"], i["name"])
+                self.fill_poi(self.poi_tab.comboBox.currentText())
 
-    def deletePOI(self):
+    def delete_poi(self):
         pass
 
     def search_installed_pois(self, text):

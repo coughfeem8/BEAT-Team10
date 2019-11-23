@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 
+
 class ErrorDialog(QtWidgets.QMessageBox):
     def __init__(self, parent, text, title):
         QtWidgets.QMessageBox.__init__(self, parent)

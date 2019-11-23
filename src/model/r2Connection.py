@@ -1,12 +1,13 @@
-import time
 import json
-import os, sys
+import os
+import sys
+import time
 from subprocess import Popen, PIPE, STDOUT
 
 try:
-        import fcntl
+    import fcntl
 except ImportError:
-        fcntl = None
+    fcntl = None
 
 import re
 
@@ -90,7 +91,7 @@ class Open:
                 try:
                     foo = r.read(4096)
 
-                    #print(foo.decode())
+                    # print(foo.decode())
                 except:
                     continue
             else:
@@ -110,7 +111,8 @@ class Open:
         return out
 
     def quit(self):
-        """Quit current r2pipe session and kill
+        """
+        Quit current r2pipe session and kill
         """
         self.cmd("q")
         if hasattr(self, 'process'):
@@ -127,7 +129,8 @@ class Open:
                 asyncio.get_event_loop().run_until_complete(asyncio.sleep(0.1))
 
     def cmd(self, cmd, **kwargs):
-        """Run an r2 command return string with result
+        """
+        Run an r2 command return string with result
         Args:
             cmd (str): r2 command
         Returns:
@@ -145,7 +148,8 @@ class Open:
         return None
 
     def cmdj(self, cmd, **kwargs):
-        """Same as cmd() but evaluates JSONs and returns an object
+        """
+        Same as cmd() but evaluates JSONs and returns an object
         Args:
             cmdj (str): r2 command
         Returns:

@@ -9,6 +9,7 @@ class ProjectTabController:
     def __init__(self, project_tab, main):
         self.main = main
         self.projectTab = project_tab
+        self.project_name = ""
 
     def establish_connections(self):
         self.projectTab.listWidget.itemSelectionChanged.connect(self.item_activated_event)
@@ -26,7 +27,6 @@ class ProjectTabController:
         self.projectTab.textEdit_2.setReadOnly(True)
         self.search_projects()
         self.fill_binary_prop_empty()
-
 
     def fill_binary_prop_empty(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
@@ -117,13 +117,13 @@ class ProjectTabController:
     def save_project(self):
         if self.projectTab.lineEdit_3.text() != "":
             saved = False
-            projectDb = DBConnection.get_collection(self.nameProject)
-            projInfo = projectDb["projectInfo"]
+            project_db = DBConnection.get_collection(self.project_name)
+            project_info = project_db["projectInfo"]
             info = {"ProjectName": self.projectTab.lineEdit_2.text(),
                     "ProjectDescription": self.projectTab.textEdit_2.toPlainText(),
                     "BnyFilePath": self.projectTab.lineEdit_3.text()}
-            insert_info = projInfo.insert(info, check_keys=False)
-            bin_info = projectDb["binaryInfo"]
+            insert_info = project_info.insert(info, check_keys=False)
+            bin_info = project_db["binaryInfo"]
             insert_obj = bin_info.insert(r2_bin_info, check_keys=False)
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Information)
@@ -158,7 +158,7 @@ class ProjectTabController:
             self.projectTab.textEdit_2.setText("")
             self.projectTab.lineEdit_3.setText("")
             self.fill_binary_prop_empty()
-            self.nameProject = text
+            self.project_name = text
             self.projectTab.listWidget.addItem(text)
             item = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.projectTab.listWidget.setCurrentItem(item[0])
@@ -176,10 +176,10 @@ class ProjectTabController:
             project = self.projectTab.listWidget.selectedItems()
             project_name = [item.text().encode("ascii") for item in project]
             if project_name:
-                self.nameProject = str(project_name[0], 'utf-8')
+                self.project_name = str(project_name[0], 'utf-8')
                 try:
-                    Singleton.set_project(self.nameProject)
-                    project_db = DBConnection.get_collection(self.nameProject)
+                    Singleton.set_project(self.project_name)
+                    project_db = DBConnection.get_collection(self.project_name)
                     project_info = project_db["projectInfo"]
                     bin_info = project_db["binaryInfo"]
                     cursor = project_info.find()
@@ -209,14 +209,14 @@ class ProjectTabController:
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setWindowTitle("Delete Project")
-        if self.nameProject != "":
+        if self.project_name != "":
             button_reply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message',
-                                                          "Do you like to erase Project %s ?" % self.nameProject,
+                                                          "Do you like to erase Project %s ?" % self.project_name,
                                                           QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
                                                           QtWidgets.QMessageBox.No)
             if button_reply == QtWidgets.QMessageBox.Yes:
 
-                DBConnection.drop_db(self.nameProject)
+                DBConnection.drop_db(self.project_name)
 
                 self.projectTab.lineEdit_2.setText("")
                 self.projectTab.textEdit_2.setText("")
@@ -227,10 +227,10 @@ class ProjectTabController:
                 for item_at in range(self.projectTab.listWidget.count()):
                     self.projectTab.listWidget.item(item_at).setFlags(
                         self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
-                listItems = self.projectTab.listWidget.selectedItems()
-                if not listItems:
+                list_items = self.projectTab.listWidget.selectedItems()
+                if not list_items:
                     return
-                for item in listItems:
+                for item in list_items:
                     self.projectTab.listWidget.takeItem(self.projectTab.listWidget.row(item))
         else:
             msg.setText("Please select a project")

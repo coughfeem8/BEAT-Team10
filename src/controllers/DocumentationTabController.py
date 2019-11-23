@@ -1,4 +1,3 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import os, sys, re
 
 """
@@ -9,14 +8,14 @@ name_like_this -> Name Like This.
 Make the "prettyfier" for the view portion of the code.
 """
 
-
 # doc_list
 # doc_search_bar
 # detailed_view
 
-class doc_tab_controller:
 
-    def __init__(self, docTab):
+class DocumentationTabController:
+
+    def __init__(self, documentation_tab):
         self.docs = {
             'demo': {'name': 'Demo',
                      'path': 'demo.html'},
@@ -32,19 +31,19 @@ class doc_tab_controller:
                         'path': 'project.html'},
         }
 
-        self.doc_tab = docTab
-        self.load_document_List(self.docs)
+        self.documentation_tab = documentation_tab
+        self.load_document_list(self.docs)
         self.get_documents(self.docs)
 
     def establish_connections(self):
-        self.doc_tab.doc_list.itemSelectionChanged.connect(lambda: self.display_doc())
+        self.documentation_tab.doc_list.itemSelectionChanged.connect(lambda: self.display_doc())
 
     def establish_calls(self):
         pass
 
-    def load_document_List(self, docs):
+    def load_document_list(self, docs):
         for doc in docs.keys():
-            self.doc_tab.doc_list.addItem(str(self.docs[doc]['name']))
+            self.documentation_tab.doc_list.addItem(str(self.docs[doc]['name']))
 
     def get_documents(self, docs):
         root = os.getcwd()
@@ -54,12 +53,9 @@ class doc_tab_controller:
             content = file.read()
             self.docs[doc]['content'] = content
             file.close()
-            # print(content)
-            self.doc_tab.detailed_view.setHtml(self.docs['demo']['content'])
-            self.doc_tab.doc_list.setCurrentRow(0)
+            self.documentation_tab.detailed_view.setHtml(self.docs['demo']['content'])
+            self.documentation_tab.doc_list.setCurrentRow(0)
 
     def display_doc(self):
-        selected = self.doc_tab.doc_list.currentItem().text()
-        print(selected)
-        print('it changed')
-        self.doc_tab.detailed_view.setHtml(self.docs[selected.lower()]['content'])
+        selected = self.documentation_tab.doc_list.currentItem().text()
+        self.documentation_tab.detailed_view.setHtml(self.docs[selected.lower()]['content'])

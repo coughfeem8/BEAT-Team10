@@ -1,0 +1,73 @@
+from PyQt5 import QtCore
+
+
+class DynamicThread(QtCore.QThread):
+    textSignal = QtCore.pyqtSignal(str)
+    listSignal = QtCore.pyqtSignal(dict)
+    stopSignal = QtCore.pyqtSignal()
+
+    def __init__(self, rlocal, pois):
+        super(DynamicThread, self).__init__()
+        self.rlocal = rlocal
+        self.pois = pois
+
+    def run(self):
+        for poi in self.pois:
+            poi_location = poi["from"]
+            r2_breakpoint = 'db ' + poi_location
+            self.rlocal.cmd(r2_breakpoint)
+
+            x = self.rlocal.cmd("dc")
+            poi["rtnPara"] = self.check_parameters()
+            if "Cannot continue, run ood?" in x:
+                break
+            self.textSignal.emit(x)
+            y = self.rlocal.cmd("dso")
+            self.textSignal.emit(y)
+
+            message_addr = self.rlocal.cmd("dr rsi")
+            look_in_buff = "pxj @" + message_addr
+            message_arr = self.rlocal.cmdj(look_in_buff)
+            byte_str = ""
+
+            for i in range(len(message_arr)):
+                if message_arr[i] == 0:
+                    break
+                byte_str = byte_str + str(hex(message_arr[i]))[2:]
+
+            if "ffffffff" not in byte_str:
+                poi["rtnFnc"] = byte_str
+            else:
+                poi["rtnFnc"] = "No Value"
+            self.listSignal.emit(poi)
+
+    def stop(self):
+        self.rlocal.quit()
+
+    def check_parameters(self):
+        self.rlocal.cmd("s")
+        i = 0
+        parameter_values = []
+        seen = []
+        while True:
+            i += 1
+            code = self.rlocal.cmdj('pdj ' + str(-i))
+            if code[0]['type'] == 'mov' or code[0]['type'] == 'lea':
+                split_cmd = code[0]['opcode'].replace(',', '').split()
+                if len(split_cmd) < 2:
+                    pass
+                elif not (split_cmd[1] in seen):
+                    if split_cmd[1] == 'qword':
+                        x = " ".join(split_cmd[2:-1]).replace('[', '').replace(']', '')
+                        parameter_value = self.rlocal.cmd('dr ' + x)
+
+                    elif split_cmd[1].__contains__("word"):
+                        pass
+                    else:
+                        x = split_cmd[1]
+                        parameter_value = self.rlocal.cmd('dr ' + x)
+                        seen.append(split_cmd[1])
+                parameter_values.append(parameter_value)
+            else:
+                break
+        return parameter_values

@@ -1,29 +1,27 @@
 from PyQt5 import QtCore, QtWidgets
-
 from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
-from model import Plugin
-from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController , doc_tab_controller
+from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController, \
+    DocumentationTabController
 
 
+class UIMainWindow(QtWidgets.QMainWindow):
+    def setup_ui(self, main_window):
+        main_window.setObjectName("BEAT")
+        main_window.resize(804, 615)
+        main_window.setFixedSize(main_window.width(), main_window.height())
 
-class Ui_MainWindow(QtWidgets.QMainWindow):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("BEAT")
-        MainWindow.resize(804, 615)
-        MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
-
-        MainWindow.setWindowTitle("BEAT")
+        main_window.setWindowTitle("BEAT")
         s = Singleton()
         s.set_project("BEAT")
 
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget = QtWidgets.QWidget(main_window)
         self.centralwidget.setObjectName("centralwidget")
         self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
         self.tabWidget.setGeometry(QtCore.QRect(5, 5, 794, 605))
         self.tabWidget.setObjectName("tabWidget")
 
-        self.ProjectTab = Tab1.Tab1(self, MainWindow)
+        self.ProjectTab = Tab1.Tab1(self, main_window)
         self.tabWidget.addTab(self.ProjectTab, "")
 
         self.analysisTab = Tab2.Tab2(self, self)
@@ -38,11 +36,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.documentationTab = Tab5.Tab5(self, self)
         self.tabWidget.addTab(self.documentationTab, "")
 
-        self.project_controller = ProjectTabController.ProjectTabController(self.ProjectTab, MainWindow)
+        self.project_controller = ProjectTabController.ProjectTabController(self.ProjectTab, main_window)
         self.project_controller.establish_connections()
         self.project_controller.establish_calls()
 
-        self.analysis_controller = AnalysisTabController.AnalysisTabController(self.analysisTab, MainWindow)
+        self.analysis_controller = AnalysisTabController.AnalysisTabController(self.analysisTab, main_window)
         self.analysis_controller.establish_connections()
         self.analysis_controller.establish_calls()
 
@@ -54,20 +52,19 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.poi_controller.establish_connections()
         self.poi_controller.establish_calls()
 
-        self.doc_controller = doc_tab_controller.doc_tab_controller(self.documentationTab)
+        self.doc_controller = DocumentationTabController.DocumentationTabController(self.documentationTab)
         self.doc_controller.establish_connections()
         self.doc_controller.establish_calls()
 
         self.plugin_controller.pluginSignal.connect(self.analysis_controller.set_plugins)
         self.plugin_controller.pluginSignal.connect(self.poi_controller.set_plugins)
 
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.retranslateUi(MainWindow)
+        main_window.setCentralWidget(self.centralwidget)
+        self.retranslate_ui(main_window)
         self.tabWidget.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(main_window)
 
-
-    def retranslateUi(self, MainWindow):
+    def retranslate_ui(self, main_window):
         _translate = QtCore.QCoreApplication.translate
 
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ProjectTab), _translate("MainWindow", "Project"))
@@ -84,7 +81,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(MainWindow)
+    ui = UIMainWindow()
+    ui.setup_ui(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())

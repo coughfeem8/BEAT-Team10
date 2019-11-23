@@ -2,27 +2,29 @@ import pymongo
 import base64
 from model.Singleton import Singleton
 
-global mongoClient
-mongoClient = pymongo.MongoClient("mongodb://localhost:27017")
+global mongo_client
+mongo_client = pymongo.MongoClient("mongodb://localhost:27017")
 
 
 def get_db():
-    cursor = mongoClient.list_database_names()
+    cursor = mongo_client.list_database_names()
     return cursor
 
 
 def drop_db(name):
-    mongoClient.drop_database(name)
+    mongo_client.drop_database(name)
 
 
 def list_collections(db):
-    dbs = mongoClient[db]
+    dbs = mongo_client[db]
     cursor = dbs.list_collection_names()
     return cursor
 
+
 def get_collection(db):
-    project_db = mongoClient[db]
+    project_db = mongo_client[db]
     return project_db
+
 
 def search_by_name(name, type):
     s = Singleton.get_project()
@@ -35,6 +37,7 @@ def search_by_name(name, type):
             value = {"_id": cursor["_id"], 'name': cursor["name"], 'signature': cursor["signature"],
                      'varaddress': hex(cursor["offset"]), 'from': cursor["from"], 'comment': cursor["comment"], 'runs':cursor["runs"]}
     return value
+
 
 def search_by_item(item):
     s = Singleton.get_project()

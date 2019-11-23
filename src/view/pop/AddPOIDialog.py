@@ -1,10 +1,13 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-import xmlschema, xmltodict
+import xmlschema
+import xmltodict
+from PyQt5 import QtCore, QtWidgets
+
 from view.pop.ErrorDialog import ErrorDialog
+
 
 class AddPOIDialog(QtWidgets.QDialog):
     def __init__(self, parent):
-        QtWidgets.QDialog.__init__(self,parent)
+        QtWidgets.QDialog.__init__(self, parent)
         self.resize(400, 512)
         self.groupBox = QtWidgets.QGroupBox(self)
         self.groupBox.setGeometry(QtCore.QRect(19, 9, 361, 141))
@@ -62,9 +65,8 @@ class AddPOIDialog(QtWidgets.QDialog):
         self.buttonBox_3.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox_3.setObjectName("buttonBox_3")
 
-
-
         _translate = QtCore.QCoreApplication.translate
+
         self.setWindowTitle(_translate("Dialog", "Add Point of Interest"))
         self.groupBox.setTitle(_translate("Dialog", "Add POI in bulk"))
         self.pushButton.setText(_translate("Dialog", "Search"))
@@ -78,47 +80,47 @@ class AddPOIDialog(QtWidgets.QDialog):
         self.label_4.setText(_translate("Dialog", "Return Type"))
         self.label_5.setText(_translate("Dialog", "Output"))
 
-
         self.pois = []
-        self.comboBox.currentIndexChanged.connect(lambda x: self.checkType(self.comboBox.currentText()))
-        self.pushButton.clicked.connect(self.checkSchema)
+        self.comboBox.currentIndexChanged.connect(lambda x: self.check_type(self.comboBox.currentText()))
+        self.pushButton.clicked.connect(self.check_schema)
         self.buttonBox_2.accepted.connect(self.accept)
         self.buttonBox_2.rejected.connect(self.reject)
         self.buttonBox_3.rejected.connect(self.reject)
-        self.buttonBox_3.accepted.connect(self.acceptSingle)
+        self.buttonBox_3.accepted.connect(self.accept_single)
 
-    def checkType(self, type):
-        if type == "String":
+    def check_type(self, poi_type):
+        if poi_type == "String":
             self.groupBox_3.hide()
         else:
             self.groupBox_3.show()
 
-    def checkSchema(self):
+    def check_schema(self):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
-        fileName, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML", "",
-                                                            "XML Files (*.xml)", options=options)
-        if fileName:
-
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Browse XML", "",
+                                                             "XML Files (*.xml)", options=options)
+        if file_name:
             try:
                 schema = xmlschema.XMLSchema('./plugins/schema.xsd')
-                schema.validate(fileName)
-                self.lineEdit.setText(fileName)
-                with open(fileName) as fd:
+                schema.validate(file_name)
+                self.lineEdit.setText(file_name)
+                with open(file_name) as fd:
                     doc = xmltodict.parse(fd.read())
                     self.pois = doc["point_of_interest"]
             except Exception as e:
-                x = ErrorDialog(self,str(e),"Error")
+                x = ErrorDialog(self, str(e), "Error")
                 x.exec_()
 
-    def acceptSingle(self):
+    def accept_single(self):
         if self.lineEdit_2.text() != "":
             if self.comboBox.currentText() == "String":
-                doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{},"pythonOutput":""}}
+                doc = {"item": {"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(), "attributes": {},
+                                "pythonOutput": ""}}
                 self.pois = doc
             elif self.comboBox.currentText() == "Function":
-                doc = {"item":{"name":self.lineEdit_2.text(),"type":self.comboBox.currentText(),"attributes":{"parameters":self.lineEdit_3.text(),"retur":self.lineEdit_4.text()}
-                               ,"pythonOutput":self.lineEdit_5.text()}}
+                doc = {"item": {"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(),
+                                "attributes": {"parameters": self.lineEdit_3.text(), "retur": self.lineEdit_4.text()}
+                    , "pythonOutput": self.lineEdit_5.text()}}
                 self.pois = doc
             self.accept()
         else:

@@ -1,5 +1,5 @@
 import sys, os, re
-# assumin it is running on the source directory.
+# assuming it is running on the source directory.
 if len(sys.argv) != 2:
     print('wrong format: expected "<filename>" do NOT include file type.')
 elif os.path.isfile('{}.docx'.format(sys.argv[1])):

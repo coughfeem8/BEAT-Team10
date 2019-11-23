@@ -26,7 +26,6 @@ class Singleton:
     def set_path(path):
         Singleton.filepath = path
 
-
     def __init__(self):
         """ Virtually private constructor. """
         if Singleton.__instance is not None:
