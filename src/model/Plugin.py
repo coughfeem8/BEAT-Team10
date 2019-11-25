@@ -66,3 +66,12 @@ def update_poi(poi_list, current):
     query = {"name": current}
     new_values = {"$set": {"poi": poi_list}}
     my_col.update_one(query, new_values)
+
+
+def delete_poi(current, pois):
+    poi = get_poi(current)
+    for i in range(len(poi["item"])):
+        if poi["item"][i]['name'] == pois:
+            del poi["item"][i]
+            break
+    update_poi(poi, current)

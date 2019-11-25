@@ -58,6 +58,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
 
         self.plugin_controller.pluginSignal.connect(self.analysis_controller.set_plugins)
         self.plugin_controller.pluginSignal.connect(self.poi_controller.set_plugins)
+        self.project_controller.projectSignal.connect(lambda:self.analysis_controller.poi_comboBox_change("All"))
 
         main_window.setCentralWidget(self.centralwidget)
         self.retranslate_ui(main_window)

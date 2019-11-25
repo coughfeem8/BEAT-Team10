@@ -4,9 +4,11 @@ from model.Singleton import Singleton
 from model import DBConnection, r2Connection
 
 
-class ProjectTabController:
+class ProjectTabController(QtCore.QObject):
+    projectSignal = QtCore.pyqtSignal()
 
     def __init__(self, project_tab, main):
+        super().__init__()
         self.main = main
         self.projectTab = project_tab
         self.project_name = ""
@@ -193,7 +195,7 @@ class ProjectTabController:
                         self.fill_binary_prop_empty()
                         self.fill_binary_prop(db)
                     self.main.setWindowTitle("BEAT | "+Singleton.get_project())
-
+                    self.projectSignal.emit()
                 except Exception as e:
                     msg = ErrorDialog(self.projectTab,str(e),"Error")
                     msg.exec()

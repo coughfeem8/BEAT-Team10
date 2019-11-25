@@ -1,3 +1,5 @@
+ - v5.6 - Added Delete POI Option and fixed bugs (Nov 25)
+ - v5.5.1 - Fixed relative path in Documentation Tab (Nov 25)
  - v5.5 - Added Input to terminal (Nov 25)
  - v5.4 - Minor code refactoring to project (Nov 23)
  - v5.3.1 - Fixed bug in output (Nov 22)

@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
+from PyQt5 import QtCore, QtWidgets
 from model import Plugin, DBConnection
 from view.pop.ErrorDialog import ErrorDialog
 

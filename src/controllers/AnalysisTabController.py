@@ -53,6 +53,10 @@ class AnalysisTabController:
             x = ErrorDialog(self.analysis_tab, "Please select a project", "Static Analysis Error")
             x.exec_()
             return
+        if self.analysis_tab.plugin_comboBox.count() == 0:
+            x = ErrorDialog(self.analysis_tab, "Please install a plugin", "Static Analysis Error")
+            x.exec_()
+            return
 
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
@@ -208,7 +212,10 @@ class AnalysisTabController:
             self.analysis_tab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
 
     def dynamic(self):
-
+        if (self.analysis_tab.poi_listWidget.count() == 0):
+            x = ErrorDialog(self.analysis_tab, "Please run Static Analysis first", "Error in DYnamic Analysis")
+            x.exec_()
+            return
         text, ok_pressed = QtWidgets.QInputDialog.getText(self.analysis_tab, "Dynamic Analysis", "Args to pass:",
                                                           QtWidgets.QLineEdit.Normal, "")
 
