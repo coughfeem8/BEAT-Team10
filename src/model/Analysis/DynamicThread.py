@@ -25,24 +25,29 @@ class DynamicThread(QtCore.QThread):
             y = self.rlocal.cmd("dso")
             self.textSignal.emit(y)
 
-            message_addr = self.rlocal.cmd("dr rsi")
-            look_in_buff = "pxj @" + message_addr
-            message_arr = self.rlocal.cmdj(look_in_buff)
-            byte_str = ""
+            poi["rtnFnc"] = self.check_return()
 
-            for i in range(len(message_arr)):
-                if message_arr[i] == 0:
-                    break
-                byte_str = byte_str + str(hex(message_arr[i]))[2:]
-
-            if "ffffffff" not in byte_str:
-                poi["rtnFnc"] = byte_str
-            else:
-                poi["rtnFnc"] = "No Value"
             self.listSignal.emit(poi)
 
     def stop(self):
         self.rlocal.quit()
+
+    def check_return(self):
+        message_addr = self.rlocal.cmd("dr rsi")
+        look_in_buff = "pxj @" + message_addr
+        message_arr = self.rlocal.cmdj(look_in_buff)
+        byte_str = ""
+
+        for i in range(len(message_arr)):
+            if message_arr[i] == 0:
+                break
+            byte_str = byte_str + str(hex(message_arr[i]))[2:]
+
+        if "ffffffff" not in byte_str:
+            poi = byte_str
+        else:
+            poi = "No Value"
+        return poi
 
     def check_parameters(self):
         self.rlocal.cmd("s")
@@ -71,3 +76,6 @@ class DynamicThread(QtCore.QThread):
             else:
                 break
         return parameter_values
+
+    def input(self, text):
+        self.rlocal.process.stdin.write((text + '\n').encode('utf8'))

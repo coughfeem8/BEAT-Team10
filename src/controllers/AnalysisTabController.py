@@ -29,6 +29,8 @@ class AnalysisTabController:
         self.analysis_tab.dynamic_stop_button.clicked.connect(self.stop)
         self.analysis_tab.search_bar_lineEdit.textChanged.connect(
             lambda x: self.search_filtered_pois(self.analysis_tab.search_bar_lineEdit.text()))
+        self.analysis_tab.terminal_window_lineEdit.returnPressed.connect(
+            lambda: self.input_terminal(self.analysis_tab.terminal_window_lineEdit.text()))
 
     def establish_calls(self):
         self.analysis_tab.terminal_output_textEdit.setReadOnly(True)
@@ -183,9 +185,7 @@ class AnalysisTabController:
             sort = sorted(pois, key=lambda i: i["from"])
             for s in sort:
                 cmd.append(str(s))
-            # print(cmd)
             subprocess.check_call(cmd)
-            # proc.w
             x = ErrorDialog(self.analysis_tab, "Finished creating output", "Output")
             x.exec_()
         except subprocess.CalledProcessError as e:
@@ -231,6 +231,7 @@ class AnalysisTabController:
             sort = sorted(pois_checked, key=lambda i: i["from"])
 
             global thread
+            self.run = 1
             self.main.setWindowTitle("BEAT | Running " + Singleton.get_project())
             thread = model.Analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
             thread.textSignal.connect(lambda x: self.terminal(x))
@@ -262,4 +263,13 @@ class AnalysisTabController:
             x.exec_()
 
     def set_stop_title(self):
+        self.run = 0
         self.main.setWindowTitle("BEAT | " + Singleton.get_project())
+
+    def input_terminal(self, text):
+        if self.run == 0:
+            r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
+            self.terminal(r2.cmd(text))
+        elif self.run == 1:
+            thread.input(text)
+
