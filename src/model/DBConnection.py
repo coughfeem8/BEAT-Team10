@@ -40,19 +40,21 @@ def search_by_name(name, type):
 
 
 def search_by_item(item):
-    s = Singleton.get_project()
-    project_db = get_collection(s)
-    value = None
-    if item.toolTip() == "Functions":
-        project_info = project_db["functions"]
-        cursor = project_info.find_one({"name": item.text()})
-        if cursor is not None:
-            value = {"_id":cursor["_id"],'name': cursor["name"], 'signature': cursor["signature"], 'varaddress': hex(cursor["offset"]),
-                     'from': cursor["from"], 'comment': cursor["comment"],"runs": cursor["runs"]}
-    elif item.toolTip() == "Strings":
-        project_info = project_db["string"]
-        cursor = project_info.find_one({"string": item.text()})
-        if cursor is not None:
-            value = {"_id":cursor["_id"],'string': cursor["string"], 'varaddress': hex(cursor["vaddr"]), 'from': cursor["from"],
-                     'comment': cursor["comment"]}
-    return value
+    if item is not None:
+        s = Singleton.get_project()
+        project_db = get_collection(s)
+        value = None
+        if item.toolTip() == "Functions":
+            project_info = project_db["functions"]
+            cursor = project_info.find_one({"name": item.text()})
+            if cursor is not None:
+                value = {"_id":cursor["_id"],'name': cursor["name"], 'signature': cursor["signature"], 'varaddress': hex(cursor["offset"]),
+                         'from': cursor["from"], 'comment': cursor["comment"],"runs": cursor["runs"]}
+        elif item.toolTip() == "Strings":
+            project_info = project_db["string"]
+            cursor = project_info.find_one({"string": item.text()})
+            if cursor is not None:
+                value = {"_id":cursor["_id"],'string': cursor["string"], 'varaddress': hex(cursor["vaddr"]), 'from': cursor["from"],
+                         'comment': cursor["comment"]}
+        return value
+    return None

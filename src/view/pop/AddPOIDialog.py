@@ -118,9 +118,9 @@ class AddPOIDialog(QtWidgets.QDialog):
                                 "pythonOutput": ""}}
                 self.pois = doc
             elif self.comboBox.currentText() == "Function":
-                doc = {"item": {"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(),
+                doc = {"item": [{"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(),
                                 "attributes": {"parameters": self.lineEdit_3.text(), "retur": self.lineEdit_4.text()}
-                    , "pythonOutput": self.lineEdit_5.text()}}
+                    , "pythonOutput": self.lineEdit_5.text()}]}
                 self.pois = doc
             self.accept()
         else:

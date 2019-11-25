@@ -52,15 +52,15 @@ class POITabController:
         doc = Plugin.get_name(self.poi_tab.comboBox.currentText())
         if doc:
             for i in doc:
-                tmp = i["poi"]
-                tmp.update(pois)
-                Plugin.update_poi(i["poi"], i["name"])
-                self.fill_poi(self.poi_tab.comboBox.currentText())
+                new = i["poi"]["item"] + pois["item"]
+                dict = {"item":new}
+                Plugin.update_poi(dict, i["name"])
+                self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
 
     def delete_poi(self):
         poi = self.poi_tab.listWidget_2.selectedItems()
         poi_name = [item.text().encode("ascii") for item in poi]
-        button_reply = QtWidgets.QMessageBox.question(poi_name[0].decode(), 'PyQt5 message',
+        button_reply = QtWidgets.QMessageBox.question(self.poi_tab, 'PyQt5 message',
                                                       "Do you like to erase Poi %s ?" % poi_name[0].decode(),
                                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
                                                       QtWidgets.QMessageBox.No)
