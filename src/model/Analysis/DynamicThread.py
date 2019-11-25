@@ -21,9 +21,9 @@ class DynamicThread(QtCore.QThread):
             poi["rtnPara"] = self.check_parameters()
             if "Cannot continue, run ood?" in x:
                 break
-            self.textSignal.emit(x)
+            self.textSignal.emit('r2 > \n'+x)
             y = self.rlocal.cmd("dso")
-            self.textSignal.emit(y)
+            self.textSignal.emit('r2 > \n'+y)
 
             poi["rtnFnc"] = self.check_return()
 

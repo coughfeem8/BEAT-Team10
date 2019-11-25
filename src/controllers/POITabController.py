@@ -25,12 +25,13 @@ class POITabController:
 
     def fill_poi(self, current):
         doc = Plugin.get_poi(current)
-        types = []
-        for i in doc["item"]:
-            self.poi_tab.listWidget_2.addItem(i["name"])
-            if i["type"] not in types:
-                types.append(i["type"])
-                self.poi_tab.comboBox_2.addItem(i["type"])
+        if doc:
+            types = []
+            for i in doc["item"]:
+                self.poi_tab.listWidget_2.addItem(i["name"])
+                if i["type"] not in types:
+                    types.append(i["type"])
+                    self.poi_tab.comboBox_2.addItem(i["type"])
 
     def filter_poi(self, current, poi_type):
         self.poi_tab.listWidget_2.clear()

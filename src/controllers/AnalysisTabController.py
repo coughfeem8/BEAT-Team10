@@ -217,6 +217,7 @@ class AnalysisTabController:
             pois_checked = []
 
             r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
+            self.terminal('r2 > \n')
             self.terminal(r2.cmd("doo %s" % text))
 
             for i in range(self.analysis_tab.poi_listWidget.count()):
@@ -268,8 +269,18 @@ class AnalysisTabController:
 
     def input_terminal(self, text):
         if self.run == 0:
-            r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
-            self.terminal(r2.cmd(text))
+            if Singleton.get_project() != "BEAT":
+                try:
+                    r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
+                    self.terminal(text+' >\n')
+                    self.terminal(r2.cmd(text))
+                except Exception as e:
+                    x = ErrorDialog(self.analysis_tab, str(e), "Error")
+                    x.exec_()
+                self.analysis_tab.terminal_window_lineEdit.setText("")
+            else:
+                x = ErrorDialog(self.analysis_tab,"First select a project","Error")
+                x.exec_()
         elif self.run == 1:
             thread.input(text)
 
