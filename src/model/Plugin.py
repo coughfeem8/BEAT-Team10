@@ -34,8 +34,9 @@ def get_name(plugin):
 
 def get_poi(plugin):
     cursor = get_name(plugin)
-    for i in cursor:
-        return i["poi"]
+    if cursor:
+        for i in cursor:
+            return i["poi"]
 
 
 def get_output(item, current):
