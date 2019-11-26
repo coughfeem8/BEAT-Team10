@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 import subprocess
-
+from controllers.POIFormatter import format_poi
 import model.Analysis.DynamicThread
 import model.Analysis.StaticAnalysis
 from model import DBConnection, Plugin
@@ -31,6 +31,8 @@ class AnalysisTabController:
             lambda x: self.search_filtered_pois(self.analysis_tab.search_bar_lineEdit.text()))
         self.analysis_tab.terminal_window_lineEdit.returnPressed.connect(
             lambda: self.input_terminal(self.analysis_tab.terminal_window_lineEdit.text()))
+        self.analysis_tab.poi_listWidget.itemDoubleClicked.connect(
+            lambda x: self.detailed_poi(self.analysis_tab.poi_listWidget.currentItem()))
 
     def establish_calls(self):
         self.analysis_tab.terminal_output_textEdit.setReadOnly(True)
@@ -146,10 +148,11 @@ class AnalysisTabController:
 
     def detailed_poi(self, item):
         value = DBConnection.search_by_item(item)
+        print(value)
         if value is not None:
             del value["_id"]
-            y = str(value)
-            self.analysis_tab.poi_content_area_textEdit.setText(y)
+            y = value
+            self.analysis_tab.poi_content_area_textEdit.setText(format_poi(y))
 
     def open_comment(self):
         item = self.analysis_tab.poi_listWidget.currentItem()

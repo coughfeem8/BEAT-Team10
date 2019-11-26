@@ -1,6 +1,5 @@
 import xml.etree.cElementTree as ET
 from xml.dom import minidom
-import base64
 import re
 
 
@@ -45,9 +44,7 @@ def format_string(poi, parent):
             data = ET.SubElement(data_style, 'strong')
             val = ET.SubElement(val_style, 'i')
             if item == 'string':
-                poi[item] = poi[item].decode()
-                print(base64_decode(str(poi[item])))
-                val.text = base64_decode(str(poi[item])).decode()
+                val.text = poi[item]
             else:
                 val.text = str(poi[item])
             data.text = item
@@ -77,8 +74,10 @@ def format_signature(sig, parent):
     variable = r'[_a-zA-Z]+[_\w]*'
     pattern = re.compile(r'([_a-zA-Z]+[_\w]*)\s(([_a-zA-Z]*[_\w]*\.)+[_a-zA-Z]+[_\w]*)\s(\(.*\))')
     match = pattern.search(sig)
-    res = {'return_type': match.group(1), 'arguments': match.group(4)}
-
+    if match is not None:
+        res = {'return_type': match.group(1), 'arguments': match.group(4)}
+    else:
+        res = {'return_type': "None", 'arguments' : "None"}
     head_row = ET.SubElement(parent, 'tr')
     for th in ['Data', 'Value']:
         col = ET.SubElement(head_row, 'th')
@@ -99,9 +98,3 @@ def prettify(elem):
     rough_string = ET.tostring(elem, 'utf-8')
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent="  ")
-
-
-def base64_decode(base64_str):
-    byte_str = base64_str.encode()
-    decoded_str = base64.b64decode(byte_str)
-    return decoded_str

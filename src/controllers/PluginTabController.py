@@ -51,7 +51,7 @@ class PluginTabController(QtCore.QObject):
         plg_cllc = plugin_db[self.plugin_tab.DPVPluginName.text()]
         info = {"name": self.plugin_tab.DPVPluginName.text(),
                 "desc": self.plugin_tab.DPVPluginDescription.toPlainText(),
-                "poi": {"item": ""}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
+                "poi": {"item": []}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
         plg = Plugin.get_name(self.plugin_tab.DPVPluginName.text())
         if not plg:
             plg_cllc.insert(info, check_keys=False)

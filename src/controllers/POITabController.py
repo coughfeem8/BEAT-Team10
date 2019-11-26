@@ -1,6 +1,7 @@
 from view.pop.AddPOIDialog import AddPOIDialog
 from model import Plugin
 from PyQt5 import QtCore, QtWidgets, QtGui
+from controllers.POIFormatter import format_poi
 
 
 class POITabController:
@@ -87,7 +88,7 @@ class POITabController:
                 cursor = Plugin.get_poi(self.poi_tab.comboBox.currentText())
                 for i in cursor["item"]:
                     if i["name"] == poi_name[0].decode():
-                        self.poi_tab.textEdit.setText(str(i))
+                        self.poi_tab.textEdit.setText(format_poi(i))
                         break
 
 
