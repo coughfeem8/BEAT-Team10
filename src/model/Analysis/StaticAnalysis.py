@@ -18,8 +18,8 @@ def static_strings(rlocal, cplugin):
     strings = rlocal.cmdj("izj")
     str_plg = Plugin.plugin_types("String", cplugin)
 
-    if project_db["string"]:
-        project_db.drop_collection("string")
+    #if project_db["string"]:
+    #    project_db.drop_collection("string")
 
     str_db = project_db["string"]
     for string in strings:
@@ -36,7 +36,8 @@ def static_strings(rlocal, cplugin):
                     string["comment"] = ""
                     if "_id" in string:
                         del string["_id"]
-                    str_db.insert_one(string)
+                    if str_db.find({"string":string["string"]}).count() == 0:
+                        str_db.insert_one(string)
                 break
     return items
 
@@ -46,8 +47,8 @@ def static_functions(rlocal, cplugin):
     s = Singleton.get_project()
     project_db = DBConnection.get_collection(s)
 
-    if project_db["functions"]:
-        project_db.drop_collection("functions")
+    #if project_db["functions"]:
+    #    project_db.drop_collection("functions")
 
     func_db = project_db["functions"]
     func_all = rlocal.cmdj("aflj")
@@ -66,5 +67,6 @@ def static_functions(rlocal, cplugin):
                 fc["from"] = hex(f["from"])
                 if "_id" in fc:
                     del fc["_id"]
-                func_db.insert_one(fc)
+                if func_db.find({"name":fc["name"]}).count() == 0:
+                    func_db.insert_one(fc)
     return items

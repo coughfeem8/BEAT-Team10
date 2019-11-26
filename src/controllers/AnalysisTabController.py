@@ -70,11 +70,13 @@ class AnalysisTabController:
                 strings = model.Analysis.StaticAnalysis.static_strings(rlocal, self.analysis_tab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
+                    item = self.change_font(item)
                     self.analysis_tab.poi_listWidget.addItem(item)
 
                 functions = model.Analysis.StaticAnalysis.static_functions(rlocal, self.analysis_tab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
+                    item = self.change_font(item)
                     self.analysis_tab.poi_listWidget.addItem(item)
 
             elif self.analysis_tab.poi_comboBox.currentText() == "Functions":
@@ -82,6 +84,7 @@ class AnalysisTabController:
                 functions = model.Analysis.StaticAnalysis.static_functions(rlocal, self.analysis_tab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
+                    item = self.change_font(item)
                     self.analysis_tab.poi_listWidget.addItem(item)
 
             elif self.analysis_tab.poi_comboBox.currentText() == "Strings":
@@ -89,6 +92,7 @@ class AnalysisTabController:
                 strings = model.Analysis.StaticAnalysis.static_strings(rlocal, self.analysis_tab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
+                    item = self.change_font(item)
                     self.analysis_tab.poi_listWidget.addItem(item)
 
         except Exception as e:
@@ -113,6 +117,7 @@ class AnalysisTabController:
             cursor = project_info.find()
             for db in cursor:
                 item = self.set_item(db["name"], "Functions")
+                item = self.change_font(item)
                 self.analysis_tab.poi_listWidget.addItem(item)
         elif text == "Strings":
             project_info = project_db["string"]
@@ -120,6 +125,7 @@ class AnalysisTabController:
             for db in cursor:
                 text = db["string"]
                 item = self.set_item(text, "Strings")
+                item = self.change_font(item)
                 self.analysis_tab.poi_listWidget.addItem(item)
 
         elif text == "All":
@@ -127,12 +133,14 @@ class AnalysisTabController:
             cursor = project_info.find()
             for db in cursor:
                 item = self.set_item(db["name"], "Functions")
+                item = self.change_font(item)
                 self.analysis_tab.poi_listWidget.addItem(item)
             project_info = project_db["string"]
             cursor = project_info.find()
             for db in cursor:
                 text = db["string"]
                 item = self.set_item(text, "Strings")
+                item = self.change_font(item)
                 self.analysis_tab.poi_listWidget.addItem(item)
 
     def search_filtered_pois(self, text):
@@ -148,7 +156,6 @@ class AnalysisTabController:
 
     def detailed_poi(self, item):
         value = DBConnection.search_by_item(item)
-        print(value)
         if value is not None:
             del value["_id"]
             y = value
@@ -294,3 +301,9 @@ class AnalysisTabController:
         elif self.run == 1:
             thread.input(text)
 
+    def change_font(self, item):
+        if DBConnection.search_comment_by_item(item):
+            new_font = QtGui.QFont()
+            new_font.setBold(True)
+            item.setFont(new_font)
+        return item

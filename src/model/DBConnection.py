@@ -58,3 +58,11 @@ def search_by_item(item):
                          'comment': cursor["comment"]}
         return value
     return None
+
+def search_comment_by_item(item):
+    value = search_by_item(item)
+    if value:
+        if value["comment"] == "":
+            return False
+        return True
+    return None
