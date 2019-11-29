@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from view.pop import PopUpDialog
 
 
-class OutputFieldDialog(QtWidgets.QDialog):
+class OutputFieldDialog(PopUpDialog.PopUpDialog):
     def __init__(self, parent):
         QtWidgets.QDialog.__init__(self, parent)
 
@@ -54,15 +55,3 @@ class OutputFieldDialog(QtWidgets.QDialog):
         self.label.setText(_translate("Dialog", "Name"))
         self.label_2.setText(_translate("Dialog", "Description"))
         self.label_3.setText(_translate("Dialog", "Location"))
-
-    def exec_(self):
-        super(OutputFieldDialog, self).exec_()
-        return self.returnVal
-
-    def save_text(self):
-        self.returnVal = self.textEdit.toPlainText()
-        self.accept()
-
-    def clear_text(self):
-        self.returnVal = ""
-        self.accept()

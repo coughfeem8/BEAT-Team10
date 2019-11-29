@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from view.pop import PopUpDialog
 
 
-class CommentDialog(QtWidgets.QDialog):
+class CommentDialog(PopUpDialog.PopUpDialog):
     def __init__(self, parent, text):
         QtWidgets.QDialog.__init__(self, parent)
 
@@ -37,15 +38,3 @@ class CommentDialog(QtWidgets.QDialog):
         self.setWindowTitle(_translate("Dialog", "Comment View"))
         self.pushButton.setText(_translate("Dialog", "Save"))
         self.pushButton_2.setText(_translate("Dialog", "Clear"))
-
-    def exec_(self):
-        super(CommentDialog, self).exec_()
-        return self.returnVal
-
-    def save_text(self):
-        self.returnVal = self.textEdit.toPlainText()
-        self.accept()
-
-    def clear_text(self):
-        self.returnVal = ""
-        self.accept()

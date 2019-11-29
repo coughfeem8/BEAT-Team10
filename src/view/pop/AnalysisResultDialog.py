@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from view.pop import PopUpDialog
 
 
-class AnalysisResultDialog(QtWidgets.QDialog):
+class AnalysisResultDialog(PopUpDialog.PopUpDialog):
     def __init__(self, parent):
         QtWidgets.QDialog.__init__(self, parent)
 
@@ -89,15 +90,3 @@ class AnalysisResultDialog(QtWidgets.QDialog):
         self.label_5.setText(_translate("Dialog", "Analysis Result B"))
         self.label_6.setText(_translate("Dialog", "Analysis Result C"))
         self.label_7.setText(_translate("Dialog", "..."))
-
-    def exec_(self):
-        super(AnalysisResultDialog, self).exec_()
-        return self.returnVal
-
-    def save_text(self):
-        self.returnVal = self.textEdit.toPlainText()
-        self.accept()
-
-    def clear_text(self):
-        self.returnVal = ""
-        self.accept()

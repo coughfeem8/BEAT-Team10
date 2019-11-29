@@ -90,5 +90,3 @@ class POITabController:
                     if i["name"] == poi_name[0].decode():
                         self.poi_tab.textEdit.setText(format_poi(i))
                         break
-
-
