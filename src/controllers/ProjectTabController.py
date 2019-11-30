@@ -133,6 +133,7 @@ class ProjectTabController(QtCore.QObject):
             msg.setText("Project Saved")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+            self.projectTab.pushButton_7.setEnabled(True)
             self.projectTab.pushButton_8.setEnabled(False)
             self.projectTab.pushButton_10.setEnabled(False)
             for item_at in range(self.projectTab.listWidget.count()):
@@ -166,6 +167,7 @@ class ProjectTabController(QtCore.QObject):
             self.projectTab.listWidget.setCurrentItem(item[0])
             self.projectTab.setWindowTitle('Create Project')
             saved = True
+            self.projectTab.pushButton_7.setEnabled(False)
             self.projectTab.pushButton_8.setEnabled(True)
             self.projectTab.pushButton_10.setEnabled(True)
             self.projectTab.textEdit_2.setReadOnly(False)
@@ -224,6 +226,7 @@ class ProjectTabController(QtCore.QObject):
                 self.projectTab.textEdit_2.setText("")
                 self.projectTab.lineEdit_3.setText("")
                 self.fill_binary_prop_empty()
+                self.projectTab.pushButton_7.setEnabled(True)
                 self.projectTab.pushButton_8.setEnabled(False)
                 self.projectTab.pushButton_10.setEnabled(False)
                 for item_at in range(self.projectTab.listWidget.count()):

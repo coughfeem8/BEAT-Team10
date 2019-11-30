@@ -1,3 +1,5 @@
+import collections
+
 import xmlschema
 import xmltodict
 from PyQt5 import QtCore, QtWidgets
@@ -107,6 +109,7 @@ class AddPOIDialog(QtWidgets.QDialog):
                 with open(file_name) as fd:
                     doc = xmltodict.parse(fd.read())
                     self.pois = doc["point_of_interest"]
+                    print(type(doc["point_of_interest"]))
             except Exception as e:
                 x = ErrorDialog(self, str(e), "Error")
                 x.exec_()
@@ -114,14 +117,13 @@ class AddPOIDialog(QtWidgets.QDialog):
     def accept_single(self):
         if self.lineEdit_2.text() != "":
             if self.comboBox.currentText() == "String":
-                doc = {"item": {"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(), "attributes": {},
-                                "pythonOutput": ""}}
-                self.pois = doc
+                doc = {"item": [{"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(), "attributes": {},
+                                "pythonOutput": ""}]}
             elif self.comboBox.currentText() == "Function":
                 doc = {"item": [{"name": self.lineEdit_2.text(), "type": self.comboBox.currentText(),
                                 "attributes": {"parameters": self.lineEdit_3.text(), "retur": self.lineEdit_4.text()}
                     , "pythonOutput": self.lineEdit_5.text()}]}
-                self.pois = doc
+            self.pois = doc
             self.accept()
         else:
             e = ErrorDialog(self, "Name must be filled", "Error")

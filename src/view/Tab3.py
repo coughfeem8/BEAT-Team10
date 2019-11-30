@@ -124,6 +124,7 @@ class Tab3(QtWidgets.QWidget):
 
         self.ButtonSavePlugin = QtWidgets.QPushButton(self.DetailedPluginView)
         self.ButtonSavePlugin.setObjectName("ButtonSavePlugin")
+        self.ButtonSavePlugin.setEnabled(False)
 
         self.savingframe.addWidget(self.ButtonSavePlugin, 0, QtCore.Qt.AlignLeft)
         self.verticalLayout.addLayout(self.savingframe)

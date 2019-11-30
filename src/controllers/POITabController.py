@@ -52,10 +52,10 @@ class POITabController:
         pois = add_poi_pop_up.exec_()
         doc = Plugin.get_name(self.poi_tab.comboBox.currentText())
         if doc:
-            for i in doc:
-                new = i["poi"]["item"] + pois["item"]
-                dict = {"item":new}
-                Plugin.update_poi(dict, i["name"])
+            for item in doc:
+                new = item["poi"]["item"] + pois["item"]
+                dict = {"item": new}
+                Plugin.update_poi(dict, item["name"])
                 self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
 
     def delete_poi(self):
@@ -66,7 +66,7 @@ class POITabController:
                                                       QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
                                                       QtWidgets.QMessageBox.No)
         if button_reply == QtWidgets.QMessageBox.Yes and poi_name:
-            Plugin.delete_poi(self.poi_tab.comboBox.currentText(),poi_name[0].decode())
+            Plugin.delete_poi(self.poi_tab.comboBox.currentText(), poi_name[0].decode())
             self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
 
     def search_installed_pois(self, text):

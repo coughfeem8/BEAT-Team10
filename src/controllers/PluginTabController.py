@@ -45,6 +45,8 @@ class PluginTabController(QtCore.QObject):
             self.plugin_tab.listWidget.addItem(text)
             item = self.plugin_tab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.plugin_tab.listWidget.setCurrentItem(item[0])
+            self.plugin_tab.ButtonSavePlugin.setEnabled(True)
+            self.plugin_tab.pushButton_7.setEnabled(False)
             for item_at in range(self.plugin_tab.listWidget.count()):
                 self.plugin_tab.listWidget.item(item_at).setFlags(
                     self.plugin_tab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
@@ -56,6 +58,8 @@ class PluginTabController(QtCore.QObject):
                 "desc": self.plugin_tab.DPVPluginDescription.toPlainText(),
                 "poi": {"item": []}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
         plg = Plugin.get_name(self.plugin_tab.DPVPluginName.text())
+        self.plugin_tab.ButtonSavePlugin.setEnabled(False)
+        self.plugin_tab.pushButton_7.setEnabled(True)
         for item_at in range(self.plugin_tab.listWidget.count()):
             self.plugin_tab.listWidget.item(item_at).setFlags(
                 self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
@@ -83,6 +87,8 @@ class PluginTabController(QtCore.QObject):
                 self.plugin_tab.DPVPluginName.setText("")
                 self.plugin_tab.DVPPointOfInterest.setText("")
                 self.plugin_tab.DPVDefaultOutputField.setText("")
+                self.plugin_tab.ButtonSavePlugin.setEnabled(False)
+                self.plugin_tab.pushButton_7.setEnabled(True)
                 for item_at in range(self.plugin_tab.listWidget.count()):
                     self.plugin_tab.listWidget.item(item_at).setFlags(
                         self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
