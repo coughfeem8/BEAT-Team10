@@ -45,6 +45,9 @@ class PluginTabController(QtCore.QObject):
             self.plugin_tab.listWidget.addItem(text)
             item = self.plugin_tab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.plugin_tab.listWidget.setCurrentItem(item[0])
+            for item_at in range(self.plugin_tab.listWidget.count()):
+                self.plugin_tab.listWidget.item(item_at).setFlags(
+                    self.plugin_tab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
 
     def save_plugin(self):
         plugin_db = DBConnection.get_collection("plugin")
@@ -53,6 +56,9 @@ class PluginTabController(QtCore.QObject):
                 "desc": self.plugin_tab.DPVPluginDescription.toPlainText(),
                 "poi": {"item": []}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
         plg = Plugin.get_name(self.plugin_tab.DPVPluginName.text())
+        for item_at in range(self.plugin_tab.listWidget.count()):
+            self.plugin_tab.listWidget.item(item_at).setFlags(
+                self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
         if not plg:
             plg_cllc.insert(info, check_keys=False)
             x = ErrorDialog(self.plugin_tab, "Plugin Saved", "Save Plugin")
@@ -77,6 +83,9 @@ class PluginTabController(QtCore.QObject):
                 self.plugin_tab.DPVPluginName.setText("")
                 self.plugin_tab.DVPPointOfInterest.setText("")
                 self.plugin_tab.DPVDefaultOutputField.setText("")
+                for item_at in range(self.plugin_tab.listWidget.count()):
+                    self.plugin_tab.listWidget.item(item_at).setFlags(
+                        self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
                 list_items = self.plugin_tab.listWidget.selectedItems()
                 if not list_items:
                     return
