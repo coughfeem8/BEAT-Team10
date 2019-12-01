@@ -29,6 +29,7 @@ class Tab4(QtWidgets.QWidget):
 
         self.lineEdit_4 = QtWidgets.QLineEdit(self.verticalLayoutWidget_3)
         self.lineEdit_4.setObjectName("lineEdit_4")
+        self.lineEdit_4.addAction(QtGui.QIcon("resources/search.png"), QtWidgets.QLineEdit.LeadingPosition)
         self.verticalLayout_3.addWidget(self.lineEdit_4)
 
         self.listWidget_2 = QtWidgets.QListWidget(self.verticalLayoutWidget_3)

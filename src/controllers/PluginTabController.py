@@ -1,9 +1,10 @@
 from PyQt5 import QtCore, QtWidgets
 from model import Plugin, DBConnection
 from view.pop.ErrorDialog import ErrorDialog
+from controllers.Controller import Controller
 
 
-class PluginTabController(QtCore.QObject):
+class PluginTabController(Controller):
     plugin_creation_started = QtCore.pyqtSignal()
     plugin_creation_finished = QtCore.pyqtSignal()
     plugin_signal = QtCore.pyqtSignal()
@@ -19,7 +20,7 @@ class PluginTabController(QtCore.QObject):
         self.plugin_tab.ButtonDeletePlugin.clicked.connect(self.delete_plugin)
         self.plugin_tab.listWidget.itemSelectionChanged.connect(self.item_activated)
         self.plugin_tab.lineEdit.textChanged.connect(
-            lambda x: self.search_installed_plugins(self.plugin_tab.lineEdit.text()))
+            lambda: self.search_list(self.plugin_tab.listWidget, self.plugin_tab.lineEdit.text()))
 
     def establish_calls(self):
         self.set_plugins()
@@ -47,12 +48,9 @@ class PluginTabController(QtCore.QObject):
             self.plugin_tab.listWidget.addItem(text)
             item = self.plugin_tab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.plugin_tab.listWidget.setCurrentItem(item[0])
-            self.plugin_creation_started.emit()
-            self.plugin_tab.ButtonSavePlugin.setEnabled(True)
-            self.plugin_tab.pushButton_7.setEnabled(False)
-            for item_at in range(self.plugin_tab.listWidget.count()):
-                self.plugin_tab.listWidget.item(item_at).setFlags(
-                    self.plugin_tab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
+            self.create_operations(self.plugin_creation_started,
+                                   [self.plugin_tab.pushButton_7], [self.plugin_tab.ButtonSavePlugin],
+                                   self.plugin_tab.listWidget)
 
     def save_plugin(self):
         plugin_db = DBConnection.get_collection("plugin")
@@ -61,12 +59,9 @@ class PluginTabController(QtCore.QObject):
                 "desc": self.plugin_tab.DPVPluginDescription.toPlainText(),
                 "poi": {"item": []}, "output": self.plugin_tab.DPVDefaultOutputField.text()}
         plg = Plugin.get_name(self.plugin_tab.DPVPluginName.text())
-        self.plugin_tab.ButtonSavePlugin.setEnabled(False)
-        self.plugin_tab.pushButton_7.setEnabled(True)
-        self.plugin_creation_finished.emit()
-        for item_at in range(self.plugin_tab.listWidget.count()):
-            self.plugin_tab.listWidget.item(item_at).setFlags(
-                self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
+        self.delete_save_operations(self.plugin_creation_finished,
+                                    [self.plugin_tab.pushButton_7], [self.plugin_tab.ButtonSavePlugin],
+                                    self.plugin_tab.listWidget)
         if not plg:
             plg_cllc.insert(info, check_keys=False)
             x = ErrorDialog(self.plugin_tab, "Plugin Saved", "Save Plugin")
@@ -91,12 +86,9 @@ class PluginTabController(QtCore.QObject):
                 self.plugin_tab.DPVPluginName.setText("")
                 self.plugin_tab.DVPPointOfInterest.setText("")
                 self.plugin_tab.DPVDefaultOutputField.setText("")
-                self.plugin_tab.ButtonSavePlugin.setEnabled(False)
-                self.plugin_tab.pushButton_7.setEnabled(True)
-                self.plugin_creation_finished.emit()
-                for item_at in range(self.plugin_tab.listWidget.count()):
-                    self.plugin_tab.listWidget.item(item_at).setFlags(
-                        self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
+                self.delete_save_operations(self.plugin_creation_finished,
+                                            [self.plugin_tab.pushButton_7], [self.plugin_tab.ButtonSavePlugin],
+                                            self.plugin_tab.listWidget)
                 list_items = self.plugin_tab.listWidget.selectedItems()
                 if not list_items:
                     return
@@ -126,14 +118,3 @@ class PluginTabController(QtCore.QObject):
                 except Exception as e:
                     x = ErrorDialog(self.plugin_tab, str(e), "Error")
                     x.exec_()
-
-    def search_installed_plugins(self, text):
-        if len(text) is not 0:
-            search_result = self.plugin_tab.listWidget.findItems(text, QtCore.Qt.MatchContains)
-            for item_index in range(self.plugin_tab.listWidget.count()):
-                self.plugin_tab.listWidget.item(item_index).setHidden(True)
-            for item_index in search_result:
-                item_index.setHidden(False)
-        else:
-            for item_index in range(self.plugin_tab.listWidget.count()):
-                self.plugin_tab.listWidget.item(item_index).setHidden(False)

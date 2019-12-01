@@ -20,6 +20,7 @@ class Tab5(QtWidgets.QWidget):
 
         self.doc_search_bar = QtWidgets.QLineEdit(self.frame)
         self.doc_search_bar.setObjectName("doc_search_bar")
+        self.doc_search_bar.addAction(QtGui.QIcon("resources/search.png"), QtWidgets.QLineEdit.LeadingPosition)
         self.verticalLayout.addWidget(self.doc_search_bar, 0, QtCore.Qt.AlignHCenter)
 
         self.doc_list = QtWidgets.QListWidget(self.frame)

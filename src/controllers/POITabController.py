@@ -1,20 +1,22 @@
-from view.pop.AddPOIDialog import AddPOIDialog
-from model import Plugin
 from PyQt5 import QtCore, QtWidgets, QtGui
+from model import Plugin
+from view.pop.AddPOIDialog import AddPOIDialog
 from controllers.POIFormatter import format_poi
+from controllers.Controller import Controller
 
 
-class POITabController:
+class POITabController(Controller):
 
     def __init__(self, poi_tab):
+        super().__init__()
         self.poi_tab = poi_tab
         self.poi_tab.comboBox_2.addItem("All")
 
     def establish_connections(self):
         self.poi_tab.pushButton_11.clicked.connect(self.add_poi)
-        self.poi_tab.comboBox.currentIndexChanged.connect(lambda x: self.fill_poi(self.poi_tab.comboBox.currentText()))
+        self.poi_tab.comboBox.currentIndexChanged.connect(lambda: self.fill_poi(self.poi_tab.comboBox.currentText()))
         self.poi_tab.lineEdit_4.textChanged.connect(
-            lambda x: self.search_installed_pois(self.poi_tab.lineEdit_4.text()))
+            lambda: self.search_list(self.poi_tab.listWidget_2, self.poi_tab.lineEdit_4.text()))
         self.poi_tab.listWidget_2.itemSelectionChanged.connect(self.item_activated_event)
         self.poi_tab.pushButton_2.clicked.connect(self.delete_poi)
 
@@ -68,17 +70,6 @@ class POITabController:
         if button_reply == QtWidgets.QMessageBox.Yes and poi_name:
             Plugin.delete_poi(self.poi_tab.comboBox.currentText(), poi_name[0].decode())
             self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
-
-    def search_installed_pois(self, text):
-        if len(text) is not 0:
-            search_result = self.poi_tab.listWidget_2.findItems(text, QtCore.Qt.MatchContains)
-            for item in range(self.poi_tab.listWidget_2.count()):
-                self.poi_tab.listWidget_2.item(item).setHidden(True)
-            for item in search_result:
-                item.setHidden(False)
-        else:
-            for item in range(self.poi_tab.listWidget_2.count()):
-                self.poi_tab.listWidget_2.item(item).setHidden(False)
 
     def item_activated_event(self):
         if self.poi_tab.listWidget_2.count() != 0:

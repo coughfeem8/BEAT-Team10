@@ -1,15 +1,16 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 import subprocess
-from controllers.POIFormatter import format_poi
 import model.Analysis.DynamicThread
 import model.Analysis.StaticAnalysis
 from model import DBConnection, Plugin
 from model.Singleton import Singleton
 from view.pop.ErrorDialog import ErrorDialog
 from view.pop.CommentDialog import CommentDialog
+from controllers.POIFormatter import format_poi
+from controllers.Controller import Controller
 
 
-class AnalysisTabController(QtCore.QObject):
+class AnalysisTabController(Controller):
     dynamic_started = QtCore.pyqtSignal()
     dynamic_stopped = QtCore.pyqtSignal()
 
@@ -22,19 +23,19 @@ class AnalysisTabController(QtCore.QObject):
     def establish_connections(self):
         self.analysis_tab.static_run_button.clicked.connect(self.static)
         self.analysis_tab.poi_comboBox.currentIndexChanged.connect(
-            lambda x: self.poi_comboBox_change(text=self.analysis_tab.poi_comboBox.currentText()))
+            lambda: self.poi_comboBox_change(text=self.analysis_tab.poi_comboBox.currentText()))
         self.analysis_tab.poi_listWidget.itemClicked.connect(
-            lambda x: self.detailed_poi(self.analysis_tab.poi_listWidget.currentItem()))
+            lambda: self.detailed_poi(self.analysis_tab.poi_listWidget.currentItem()))
         self.analysis_tab.dynamic_run_button.clicked.connect(self.dynamic)
         self.analysis_tab.comment_PushButton.clicked.connect(self.open_comment)
         self.analysis_tab.output_PushButton.clicked.connect(self.open_output)
         self.analysis_tab.dynamic_stop_button.clicked.connect(self.stop)
         self.analysis_tab.search_bar_lineEdit.textChanged.connect(
-            lambda x: self.search_filtered_pois(self.analysis_tab.search_bar_lineEdit.text()))
+            lambda: self.search_list(self.analysis_tab.poi_listWidget, self.analysis_tab.search_bar_lineEdit.text()))
         self.analysis_tab.terminal_window_lineEdit.returnPressed.connect(
             lambda: self.input_terminal(self.analysis_tab.terminal_window_lineEdit.text()))
         self.analysis_tab.poi_listWidget.itemDoubleClicked.connect(
-            lambda x: self.detailed_poi(self.analysis_tab.poi_listWidget.currentItem()))
+            lambda: self.detailed_poi(self.analysis_tab.poi_listWidget.currentItem()))
 
     def establish_calls(self):
         self.analysis_tab.terminal_output_textEdit.setReadOnly(True)
@@ -144,17 +145,6 @@ class AnalysisTabController(QtCore.QObject):
                 item = self.set_item(text, "Strings")
                 item = self.change_font(item)
                 self.analysis_tab.poi_listWidget.addItem(item)
-
-    def search_filtered_pois(self, text):
-        if len(text) is not 0:
-            search_result = self.analysis_tab.poi_listWidget.findItems(text, QtCore.Qt.MatchContains)
-            for item in range(self.analysis_tab.poi_listWidget.count()):
-                self.analysis_tab.poi_listWidget.item(item).setHidden(True)
-            for item in search_result:
-                item.setHidden(False)
-        else:
-            for item in range(self.analysis_tab.poi_listWidget.count()):
-                self.analysis_tab.poi_listWidget.item(item).setHidden(False)
 
     def detailed_poi(self, item):
         value = DBConnection.search_by_item(item)
@@ -277,14 +267,11 @@ class AnalysisTabController(QtCore.QObject):
     def stop(self):
         try:
             thread.terminate()
-            self.set_stop_title()
+            self.run = 0
+            self.dynamic_stopped.emit()
         except:
             x = ErrorDialog(self.analysis_tab, "Run a dynamic analysis first", "Dynamic Analysis Error")
             x.exec_()
-
-    def set_stop_title(self):
-        self.run = 0
-        self.dynamic_stopped.emit()
 
     def input_terminal(self, text):
         if self.run == 0:

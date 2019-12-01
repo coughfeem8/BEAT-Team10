@@ -70,6 +70,7 @@ class Tab3(QtWidgets.QWidget):
         self.DPVPluginName = QtWidgets.QLineEdit(self.DPVContents)
         self.DPVPluginName.setAlignment(QtCore.Qt.AlignCenter)
         self.DPVPluginName.setObjectName("DPVPluginName")
+        self.DPVPluginName.setReadOnly(True)
         self.DPVLeft.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.DPVPluginName)
 
         self.LabelDPVPLuginDescription = QtWidgets.QLabel(self.DPVContents)

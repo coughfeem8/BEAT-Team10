@@ -1,4 +1,5 @@
 import os, sys, re
+from controllers.Controller import Controller
 
 """
 TODO:  
@@ -13,9 +14,10 @@ Make the "prettyfier" for the view portion of the code.
 # detailed_view
 
 
-class DocumentationTabController:
+class DocumentationTabController(Controller):
 
     def __init__(self, documentation_tab):
+        super().__init__()
         self.docs = {
             'demo': {'name': 'Demo',
                      'path': 'demo.html'},
@@ -37,6 +39,8 @@ class DocumentationTabController:
 
     def establish_connections(self):
         self.documentation_tab.doc_list.itemSelectionChanged.connect(lambda: self.display_doc())
+        self.documentation_tab.doc_search_bar.textChanged.connect(
+            lambda: self.search_list(self.documentation_tab.doc_list, self.documentation_tab.doc_search_bar.text()))
 
     def establish_calls(self):
         pass
