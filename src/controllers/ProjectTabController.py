@@ -5,16 +5,17 @@ from model import DBConnection, r2Connection
 
 
 class ProjectTabController(QtCore.QObject):
-    projectSignal = QtCore.pyqtSignal()
+    project_creation_started = QtCore.pyqtSignal()
+    project_creation_finished = QtCore.pyqtSignal()
+    selected_project_changed = QtCore.pyqtSignal()
 
-    def __init__(self, project_tab, main):
+    def __init__(self, project_tab):
         super().__init__()
-        self.main = main
         self.projectTab = project_tab
         self.project_name = ""
 
     def establish_connections(self):
-        self.projectTab.listWidget.itemSelectionChanged.connect(self.item_activated_event)
+        self.projectTab.listWidget.itemSelectionChanged.connect(self.project_selected_changed)
         self.projectTab.pushButton_7.clicked.connect(self.create_project)
         self.projectTab.pushButton_8.clicked.connect(self.browse_binary_files)
         self.projectTab.pushButton_9.clicked.connect(self.delete_project)
@@ -28,9 +29,9 @@ class ProjectTabController(QtCore.QObject):
         self.projectTab.lineEdit_2.setReadOnly(True)
         self.projectTab.textEdit_2.setReadOnly(True)
         self.search_projects()
-        self.fill_binary_prop_empty()
+        self.set_binary_prop()
 
-    def fill_binary_prop_empty(self):
+    def set_binary_prop(self):
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
                       "Pic", "Endian"]
 
@@ -116,6 +117,37 @@ class ProjectTabController(QtCore.QObject):
                 x.exec_()
             QtWidgets.QApplication.restoreOverrideCursor()
 
+    def create_project(self):
+        text, ok_pressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:",
+                                                          QtWidgets.QLineEdit.Normal, "")
+        if ok_pressed and text != '':
+            db_names = DBConnection.get_db()
+            if text in db_names:
+                msg = QtWidgets.QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Project with that name already exists")
+                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                retval = msg.exec_()
+                return
+            self.projectTab.lineEdit_2.setText(text)
+            self.projectTab.textEdit_2.setText("")
+            self.projectTab.lineEdit_3.setText("")
+            self.set_binary_prop()
+            self.project_name = text
+            self.projectTab.listWidget.addItem(text)
+            item = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
+            self.projectTab.listWidget.setCurrentItem(item[0])
+            self.projectTab.setWindowTitle('Create Project')
+            saved = True
+            self.project_creation_started.emit()
+            self.projectTab.pushButton_7.setEnabled(False)
+            self.projectTab.pushButton_8.setEnabled(True)
+            self.projectTab.pushButton_10.setEnabled(True)
+            self.projectTab.textEdit_2.setReadOnly(False)
+            for item_at in range(self.projectTab.listWidget.count()):
+                self.projectTab.listWidget.item(item_at).setFlags(
+                    self.projectTab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
+
     def save_project(self):
         if self.projectTab.lineEdit_3.text() != "":
             saved = False
@@ -133,6 +165,7 @@ class ProjectTabController(QtCore.QObject):
             msg.setText("Project Saved")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+            self.project_creation_finished.emit()
             self.projectTab.pushButton_7.setEnabled(True)
             self.projectTab.pushButton_8.setEnabled(False)
             self.projectTab.pushButton_10.setEnabled(False)
@@ -145,37 +178,41 @@ class ProjectTabController(QtCore.QObject):
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
 
-    def create_project(self):
-        text, ok_pressed = QtWidgets.QInputDialog.getText(self.projectTab, "Create New Project", "Name of Project:",
-                                                          QtWidgets.QLineEdit.Normal, "")
-        if ok_pressed and text != '':
-            db_names = DBConnection.get_db()
-            if text in db_names:
-                msg = QtWidgets.QMessageBox()
-                msg.setWindowTitle("Error")
-                msg.setText("Project with that name already exists")
-                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                retval = msg.exec_()
-                return
-            self.projectTab.lineEdit_2.setText(text)
-            self.projectTab.textEdit_2.setText("")
-            self.projectTab.lineEdit_3.setText("")
-            self.fill_binary_prop_empty()
-            self.project_name = text
-            self.projectTab.listWidget.addItem(text)
-            item = self.projectTab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
-            self.projectTab.listWidget.setCurrentItem(item[0])
-            self.projectTab.setWindowTitle('Create Project')
-            saved = True
-            self.projectTab.pushButton_7.setEnabled(False)
-            self.projectTab.pushButton_8.setEnabled(True)
-            self.projectTab.pushButton_10.setEnabled(True)
-            self.projectTab.textEdit_2.setReadOnly(False)
-            for item_at in range(self.projectTab.listWidget.count()):
-                self.projectTab.listWidget.item(item_at).setFlags(
-                    self.projectTab.listWidget.item(item_at).flags() & ~QtCore.Qt.ItemIsSelectable)
+    def delete_project(self):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Warning)
+        msg.setWindowTitle("Delete Project")
+        if self.project_name != "":
+            button_reply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message',
+                                                          "Do you like to erase Project %s ?" % self.project_name,
+                                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                                                          QtWidgets.QMessageBox.No)
+            if button_reply == QtWidgets.QMessageBox.Yes:
 
-    def item_activated_event(self):
+                DBConnection.drop_db(self.project_name)
+
+                self.projectTab.lineEdit_2.setText("")
+                self.projectTab.textEdit_2.setText("")
+                self.projectTab.lineEdit_3.setText("")
+                self.set_binary_prop()
+                self.project_creation_finished.emit()
+                self.projectTab.pushButton_7.setEnabled(True)
+                self.projectTab.pushButton_8.setEnabled(False)
+                self.projectTab.pushButton_10.setEnabled(False)
+                for item_at in range(self.projectTab.listWidget.count()):
+                    self.projectTab.listWidget.item(item_at).setFlags(
+                        self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
+                list_items = self.projectTab.listWidget.selectedItems()
+                if not list_items:
+                    return
+                for item in list_items:
+                    self.projectTab.listWidget.takeItem(self.projectTab.listWidget.row(item))
+        else:
+            msg.setText("Please select a project")
+            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+            retval = msg.exec_()
+
+    def project_selected_changed(self):
         if self.projectTab.listWidget.count() != 0:
             project = self.projectTab.listWidget.selectedItems()
             project_name = [item.text().encode("ascii") for item in project]
@@ -194,10 +231,9 @@ class ProjectTabController(QtCore.QObject):
                         Singleton.set_path(db['BnyFilePath'])
                     cursor_bin = bin_info.find()
                     for db in cursor_bin:
-                        self.fill_binary_prop_empty()
+                        self.set_binary_prop()
                         self.fill_binary_prop(db)
-                    self.main.setWindowTitle("BEAT | "+Singleton.get_project())
-                    self.projectSignal.emit()
+                    self.selected_project_changed.emit()
                 except Exception as e:
                     msg = ErrorDialog(self.projectTab,str(e),"Error")
                     msg.exec()
@@ -208,39 +244,6 @@ class ProjectTabController(QtCore.QObject):
         for db in cursor:
             if db not in ['admin', 'local', 'config', 'plugin']:
                 self.projectTab.listWidget.addItem(db)
-
-    def delete_project(self):
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Warning)
-        msg.setWindowTitle("Delete Project")
-        if self.project_name != "":
-            button_reply = QtWidgets.QMessageBox.question(self.projectTab, 'PyQt5 message',
-                                                          "Do you like to erase Project %s ?" % self.project_name,
-                                                          QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                                                          QtWidgets.QMessageBox.No)
-            if button_reply == QtWidgets.QMessageBox.Yes:
-
-                DBConnection.drop_db(self.project_name)
-
-                self.projectTab.lineEdit_2.setText("")
-                self.projectTab.textEdit_2.setText("")
-                self.projectTab.lineEdit_3.setText("")
-                self.fill_binary_prop_empty()
-                self.projectTab.pushButton_7.setEnabled(True)
-                self.projectTab.pushButton_8.setEnabled(False)
-                self.projectTab.pushButton_10.setEnabled(False)
-                for item_at in range(self.projectTab.listWidget.count()):
-                    self.projectTab.listWidget.item(item_at).setFlags(
-                        self.projectTab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
-                list_items = self.projectTab.listWidget.selectedItems()
-                if not list_items:
-                    return
-                for item in list_items:
-                    self.projectTab.listWidget.takeItem(self.projectTab.listWidget.row(item))
-        else:
-            msg.setText("Please select a project")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            retval = msg.exec_()
 
     def search_saved_projects(self, text):
         if len(text) is not 0:

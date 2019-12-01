@@ -4,7 +4,9 @@ from view.pop.ErrorDialog import ErrorDialog
 
 
 class PluginTabController(QtCore.QObject):
-    pluginSignal = QtCore.pyqtSignal()
+    plugin_creation_started = QtCore.pyqtSignal()
+    plugin_creation_finished = QtCore.pyqtSignal()
+    plugin_signal = QtCore.pyqtSignal()
 
     def __init__(self, plugin_tab):
         super().__init__()
@@ -45,6 +47,7 @@ class PluginTabController(QtCore.QObject):
             self.plugin_tab.listWidget.addItem(text)
             item = self.plugin_tab.listWidget.findItems(text, QtCore.Qt.MatchExactly)
             self.plugin_tab.listWidget.setCurrentItem(item[0])
+            self.plugin_creation_started.emit()
             self.plugin_tab.ButtonSavePlugin.setEnabled(True)
             self.plugin_tab.pushButton_7.setEnabled(False)
             for item_at in range(self.plugin_tab.listWidget.count()):
@@ -60,6 +63,7 @@ class PluginTabController(QtCore.QObject):
         plg = Plugin.get_name(self.plugin_tab.DPVPluginName.text())
         self.plugin_tab.ButtonSavePlugin.setEnabled(False)
         self.plugin_tab.pushButton_7.setEnabled(True)
+        self.plugin_creation_finished.emit()
         for item_at in range(self.plugin_tab.listWidget.count()):
             self.plugin_tab.listWidget.item(item_at).setFlags(
                 self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)
@@ -67,7 +71,7 @@ class PluginTabController(QtCore.QObject):
             plg_cllc.insert(info, check_keys=False)
             x = ErrorDialog(self.plugin_tab, "Plugin Saved", "Save Plugin")
             x.exec_()
-            self.pluginSignal.emit()
+            self.plugin_signal.emit()
         else:
             x = ErrorDialog(self, "Plugin already exists", "Error Plugin")
             x.exec_()
@@ -89,6 +93,7 @@ class PluginTabController(QtCore.QObject):
                 self.plugin_tab.DPVDefaultOutputField.setText("")
                 self.plugin_tab.ButtonSavePlugin.setEnabled(False)
                 self.plugin_tab.pushButton_7.setEnabled(True)
+                self.plugin_creation_finished.emit()
                 for item_at in range(self.plugin_tab.listWidget.count()):
                     self.plugin_tab.listWidget.item(item_at).setFlags(
                         self.plugin_tab.listWidget.item(item_at).flags() | QtCore.Qt.ItemIsSelectable)

@@ -9,12 +9,14 @@ from view.pop.ErrorDialog import ErrorDialog
 from view.pop.CommentDialog import CommentDialog
 
 
-class AnalysisTabController:
+class AnalysisTabController(QtCore.QObject):
+    dynamic_started = QtCore.pyqtSignal()
+    dynamic_stopped = QtCore.pyqtSignal()
 
-    def __init__(self, analysis_tab, main):
+    def __init__(self, analysis_tab):
+        super().__init__()
         self.analysis_tab = analysis_tab
         self.analysis_tab.poi_content_area_textEdit.setStyleSheet('')
-        self.main = main
         self.run = 0
 
     def establish_connections(self):
@@ -222,7 +224,7 @@ class AnalysisTabController:
             self.analysis_tab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
 
     def dynamic(self):
-        if (self.analysis_tab.poi_listWidget.count() == 0):
+        if self.analysis_tab.poi_listWidget.count() == 0:
             x = ErrorDialog(self.analysis_tab, "Please run Static Analysis first", "Error in DYnamic Analysis")
             x.exec_()
             return
@@ -250,7 +252,7 @@ class AnalysisTabController:
 
             global thread
             self.run = 1
-            self.main.setWindowTitle("BEAT | Running " + Singleton.get_project())
+            self.dynamic_started.emit()
             thread = model.Analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
             thread.textSignal.connect(lambda x: self.terminal(x))
             thread.stopSignal.connect(self.set_stop_title)
@@ -282,7 +284,7 @@ class AnalysisTabController:
 
     def set_stop_title(self):
         self.run = 0
-        self.main.setWindowTitle("BEAT | " + Singleton.get_project())
+        self.dynamic_stopped.emit()
 
     def input_terminal(self, text):
         if self.run == 0:
@@ -302,8 +304,10 @@ class AnalysisTabController:
             thread.input(text)
 
     def change_font(self, item):
+        new_font = QtGui.QFont()
         if DBConnection.search_comment_by_item(item):
-            new_font = QtGui.QFont()
             new_font.setBold(True)
-            item.setFont(new_font)
+        else:
+            new_font.setBold(False)
+        item.setFont(new_font)
         return item

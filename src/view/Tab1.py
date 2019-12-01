@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Tab1(QtWidgets.QWidget):
-    def __init__(self, parent, mainA):
+    def __init__(self, parent):
         QtWidgets.QWidget.__init__(self, parent)
 
         self.mainLayout = QtWidgets.QHBoxLayout()
