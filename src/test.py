@@ -1,3 +1,4 @@
 from model import DBConnection
+from model import r2Connection
 
-DBConnection.drop_db("plugin")
+r2Connection.Open()

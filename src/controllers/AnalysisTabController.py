@@ -218,7 +218,8 @@ class AnalysisTabController(Controller):
             x = ErrorDialog(self.analysis_tab, "Please run Static Analysis first", "Error in DYnamic Analysis")
             x.exec_()
             return
-        text, ok_pressed = QtWidgets.QInputDialog.getText(self.analysis_tab, "Dynamic Analysis", "Args to pass:",
+        global input
+        input, ok_pressed = QtWidgets.QInputDialog.getText(self.analysis_tab, "Dynamic Analysis", "Args to pass:",
                                                           QtWidgets.QLineEdit.Normal, "")
 
         if ok_pressed:
@@ -227,7 +228,7 @@ class AnalysisTabController(Controller):
 
             r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
             self.terminal('r2 > \n')
-            self.terminal(r2.cmd("doo %s" % text))
+            self.terminal(r2.cmd("doo %s" % input))
 
             for i in range(self.analysis_tab.poi_listWidget.count()):
                 item = self.analysis_tab.poi_listWidget.item(i)
@@ -259,7 +260,7 @@ class AnalysisTabController(Controller):
 
             index = {"_id": id}
             runs = value["runs"]
-            run = {"rtnPara": text["rtnPara"], "rtnFnc": text["rtnFnc"]}
+            run = {"name":input,"rtnPara": text["rtnPara"], "rtnFnc": text["rtnFnc"]}
             runs.append(run)
             new_value = {"$set": {"runs": runs}}
             db_info.update_one(index, new_value)

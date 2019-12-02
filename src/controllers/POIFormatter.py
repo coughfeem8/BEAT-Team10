@@ -27,7 +27,6 @@ def format_poi(poi):
     elif 'name' in poi.keys():
         format_func(poi, content)
 
-    prettify(html)
     return prettify(html)
 
 
@@ -79,9 +78,9 @@ def format_signature(sig, parent):
     else:
         res = {'return_type': "None", 'arguments' : "None"}
     head_row = ET.SubElement(parent, 'tr')
-    for th in ['Data', 'Value']:
-        col = ET.SubElement(head_row, 'th')
-        col.text = th
+    #for th in ['Data', 'Value']:
+    #    col = ET.SubElement(head_row, 'th')
+    #    col.text = th
     for item in res.keys():
         row = ET.SubElement(parent, 'tr')
         data_style = ET.SubElement(row, 'td')

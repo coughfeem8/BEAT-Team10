@@ -97,10 +97,10 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.main_window.setWindowTitle("BEAT | Running " + Singleton.get_project())
 
     def disable_tabs(self):
-        print('here')
         for tab_index in range(self.tabWidget.count()):
             if tab_index != self.tabWidget.currentIndex():
                 self.tabWidget.setTabEnabled(tab_index, False)
+            self.tabWidget.setTabEnabled(4, True)
 
     def enable_tabs(self):
         for tab_index in range(self.tabWidget.count()):

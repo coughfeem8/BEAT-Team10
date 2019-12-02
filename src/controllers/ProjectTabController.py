@@ -124,15 +124,13 @@ class ProjectTabController(Controller):
         if ok_pressed and text != '':
             db_names = DBConnection.get_db()
             if text in db_names:
-                msg = QtWidgets.QMessageBox()
-                msg.setWindowTitle("Error")
-                msg.setText("Project with that name already exists")
-                msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                retval = msg.exec_()
+                msg = ErrorDialog(self.project_tab,"Project with that name already exists", "Error Creating Project")
+                msg.exec_()
                 return
             self.project_tab.lineEdit_2.setText(text)
             self.project_tab.textEdit_2.setText("")
             self.project_tab.lineEdit_3.setText("")
+            self.project_tab.textEdit_2.setReadOnly(False)
             self.set_binary_prop()
             self.project_name = text
             self.project_tab.listWidget.addItem(text)
@@ -161,20 +159,16 @@ class ProjectTabController(Controller):
             msg.setText("Project Saved")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+            self.project_tab.textEdit_2.setReadOnly(True)
             self.delete_save_operations(self.project_creation_finished, [self.project_tab.pushButton_7],
                                    [self.project_tab.pushButton_8, self.project_tab.pushButton_10],
                                    self.project_tab.listWidget)
 
         else:
-            msg = QtWidgets.QMessageBox()
-            msg.setText("Please select a Binary File")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            retval = msg.exec_()
+            msg = ErrorDialog(self.project_tab, "Please select a binary file", "Error Saving Project")
+            msg.exec_()
 
     def delete_project(self):
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Warning)
-        msg.setWindowTitle("Delete Project")
         if self.project_name != "":
             button_reply = QtWidgets.QMessageBox.question(self.project_tab, 'PyQt5 message',
                                                           "Do you like to erase Project %s ?" % self.project_name,
@@ -198,9 +192,8 @@ class ProjectTabController(Controller):
                 for item in list_items:
                     self.project_tab.listWidget.takeItem(self.project_tab.listWidget.row(item))
         else:
-            msg.setText("Please select a project")
-            msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            retval = msg.exec_()
+            msg = ErrorDialog(self.project_tab, "Please select a project", "Error Deleting Project")
+            msg.exec_()
 
     def project_selected_changed(self):
         if self.project_tab.listWidget.count() != 0:
