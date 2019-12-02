@@ -246,7 +246,6 @@ class AnalysisTabController(Controller):
             self.dynamic_started.emit()
             thread = model.Analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
             thread.textSignal.connect(lambda x: self.terminal(x))
-            #thread.stopSignal.connect(self.set_stop_title)
             thread.listSignal.connect(lambda x: self.return_funcitions(x))
             thread.start()
 
