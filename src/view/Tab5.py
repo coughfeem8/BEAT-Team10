@@ -2,7 +2,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Tab5(QtWidgets.QWidget):
-    def __init__(self, parent, main):
+    """UI for tab 5"""
+
+    def __init__(self, parent):
+        """Initializes tab 5 based on parent main window tab and sets up associated UI object"""
         QtWidgets.QWidget.__init__(self, parent)
         self.frame = QtWidgets.QFrame(self)
         self.frame.setObjectName("Frame")
