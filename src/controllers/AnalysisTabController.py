@@ -242,12 +242,21 @@ class AnalysisTabController(Controller):
             sort = sorted(pois_checked, key=lambda i: i["from"])
 
             global thread
-            self.run = 1
-            self.dynamic_started.emit()
-            thread = model.Analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
-            thread.textSignal.connect(lambda x: self.terminal(x))
-            thread.listSignal.connect(lambda x: self.return_funcitions(x))
-            thread.start()
+            try:
+                self.run = 1
+                self.dynamic_started.emit()
+                thread = model.Analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
+                thread.textSignal.connect(lambda x: self.terminal(x))
+                thread.listSignal.connect(lambda x: self.return_funcitions(x))
+                thread.errorSignal.connect(lambda x: self.error_thread(x))
+                thread.start()
+            except Exception as e:
+                print(e)
+
+    def error_thread(self, text):
+        msg = ErrorDialog(self.analysis_tab,text,"Error in Dynamic Analysis")
+        msg.exec_()
+
 
     def return_funcitions(self, text):
 
@@ -289,6 +298,7 @@ class AnalysisTabController(Controller):
                 x.exec_()
         elif self.run == 1:
             thread.input(text)
+        self.analysis_tab.terminal_window_lineEdit.clear()
 
     def change_font(self, item):
         new_font = QtGui.QFont()

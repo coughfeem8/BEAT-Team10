@@ -61,6 +61,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.project_controller.selected_project_changed.connect(
             lambda: self.analysis_controller.poi_comboBox_change("All"))
         self.project_controller.selected_project_changed.connect(lambda: self.set_project_name())
+        self.project_controller.selected_project_changed.connect(lambda: self.analysisTab.terminal_output_textEdit.clear())
         self.project_controller.project_creation_started.connect(lambda: self.disable_tabs())
         self.project_controller.project_creation_finished.connect(lambda: self.enable_tabs())
 

@@ -5,6 +5,7 @@ class DynamicThread(QtCore.QThread):
     textSignal = QtCore.pyqtSignal(str)
     listSignal = QtCore.pyqtSignal(dict)
     stopSignal = QtCore.pyqtSignal()
+    errorSignal = QtCore.pyqtSignal(str)
 
     def __init__(self, rlocal, pois):
         super(DynamicThread, self).__init__()
@@ -12,22 +13,25 @@ class DynamicThread(QtCore.QThread):
         self.pois = pois
 
     def run(self):
-        for poi in self.pois:
-            poi_location = poi["from"]
-            r2_breakpoint = 'db ' + poi_location
-            self.rlocal.cmd(r2_breakpoint)
+        try:
+            for poi in self.pois:
+                poi_location = poi["from"]
+                r2_breakpoint = 'db ' + poi_location
+                self.rlocal.cmd(r2_breakpoint)
 
-            x = self.rlocal.cmd("dc")
-            poi["rtnPara"] = self.check_parameters()
-            if "Cannot continue, run ood?" in x:
-                break
-            self.textSignal.emit('r2 > \n'+x)
-            y = self.rlocal.cmd("dso")
-            self.textSignal.emit('r2 > \n'+y)
+                x = self.rlocal.cmd("dc")
+                poi["rtnPara"] = self.check_parameters()
+                if "Cannot continue, run ood?" in x:
+                    break
+                self.textSignal.emit('r2 > \n'+x)
+                y = self.rlocal.cmd("dso")
+                self.textSignal.emit('r2 > \n'+y)
 
-            poi["rtnFnc"] = self.check_return()
+                poi["rtnFnc"] = self.check_return()
 
-            self.listSignal.emit(poi)
+                self.listSignal.emit(poi)
+        except Exception as e:
+            self.errorSignal.emit(str(e))
 
     def stop(self):
         self.rlocal.quit()
