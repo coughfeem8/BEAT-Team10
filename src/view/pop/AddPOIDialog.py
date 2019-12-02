@@ -109,7 +109,6 @@ class AddPOIDialog(QtWidgets.QDialog):
                 with open(file_name) as fd:
                     doc = xmltodict.parse(fd.read())
                     self.pois = doc["point_of_interest"]
-                    print(type(doc["point_of_interest"]))
             except Exception as e:
                 x = ErrorDialog(self, str(e), "Error")
                 x.exec_()

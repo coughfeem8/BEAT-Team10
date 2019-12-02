@@ -4,7 +4,7 @@ from model.Singleton import Singleton
 from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController, \
     DocumentationTabController
 
-
+"""Creates the UI for the main window, this includes the controllers for each tab in the main window."""
 class UIMainWindow(QtWidgets.QMainWindow):
     def setup_ui(self, main_window):
         self.main_window = main_window

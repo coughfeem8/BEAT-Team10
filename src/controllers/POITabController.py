@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
+import re
 from model import Plugin
 from view.pop.AddPOIDialog import AddPOIDialog
 from controllers.POIFormatter import format_poi
@@ -17,8 +18,11 @@ class POITabController(Controller):
         self.poi_tab.comboBox.currentIndexChanged.connect(lambda: self.fill_poi(self.poi_tab.comboBox.currentText()))
         self.poi_tab.lineEdit_4.textChanged.connect(
             lambda: self.search_list(self.poi_tab.listWidget_2, self.poi_tab.lineEdit_4.text()))
+        self.poi_tab.comboBox_2.currentIndexChanged.connect(
+            lambda: self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText()))
         self.poi_tab.listWidget_2.itemSelectionChanged.connect(self.item_activated_event)
         self.poi_tab.pushButton_2.clicked.connect(self.delete_poi)
+        self.poi_tab.pushButton_3.clicked.connect(lambda: self.save_poi())
 
     def establish_calls(self):
         self.set_plugins()

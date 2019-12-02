@@ -25,10 +25,10 @@ class Controller(QtCore.QObject):
     def search_list(self, listWidget, text):
         if len(text) is not 0:
             search_result = listWidget.findItems(text, QtCore.Qt.MatchContains)
-            for item in range(listWidget.count()):
-                listWidget.item(item).setHidden(True)
-            for item in search_result:
-                item.setHidden(False)
+            for item_index in range(listWidget.count()):
+                listWidget.item(item_index).setHidden(True)
+            for item_index in search_result:
+                item_index.setHidden(False)
         else:
-            for item in range(listWidget.count()):
-                listWidget.item(item).setHidden(False)
+            for item_index in range(listWidget.count()):
+                listWidget.item(item_index).setHidden(False)

@@ -77,6 +77,7 @@ class Tab4(QtWidgets.QWidget):
         self.textEdit = QtWidgets.QTextEdit(self.frame_3)
         self.textEdit.setGeometry(QtCore.QRect(0, 0, 531, 365))
         self.textEdit.setObjectName("textEdit")
+        self.textEdit.setReadOnly(True)
         self.gridLayout_3.addWidget(self.frame_3, 2, 0, 1, 2)
         self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget_3)
 
