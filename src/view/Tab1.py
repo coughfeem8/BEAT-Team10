@@ -2,7 +2,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Tab1(QtWidgets.QWidget):
+    """UI for tab 1"""
+
     def __init__(self, parent):
+        """Initializes tab 1 based on parent main window tab and sets up associated UI object"""
         QtWidgets.QWidget.__init__(self, parent)
 
         self.mainLayout = QtWidgets.QHBoxLayout()
