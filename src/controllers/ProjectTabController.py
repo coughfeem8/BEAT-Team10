@@ -140,7 +140,7 @@ class ProjectTabController(Controller):
             self.project_tab.listWidget.setCurrentItem(item[0])
             self.project_tab.setWindowTitle('Create Project')
             saved = True
-            self.create_operations(self.project_creation_finished, [self.project_tab.pushButton_7],
+            self.create_operations(self.project_creation_started, [self.project_tab.pushButton_7],
                                         [self.project_tab.pushButton_8, self.project_tab.pushButton_10],
                                         self.project_tab.listWidget)
 
