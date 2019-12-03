@@ -1,5 +1,5 @@
 import os, sys, re
-from controllers.ViewFunctions import ViewFunctions
+from view_implementation.ViewFunctions import ViewFunctions
 
 """
 TODO:  

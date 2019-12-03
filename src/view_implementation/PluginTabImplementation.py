@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 from model import Plugin, DBConnection
 from view.pop.ErrorDialog import ErrorDialog
-from controllers.ViewFunctions import ViewFunctions
+from view_implementation.ViewFunctions import ViewFunctions
 
 
 class PluginTabImplementation(ViewFunctions):

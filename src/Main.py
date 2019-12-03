@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtWidgets
 from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
-from controllers import ProjectTabImplementation, AnalysisTabImplementation, POITabImplementation, PluginTabImplementation, \
+from view_implementation import ProjectTabImplementation, AnalysisTabImplementation, POITabImplementation, PluginTabImplementation, \
     DocumentationTabImplementation
 
 
@@ -9,7 +9,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
     """Creates the UI for the main window and controls its properties"""
 
     def setup_ui(self, main_window):
-        """Sets up the ui for the main window and establishes the controllers and their connections for each tab"""
+        """Sets up the ui for the main window and establishes the view_implementation and their connections for each tab"""
         self.main_window = main_window
         self.main_window.setObjectName("BEAT")
         self.main_window.resize(804, 615)
@@ -41,42 +41,42 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.documentationTab = Tab5.Tab5(self)
         self.tabWidget.addTab(self.documentationTab, "")
 
-        self.project_controller = ProjectTabImplementation.ProjectTabImplementation(self.ProjectTab)
-        self.project_controller.establish_connections()
-        self.project_controller.establish_calls()
+        self.project_implementation = ProjectTabImplementation.ProjectTabImplementation(self.ProjectTab)
+        self.project_implementation.establish_connections()
+        self.project_implementation.establish_calls()
 
-        self.analysis_controller = AnalysisTabImplementation.AnalysisTabImplementation(self.analysisTab)
-        self.analysis_controller.establish_connections()
-        self.analysis_controller.establish_calls()
+        self.analysis_implementation = AnalysisTabImplementation.AnalysisTabImplementation(self.analysisTab)
+        self.analysis_implementation.establish_connections()
+        self.analysis_implementation.establish_calls()
 
-        self.plugin_controller = PluginTabImplementation.PluginTabImplementation(self.pluginTab)
-        self.plugin_controller.establish_connections()
-        self.plugin_controller.establish_calls()
+        self.plugin_implementation = PluginTabImplementation.PluginTabImplementation(self.pluginTab)
+        self.plugin_implementation.establish_connections()
+        self.plugin_implementation.establish_calls()
 
-        self.poi_controller = POITabImplementation.POITabImplementation(self.pointsOfInterestTab)
-        self.poi_controller.establish_connections()
-        self.poi_controller.establish_calls()
+        self.poi_implementation = POITabImplementation.POITabImplementation(self.pointsOfInterestTab)
+        self.poi_implementation.establish_connections()
+        self.poi_implementation.establish_calls()
 
-        self.doc_controller = DocumentationTabImplementation.DocumentationTabImplementation(self.documentationTab)
-        self.doc_controller.establish_connections()
-        self.doc_controller.establish_calls()
+        self.doc_implementation = DocumentationTabImplementation.DocumentationTabImplementation(self.documentationTab)
+        self.doc_implementation.establish_connections()
+        self.doc_implementation.establish_calls()
 
-        self.project_controller.selected_project_changed.connect(
-            lambda: self.analysis_controller.poi_comboBox_change("All"))
-        self.project_controller.selected_project_changed.connect(lambda: self.set_project_name())
-        self.project_controller.selected_project_changed.connect(lambda: self.analysisTab.terminal_output_textEdit.clear())
-        self.project_controller.project_creation_started.connect(lambda: self.disable_tabs())
-        self.project_controller.project_creation_finished.connect(lambda: self.enable_tabs())
+        self.project_implementation.selected_project_changed.connect(
+            lambda: self.analysis_implementation.poi_comboBox_change("All"))
+        self.project_implementation.selected_project_changed.connect(lambda: self.set_project_name())
+        self.project_implementation.selected_project_changed.connect(lambda: self.analysisTab.terminal_output_textEdit.clear())
+        self.project_implementation.project_creation_started.connect(lambda: self.disable_tabs())
+        self.project_implementation.project_creation_finished.connect(lambda: self.enable_tabs())
 
-        self.analysis_controller.dynamic_started.connect(lambda: self.set_running())
-        self.analysis_controller.dynamic_stopped.connect(lambda: self.set_project_name())
-        self.analysis_controller.dynamic_started.connect(lambda: self.disable_tabs())
-        self.analysis_controller.dynamic_stopped.connect(lambda: self.enable_tabs())
+        self.analysis_implementation.dynamic_started.connect(lambda: self.set_running())
+        self.analysis_implementation.dynamic_stopped.connect(lambda: self.set_project_name())
+        self.analysis_implementation.dynamic_started.connect(lambda: self.disable_tabs())
+        self.analysis_implementation.dynamic_stopped.connect(lambda: self.enable_tabs())
 
-        self.plugin_controller.plugin_signal.connect(self.analysis_controller.set_plugins)
-        self.plugin_controller.plugin_signal.connect(self.poi_controller.set_plugins)
-        self.plugin_controller.plugin_creation_started.connect(lambda: self.disable_tabs())
-        self.plugin_controller.plugin_creation_finished.connect(lambda: self.enable_tabs())
+        self.plugin_implementation.plugin_signal.connect(self.analysis_implementation.set_plugins)
+        self.plugin_implementation.plugin_signal.connect(self.poi_implementation.set_plugins)
+        self.plugin_implementation.plugin_creation_started.connect(lambda: self.disable_tabs())
+        self.plugin_implementation.plugin_creation_finished.connect(lambda: self.enable_tabs())
 
         self.main_window.setCentralWidget(self.centralwidget)
         self.retranslate_ui()

@@ -6,8 +6,8 @@ from model import DBConnection, Plugin
 from model.Singleton import Singleton
 from view.pop.ErrorDialog import ErrorDialog
 from view.pop.CommentDialog import CommentDialog
-from controllers.POIFormatter import format_poi
-from controllers.ViewFunctions import ViewFunctions
+from view_implementation.POIFormatter import format_poi
+from view_implementation.ViewFunctions import ViewFunctions
 
 
 class AnalysisTabImplementation(ViewFunctions):
