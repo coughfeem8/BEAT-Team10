@@ -2,10 +2,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from model.Singleton import Singleton
 from model import DBConnection, r2Connection
 from view.pop.ErrorDialog import ErrorDialog
-from controllers.Controller import Controller
+from view_implementation.ViewFunctions import ViewFunctions
 
 
-class ProjectTabController(Controller):
+class ProjectTabImplementation(ViewFunctions):
     project_creation_started = QtCore.pyqtSignal()
     project_creation_finished = QtCore.pyqtSignal()
     selected_project_changed = QtCore.pyqtSignal()

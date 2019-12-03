@@ -1,10 +1,10 @@
 from PyQt5 import QtCore, QtWidgets
 from model import Plugin, DBConnection
 from view.pop.ErrorDialog import ErrorDialog
-from controllers.Controller import Controller
+from view_implementation.ViewFunctions import ViewFunctions
 
 
-class PluginTabController(Controller):
+class PluginTabImplementation(ViewFunctions):
     plugin_creation_started = QtCore.pyqtSignal()
     plugin_creation_finished = QtCore.pyqtSignal()
     plugin_signal = QtCore.pyqtSignal()

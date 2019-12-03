@@ -1,5 +1,5 @@
 import os, sys, re
-from controllers.Controller import Controller
+from view_implementation.ViewFunctions import ViewFunctions
 
 """
 TODO:  
@@ -14,7 +14,7 @@ Make the "prettyfier" for the view portion of the code.
 # detailed_view
 
 
-class DocumentationTabController(Controller):
+class DocumentationTabImplementation(ViewFunctions):
 
     def __init__(self, documentation_tab):
         super().__init__()

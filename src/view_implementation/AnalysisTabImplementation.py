@@ -6,11 +6,11 @@ from model import DBConnection, Plugin
 from model.Singleton import Singleton
 from view.pop.ErrorDialog import ErrorDialog
 from view.pop.CommentDialog import CommentDialog
-from controllers.POIFormatter import format_poi
-from controllers.Controller import Controller
+from view_implementation.POIFormatter import format_poi
+from view_implementation.ViewFunctions import ViewFunctions
 
 
-class AnalysisTabController(Controller):
+class AnalysisTabImplementation(ViewFunctions):
     dynamic_started = QtCore.pyqtSignal()
     dynamic_stopped = QtCore.pyqtSignal()
 

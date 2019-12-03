@@ -2,11 +2,11 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 import re
 from model import Plugin
 from view.pop.AddPOIDialog import AddPOIDialog
-from controllers.POIFormatter import format_poi
-from controllers.Controller import Controller
+from view_implementation.POIFormatter import format_poi
+from view_implementation.ViewFunctions import ViewFunctions
 
 
-class POITabController(Controller):
+class POITabImplementation(ViewFunctions):
 
     def __init__(self, poi_tab):
         super().__init__()
