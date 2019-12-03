@@ -109,7 +109,7 @@ class ProjectTabImplementation(ViewFunctions):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.project_tab, "Browse Binary File", "",
-                                                             "Binary Files (*.exe | *.elf | *.out)", options=options)
+                                                             "Binary Files (*)", options=options)
 
         if file_name:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -180,6 +180,8 @@ class ProjectTabImplementation(ViewFunctions):
             msg.setText("Project Saved")
             msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
             retval = msg.exec_()
+            Singleton.set_path(self.project_tab.lineEdit_3.text())
+            Singleton.set_project(self.project_name)
             self.project_tab.textEdit_2.setReadOnly(True)
             self.delete_save_operations(self.project_creation_finished, [self.project_tab.pushButton_7],
                                    [self.project_tab.pushButton_8, self.project_tab.pushButton_10],

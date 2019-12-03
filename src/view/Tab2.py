@@ -47,10 +47,6 @@ class Tab2(QtWidgets.QWidget):
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
         self.poi_comboBox.addItem("")
-        self.poi_comboBox.addItem("")
-        self.poi_comboBox.addItem("")
-        self.poi_comboBox.addItem("")
-        self.poi_comboBox.addItem("")
         self.gridLayout_2.addWidget(self.poi_comboBox, 2, 1, 2, 1)
 
         self.poi_label = QtWidgets.QLabel(self)
@@ -133,12 +129,8 @@ class Tab2(QtWidgets.QWidget):
         self.dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
 
         self.poi_comboBox.setItemText(0, _translate("MainWindow", "All"))
-        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Variables"))
-        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Strings"))
-        self.poi_comboBox.setItemText(3, _translate("MainWindow", "DLLs"))
-        self.poi_comboBox.setItemText(4, _translate("MainWindow", "Functions"))
-        self.poi_comboBox.setItemText(5, _translate("MainWindow", "Packets"))
-        self.poi_comboBox.setItemText(6, _translate("MainWindow", "Structs"))
+        self.poi_comboBox.setItemText(1, _translate("MainWindow", "Strings"))
+        self.poi_comboBox.setItemText(2, _translate("MainWindow", "Functions"))
 
         self.poi_label.setText(_translate("MainWindow", "Point of Interest"))
 

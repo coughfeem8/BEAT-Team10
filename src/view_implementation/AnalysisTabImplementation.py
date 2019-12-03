@@ -85,6 +85,7 @@ class AnalysisTabImplementation(ViewFunctions):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
         self.analysis_tab.poi_listWidget.clear()
+        print(Singleton.get_path())
         rlocal = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
         try:
             if self.analysis_tab.poi_comboBox.currentText() == "All":
