@@ -13,6 +13,10 @@ class DynamicThread(QtCore.QThread):
         self.pois = pois
 
     def run(self):
+        """
+        Creates a breakpoint for each of the passed pois and analyse the returns and parameters
+        :return: None
+        """
         try:
             for poi in self.pois:
                 poi_location = poi["from"]
@@ -33,10 +37,12 @@ class DynamicThread(QtCore.QThread):
         except Exception as e:
             self.errorSignal.emit(str(e))
 
-    def stop(self):
-        self.rlocal.quit()
 
     def check_return(self):
+        """
+        Analysis the RSI register and get the return value of the function
+        :return: String Value of return fucntion
+        """
         message_addr = self.rlocal.cmd("dr rsi")
         look_in_buff = "pxj @" + message_addr
         message_arr = self.rlocal.cmdj(look_in_buff)
@@ -54,6 +60,10 @@ class DynamicThread(QtCore.QThread):
         return poi
 
     def check_parameters(self):
+        """
+        Gets the value of the parameters passed to the function
+        :return: List of values
+        """
         self.rlocal.cmd("s")
         i = 0
         parameter_values = []
@@ -82,4 +92,9 @@ class DynamicThread(QtCore.QThread):
         return parameter_values
 
     def input(self, text):
+        """
+        Pass an input to the Debugging session
+        :param text: String input to pass
+        :return: None
+        """
         self.rlocal.process.stdin.write((text + '\n').encode('utf8'))

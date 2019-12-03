@@ -29,16 +29,16 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.ProjectTab = Tab1.Tab1(self)
         self.tabWidget.addTab(self.ProjectTab, "")
 
-        self.analysisTab = Tab2.Tab2(self, self)
+        self.analysisTab = Tab2.Tab2(self)
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = Tab3.Tab3(self, self)
+        self.pluginTab = Tab3.Tab3(self)
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = Tab4.Tab4(self, self)
+        self.pointsOfInterestTab = Tab4.Tab4(self)
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = Tab5.Tab5(self, self)
+        self.documentationTab = Tab5.Tab5(self)
         self.tabWidget.addTab(self.documentationTab, "")
 
         self.project_controller = ProjectTabController.ProjectTabController(self.ProjectTab)

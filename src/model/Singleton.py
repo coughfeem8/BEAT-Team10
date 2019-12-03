@@ -1,4 +1,7 @@
 class Singleton:
+    """
+    Singleton used to store the path of the binary and name of the current selected project
+    """
     __instance = None
     project = ""
     filepath = ""

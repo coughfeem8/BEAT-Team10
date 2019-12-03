@@ -1,3 +1,14 @@
+"""
+/***************************************************************************************
+*    Title: R2Pipe
+*    Author: pancake pancake@nopcode.org
+*    Date: 2019
+*    Code version: 1.4.2
+*    Availability: https://github.com/radareorg/radare2-r2pipe
+*
+***************************************************************************************/
+"""
+
 import json
 import os
 import sys
@@ -24,6 +35,15 @@ ansi_escape = re.compile(r'''
 class Open:
 
     def __init__(self, filename='', flags=[], radare2home=None):
+        """Open a new r2 pipe
+        The 'filename' is an absolute or relative path to file
+        Args:
+            filename (str): path to filename or uri
+            flags (list of str): arguments, either in comapct form
+                ("-wdn") or sepparated by commas ("-w","-d","-n")
+        Returns:
+            Returns an object with methods to interact with r2 via commands
+        """
         super(Open, self).__init__()
 
         if filename:
@@ -53,6 +73,11 @@ class Open:
 
     @staticmethod
     def __make_non_blocking(fd):
+        """
+        Make it non-blocking to speedup reading
+        :param fd: stdout of process
+        :return:
+        """
         if fcntl is not None:
             fl = fcntl.fcntl(fd, fcntl.F_GETFL)
             fcntl.fcntl(fd, fcntl.F_SETFL, fl | os.O_NONBLOCK)
@@ -135,11 +160,6 @@ class Open:
             cmd (str): r2 command
         Returns:
             Returns an string with the results of the command
-
-        res = self._cmd(cmd)
-        if res is not None:
-            return res.strip()
-        return None
         """
 
         res = self._cmd(cmd, **kwargs)
