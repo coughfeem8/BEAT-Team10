@@ -19,8 +19,8 @@ class DocumentationTabImplementation(ViewFunctions):
     def __init__(self, documentation_tab):
         super().__init__()
         self.docs = {
-            'demo': {'name': 'Demo',
-                     'path': 'demo.html'},
+            'beat': {'name': 'Beat',
+                     'path': 'beat.html'},
             'documentation': {'name': 'Documentation',
                               'path': 'documentation.html'},
             'plugin': {'name': 'Plugin',
@@ -68,7 +68,7 @@ class DocumentationTabImplementation(ViewFunctions):
             content = file.read()
             self.docs[doc]['content'] = content
             file.close()
-            self.documentation_tab.detailed_view.setHtml(self.docs['demo']['content'])
+            self.documentation_tab.detailed_view.setHtml(self.docs['beat']['content'])
             self.documentation_tab.doc_list.setCurrentRow(0)
 
     def display_doc(self):

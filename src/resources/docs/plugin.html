@@ -1,3 +1,18 @@
-<p><em><strong>This is the plugin Tab</strong></em></p>
-<p><img src="resources/docs/../docs/plugin/media/image1.png" width="343" height="278" /></p>
-<p>Figure</p>
+<p><em><strong>PLUGIN TAB</strong></em></p>
+<p>The BEAT’s plugin section will be used to handle all the plugins used for the static and dynamic analysis. A single plugin could be created and removed. The reasons is for the user to add its own plugins to find special points of interest that would not be handles by the provided plugins. Plugins allow a user to create a custom type of outputs which will allow the user to run scripts using the filtered point of interests.</p>
+<p><img src="resources/docs/../docs/plugin/media/image1.png" width="407" height="330" /></p>
+<p>Figure 1</p>
+<p><em><strong>HOW TO CREATE A PLUGIN</strong></em></p>
+<p>To create a custom plugin requires 3 main components to be correctly accepted by BEAT. These will be contained in a folder inside the “Plugin” folder.</p>
+<ul>
+<li><p>Plugin structure</p>
+<p>This will be composed of an XML file that will contain a description of every <strong>types</strong> of POI in the plugin.</p></li>
+<li><p>Plugin predetermined data set</p>
+<ul>
+<li><p>This a list of all the specific points that appear on the plugin. Every point of this data set must exactly match its format to any of the types found on the plugin structure.</p></li>
+</ul></li>
+<li><p>Output handler(file)</p>
+<ul>
+<li><p>This will be a python file that will be included inside your plugin folder. This folder will be named output.py which will work as the BEAT-plugin connection point.</p></li>
+</ul></li>
+</ul>
