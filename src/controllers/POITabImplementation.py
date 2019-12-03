@@ -3,10 +3,10 @@ import re
 from model import Plugin
 from view.pop.AddPOIDialog import AddPOIDialog
 from controllers.POIFormatter import format_poi
-from controllers.Controller import Controller
+from controllers.ViewFunctions import ViewFunctions
 
 
-class POITabController(Controller):
+class POITabImplementation(ViewFunctions):
 
     def __init__(self, poi_tab):
         super().__init__()

@@ -1,7 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
 
 
-class Controller(QtCore.QObject):
+class ViewFunctions(QtCore.QObject):
+
     def create_operations(self, signal, buttons_to_disable, buttons_to_enable, list_to_disable):
         """
         This function enables and disables the buttons depending on the operation that can be preform at the

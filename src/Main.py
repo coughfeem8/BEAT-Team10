@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
 from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
-from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController, \
-    DocumentationTabController
+from controllers import ProjectTabImplementation, AnalysisTabImplementation, POITabImplementation, PluginTabImplementation, \
+    DocumentationTabImplementation
 
 
 class UIMainWindow(QtWidgets.QMainWindow):
@@ -29,35 +29,35 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.ProjectTab = Tab1.Tab1(self)
         self.tabWidget.addTab(self.ProjectTab, "")
 
-        self.analysisTab = Tab2.Tab2(self, self)
+        self.analysisTab = Tab2.Tab2(self)
         self.tabWidget.addTab(self.analysisTab, "")
 
-        self.pluginTab = Tab3.Tab3(self, self)
+        self.pluginTab = Tab3.Tab3(self)
         self.tabWidget.addTab(self.pluginTab, "")
 
-        self.pointsOfInterestTab = Tab4.Tab4(self, self)
+        self.pointsOfInterestTab = Tab4.Tab4(self)
         self.tabWidget.addTab(self.pointsOfInterestTab, "")
 
-        self.documentationTab = Tab5.Tab5(self, self)
+        self.documentationTab = Tab5.Tab5(self)
         self.tabWidget.addTab(self.documentationTab, "")
 
-        self.project_controller = ProjectTabController.ProjectTabController(self.ProjectTab)
+        self.project_controller = ProjectTabImplementation.ProjectTabImplementation(self.ProjectTab)
         self.project_controller.establish_connections()
         self.project_controller.establish_calls()
 
-        self.analysis_controller = AnalysisTabController.AnalysisTabController(self.analysisTab)
+        self.analysis_controller = AnalysisTabImplementation.AnalysisTabImplementation(self.analysisTab)
         self.analysis_controller.establish_connections()
         self.analysis_controller.establish_calls()
 
-        self.plugin_controller = PluginTabController.PluginTabController(self.pluginTab)
+        self.plugin_controller = PluginTabImplementation.PluginTabImplementation(self.pluginTab)
         self.plugin_controller.establish_connections()
         self.plugin_controller.establish_calls()
 
-        self.poi_controller = POITabController.POITabController(self.pointsOfInterestTab)
+        self.poi_controller = POITabImplementation.POITabImplementation(self.pointsOfInterestTab)
         self.poi_controller.establish_connections()
         self.poi_controller.establish_calls()
 
-        self.doc_controller = DocumentationTabController.DocumentationTabController(self.documentationTab)
+        self.doc_controller = DocumentationTabImplementation.DocumentationTabImplementation(self.documentationTab)
         self.doc_controller.establish_connections()
         self.doc_controller.establish_calls()
 

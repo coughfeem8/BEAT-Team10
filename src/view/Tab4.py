@@ -6,7 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Tab4(QtWidgets.QWidget):
     """UI for tab 4"""
 
-    def __init__(self, main, parent=None):
+    def __init__(self, parent):
         """Initializes tab 4 based on parent main window tab and sets up associated UI object"""
         QtWidgets.QWidget.__init__(self, parent)
 
