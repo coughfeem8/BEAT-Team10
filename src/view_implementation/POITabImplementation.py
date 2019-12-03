@@ -79,11 +79,12 @@ class POITabImplementation(ViewFunctions):
         add_poi_pop_up = AddPOIDialog(self.poi_tab)
         pois = add_poi_pop_up.exec_()
         doc = Plugin.get_name(self.poi_tab.comboBox.currentText())
-        if doc:
+        if doc and pois:
             for item in doc:
                 new = item["poi"]["item"] + pois["item"]
                 dict = {"item": new}
                 Plugin.update_poi(dict, item["name"])
+                self.fill_poi(self.poi_tab.comboBox_2.currentText())
                 self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
 
     def delete_poi(self):
