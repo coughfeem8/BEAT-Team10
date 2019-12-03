@@ -14,7 +14,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.main_window.setObjectName("BEAT")
         self.main_window.resize(804, 615)
         self.main_window.setFixedSize(self.main_window.width(), self.main_window.height())
-        self.setWindowIcon(QtGui.QIcon('beat.png'))
+        self.setWindowIcon(QtGui.QIcon('./resources/beat.png'))
 
         self.main_window.setWindowTitle("BEAT")
 
@@ -68,6 +68,9 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.project_implementation.selected_project_changed.connect(lambda: self.analysisTab.terminal_output_textEdit.clear())
         self.project_implementation.project_creation_started.connect(lambda: self.disable_tabs())
         self.project_implementation.project_creation_finished.connect(lambda: self.enable_tabs())
+        self.project_implementation.delete_project_signal.connect(lambda: self.analysisTab.poi_listWidget.clear())
+        self.project_implementation.delete_project_signal.connect(lambda: self.set_clear_name())
+        self.project_implementation.delete_project_signal.connect(lambda: self.analysisTab.poi_content_area_textEdit.clear())
 
         self.analysis_implementation.dynamic_started.connect(lambda: self.set_running())
         self.analysis_implementation.dynamic_stopped.connect(lambda: self.set_project_name())
@@ -78,6 +81,13 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.plugin_implementation.plugin_signal.connect(self.poi_implementation.set_plugins)
         self.plugin_implementation.plugin_creation_started.connect(lambda: self.disable_tabs())
         self.plugin_implementation.plugin_creation_finished.connect(lambda: self.enable_tabs())
+        self.plugin_implementation.plugin_delete_signal.connect(self.poi_implementation.set_plugins)
+        self.plugin_implementation.plugin_delete_signal.connect(
+            lambda: self.poi_implementation.fill_poi(self.pointsOfInterestTab.comboBox_2.currentText()))
+        self.plugin_implementation.plugin_delete_signal.connect(self.pointsOfInterestTab.textEdit.clear)
+        self.plugin_implementation.plugin_delete_signal.connect(self.analysis_implementation.set_plugins)
+
+        self.poi_implementation.add_poi_signal.connect(self.plugin_implementation.item_activated)
 
         self.main_window.setCentralWidget(self.centralwidget)
         self.retranslate_ui()
@@ -99,6 +109,9 @@ class UIMainWindow(QtWidgets.QMainWindow):
     def set_project_name(self):
         self.main_window.setWindowTitle("BEAT | " + Singleton.get_project())
 
+    def set_clear_name(self):
+        self.main_window.setWindowTitle("BEAT")
+
     def set_running(self):
         self.main_window.setWindowTitle("BEAT | Running " + Singleton.get_project())
 
@@ -113,6 +126,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
         """Enables all tabs once creation of a project or plugin finishes or dynamic analysis stops running"""
         for tab_index in range(self.tabWidget.count()):
             self.tabWidget.setTabEnabled(tab_index, True)
+
 
 
 if __name__ == "__main__":

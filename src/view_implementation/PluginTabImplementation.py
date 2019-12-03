@@ -8,6 +8,7 @@ class PluginTabImplementation(ViewFunctions):
     plugin_creation_started = QtCore.pyqtSignal()
     plugin_creation_finished = QtCore.pyqtSignal()
     plugin_signal = QtCore.pyqtSignal()
+    plugin_delete_signal = QtCore.pyqtSignal()
 
     def __init__(self, plugin_tab):
         super().__init__()
@@ -110,6 +111,7 @@ class PluginTabImplementation(ViewFunctions):
                     return
                 for item in list_items:
                     self.plugin_tab.listWidget.takeItem(self.plugin_tab.listWidget.row(item))
+                self.plugin_delete_signal.emit()
         else:
             x = ErrorDialog(self.plugin_tab, "Please select a plugin", "Error")
             x.exec_()

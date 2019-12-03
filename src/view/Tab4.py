@@ -61,10 +61,6 @@ class Tab4(QtWidgets.QWidget):
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout_3.addWidget(self.pushButton_2, 3, 0, 1, 1, QtCore.Qt.AlignLeft)
 
-        self.pushButton_3 = QtWidgets.QPushButton(self.gridLayoutWidget_3)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout_3.addWidget(self.pushButton_3, 3, 1, 1, 1, QtCore.Qt.AlignRight)
-
         self.frame_3 = QtWidgets.QFrame(self.gridLayoutWidget_3)
 
         self.sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
@@ -124,7 +120,6 @@ class Tab4(QtWidgets.QWidget):
         self.groupBox_5.setTitle(_translate("MainWindow", "Point of Interest"))
         self.pushButton_11.setText(_translate("MainWindow", "New"))
         self.pushButton_2.setText(_translate("MainWindow", "Delete"))
-        self.pushButton_3.setText(_translate("MainWindow", "Save"))
         self.label_6.setText(_translate("MainWindow", "Detail Point of Interest View"))
         self.label_12.setText(_translate("MainWindow", "Plugin"))
         self.label_13.setText(_translate("MainWindow", "Point of Interest Type"))

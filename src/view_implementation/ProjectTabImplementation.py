@@ -9,6 +9,7 @@ class ProjectTabImplementation(ViewFunctions):
     project_creation_started = QtCore.pyqtSignal()
     project_creation_finished = QtCore.pyqtSignal()
     selected_project_changed = QtCore.pyqtSignal()
+    delete_project_signal = QtCore.pyqtSignal()
 
     def __init__(self, project_tab):
         super().__init__()
@@ -218,6 +219,10 @@ class ProjectTabImplementation(ViewFunctions):
                     return
                 for item in list_items:
                     self.project_tab.listWidget.takeItem(self.project_tab.listWidget.row(item))
+                Singleton.set_project("BEAT")
+                Singleton.set_path("")
+                self.delete_project_signal.emit()
+                self.project_selected_changed()
         else:
             msg = ErrorDialog(self.project_tab, "Please select a project", "Error Deleting Project")
             msg.exec_()

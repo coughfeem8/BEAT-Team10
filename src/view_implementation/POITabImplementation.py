@@ -1,5 +1,4 @@
-from PyQt5 import QtCore, QtWidgets, QtGui
-import re
+from PyQt5 import QtCore, QtWidgets
 from model import Plugin
 from view.pop.AddPOIDialog import AddPOIDialog
 from view_implementation.POIFormatter import format_poi
@@ -7,6 +6,7 @@ from view_implementation.ViewFunctions import ViewFunctions
 
 
 class POITabImplementation(ViewFunctions):
+    add_poi_signal = QtCore.pyqtSignal()
 
     def __init__(self, poi_tab):
         super().__init__()
@@ -22,7 +22,6 @@ class POITabImplementation(ViewFunctions):
             lambda: self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText()))
         self.poi_tab.listWidget_2.itemSelectionChanged.connect(self.item_activated_event)
         self.poi_tab.pushButton_2.clicked.connect(self.delete_poi)
-        self.poi_tab.pushButton_3.clicked.connect(lambda: self.save_poi())
 
     def establish_calls(self):
         self.set_plugins()
@@ -86,6 +85,7 @@ class POITabImplementation(ViewFunctions):
                 Plugin.update_poi(dict, item["name"])
                 self.fill_poi(self.poi_tab.comboBox_2.currentText())
                 self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
+            self.add_poi_signal.emit()
 
     def delete_poi(self):
         """
