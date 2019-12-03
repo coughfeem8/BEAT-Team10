@@ -1,4 +1,4 @@
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
 from view_implementation import ProjectTabImplementation, AnalysisTabImplementation, POITabImplementation, PluginTabImplementation, \
@@ -14,6 +14,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.main_window.setObjectName("BEAT")
         self.main_window.resize(804, 615)
         self.main_window.setFixedSize(self.main_window.width(), self.main_window.height())
+        self.setWindowIcon(QtGui.QIcon('beat.png'))
 
         self.main_window.setWindowTitle("BEAT")
 
