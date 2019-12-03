@@ -4,9 +4,12 @@ from model.Singleton import Singleton
 from controllers import ProjectTabController, AnalysisTabController, POITabController, PluginTabController, \
     DocumentationTabController
 
-"""Creates the UI for the main window, this includes the controllers for each tab in the main window."""
+
 class UIMainWindow(QtWidgets.QMainWindow):
+    """Creates the UI for the main window and controls its properties"""
+
     def setup_ui(self, main_window):
+        """Sets up the ui for the main window and establishes the controllers and their connections for each tab"""
         self.main_window = main_window
         self.main_window.setObjectName("BEAT")
         self.main_window.resize(804, 615)
@@ -61,6 +64,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.project_controller.selected_project_changed.connect(
             lambda: self.analysis_controller.poi_comboBox_change("All"))
         self.project_controller.selected_project_changed.connect(lambda: self.set_project_name())
+        self.project_controller.selected_project_changed.connect(lambda: self.analysisTab.terminal_output_textEdit.clear())
         self.project_controller.project_creation_started.connect(lambda: self.disable_tabs())
         self.project_controller.project_creation_finished.connect(lambda: self.enable_tabs())
 
@@ -80,6 +84,7 @@ class UIMainWindow(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
     def retranslate_ui(self):
+        """Applies the translation qt call to the ui"""
         _translate = QtCore.QCoreApplication.translate
 
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ProjectTab), _translate("MainWindow", "Project"))
@@ -97,12 +102,14 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.main_window.setWindowTitle("BEAT | Running " + Singleton.get_project())
 
     def disable_tabs(self):
+        """Disables any tab not currently in use when creating a new Project, Plugin, or running dynamic analysis"""
         for tab_index in range(self.tabWidget.count()):
             if tab_index != self.tabWidget.currentIndex():
                 self.tabWidget.setTabEnabled(tab_index, False)
             self.tabWidget.setTabEnabled(4, True)
 
     def enable_tabs(self):
+        """Enables all tabs once creation of a project or plugin finishes or dynamic analysis stops running"""
         for tab_index in range(self.tabWidget.count()):
             self.tabWidget.setTabEnabled(tab_index, True)
 

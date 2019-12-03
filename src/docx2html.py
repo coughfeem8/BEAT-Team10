@@ -1,4 +1,6 @@
 import sys, os, re
+"""Used to reformat the doxc files used for documentation into html to be presented"""
+
 # assuming it is running on the source directory.
 if len(sys.argv) != 2:
     print('wrong format: expected "<filename>" do NOT include file type.')

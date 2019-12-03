@@ -1,7 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Tab2(QtWidgets.QWidget):
-    def __init__(self, parent, main):
+    """UI for tab 2"""
+
+    def __init__(self, parent):
+        """Initializes tab 2 based on parent main window tab and sets up associated UI object"""
         QtWidgets.QWidget.__init__(self, parent)
 
         self.gridLayout_2 = QtWidgets.QGridLayout(self)
