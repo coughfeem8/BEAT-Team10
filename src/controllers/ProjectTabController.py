@@ -33,6 +33,10 @@ class ProjectTabController(Controller):
         self.set_binary_prop()
 
     def set_binary_prop(self):
+        """
+        Creates an empty metadata table.
+        :return: none
+        """
         properties = ["OS", "Arch", "Binary Type", "Machine", "Class", "Bits", "Language", "Canary", "Cripto", "Nx",
                       "Pic", "Endian"]
 
@@ -55,6 +59,11 @@ class ProjectTabController(Controller):
             self.project_tab.tableWidget.setItem(x, 1, empty)
 
     def fill_binary_prop(self, r2_bin_info):
+        """
+        This method fill the empty table with the metadata from the binary.
+        :param r2_bin_info: metadata from the binary
+        :return: none
+        """
         item = QtWidgets.QTableWidgetItem(r2_bin_info["bin"]["os"])
         item.setFlags(QtCore.Qt.ItemIsEnabled)
         self.project_tab.tableWidget.setItem(0, 1, item)
@@ -93,6 +102,10 @@ class ProjectTabController(Controller):
         self.project_tab.tableWidget.setItem(11, 1, item)
 
     def browse_binary_files(self):
+        """
+        This method allows the user to add a binary file using a browse window.
+        :return: return
+        """
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.project_tab, "Browse Binary File", "",
@@ -119,6 +132,10 @@ class ProjectTabController(Controller):
             QtWidgets.QApplication.restoreOverrideCursor()
 
     def create_project(self):
+        """
+        This method creates a project if it does not exit in the database.
+        :return: none
+        """
         text, ok_pressed = QtWidgets.QInputDialog.getText(self.project_tab, "Create New Project", "Name of Project:",
                                                           QtWidgets.QLineEdit.Normal, "")
         if ok_pressed and text != '':
@@ -143,6 +160,10 @@ class ProjectTabController(Controller):
                                         self.project_tab.listWidget)
 
     def save_project(self):
+        """
+        This method saves the newly created project into the database.
+        :return: none
+        """
         if self.project_tab.lineEdit_3.text() != "":
             saved = False
             project_db = DBConnection.get_collection(self.project_name)
@@ -169,6 +190,10 @@ class ProjectTabController(Controller):
             msg.exec_()
 
     def delete_project(self):
+        """
+        This method gets the selected project and deletes it form the database.
+        :return: none
+        """
         if self.project_name != "":
             button_reply = QtWidgets.QMessageBox.question(self.project_tab, 'PyQt5 message',
                                                           "Do you like to erase Project %s ?" % self.project_name,
@@ -196,6 +221,10 @@ class ProjectTabController(Controller):
             msg.exec_()
 
     def project_selected_changed(self):
+        """
+        This method listens for a change in the current project and updates the singleton and updates the view.
+        :return: none
+        """
         if self.project_tab.listWidget.count() != 0:
             project = self.project_tab.listWidget.selectedItems()
             project_name = [item.text().encode("ascii") for item in project]
@@ -222,6 +251,10 @@ class ProjectTabController(Controller):
                     msg.exec()
 
     def search_projects(self):
+        """
+        This method gets all the existing projects from the database.
+        :return: none
+        """
         cursor = DBConnection.get_db()
         self.project_tab.listWidget.clear()
         for db in cursor:

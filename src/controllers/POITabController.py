@@ -28,11 +28,21 @@ class POITabController(Controller):
         self.set_plugins()
 
     def set_plugins(self):
+        """
+        This method adds the installed plugins into a list which will update the list view. "
+        :return: none
+        """""
         self.poi_tab.comboBox.clear()
         for pl in Plugin.get_installed_plugins():
             self.poi_tab.comboBox.addItem(pl)
 
     def fill_poi(self, current):
+        """
+        This method gets the current working plugin and gets all the point of interest and adds them into a list
+        that will be used in the point of interest view and adds the types of pois into the dropdown.
+        :param current: current plugin
+        :return: none
+        """
         self.poi_tab.listWidget_2.clear()
         doc = Plugin.get_poi(current)
         if doc:
@@ -44,6 +54,13 @@ class POITabController(Controller):
                     self.poi_tab.comboBox_2.addItem(i["type"])
 
     def filter_poi(self, current, poi_type):
+        """
+        This method gets all the point fo interest in the database and depending in which plug in we are working
+        it filters just the  matched point of interests
+        :param current: selected plugin
+        :param poi_type: selcted type of poi
+        :return: none
+        """
         self.poi_tab.listWidget_2.clear()
         doc = Plugin.get_poi(current)
         for i in doc["item"]:
@@ -54,6 +71,11 @@ class POITabController(Controller):
                 self.poi_tab.listWidget_2.addItem(i["name"])
 
     def add_poi(self):
+        """
+        This method interacts with the model to create a new point of interest which will be updated into the
+        database and will also update the view."
+        :return: none
+        """""
         add_poi_pop_up = AddPOIDialog(self.poi_tab)
         pois = add_poi_pop_up.exec_()
         doc = Plugin.get_name(self.poi_tab.comboBox.currentText())
@@ -65,6 +87,11 @@ class POITabController(Controller):
                 self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
 
     def delete_poi(self):
+        """
+        This method interacts with the model to delete a point of interest which will be updated into the
+                database and will also update the view.
+        :return:none
+        """
         poi = self.poi_tab.listWidget_2.selectedItems()
         poi_name = [item.text().encode("ascii") for item in poi]
         button_reply = QtWidgets.QMessageBox.question(self.poi_tab, 'PyQt5 message',
@@ -76,6 +103,11 @@ class POITabController(Controller):
             self.filter_poi(self.poi_tab.comboBox.currentText(), self.poi_tab.comboBox_2.currentText())
 
     def item_activated_event(self):
+        """
+        This method will listen for a change in the current poi where if another is selected it will cange the
+        detailed view to that poi.
+        :return: none
+        """
         if self.poi_tab.listWidget_2.count() != 0:
             poi = self.poi_tab.listWidget_2.selectedItems()
             poi_name = [item.text().encode("ascii") for item in poi]

@@ -30,7 +30,13 @@ class PluginTabController(Controller):
         for pl in Plugin.get_installed_plugins():
             self.plugin_tab.listWidget.addItem(pl)
 
+
     def create_plugin(self):
+        """
+        This method communicates with the view  for creating a new plugin and check if the created plugin already
+        exists.
+        :return: none
+        """
         text, ok_pressed = QtWidgets.QInputDialog.getText(self.plugin_tab, "Create New Plugin", "Name of Plugin:",
                                                           QtWidgets.QLineEdit.Normal, "")
         if ok_pressed and text != '':
@@ -52,7 +58,13 @@ class PluginTabController(Controller):
                                    [self.plugin_tab.pushButton_7], [self.plugin_tab.ButtonSavePlugin],
                                    self.plugin_tab.listWidget)
 
+
     def save_plugin(self):
+        """
+        This method after creating a new plugin this method communicates with the model to save the changes to the
+        database.
+        :return: none
+        """
         plugin_db = DBConnection.get_collection("plugin")
         plg_cllc = plugin_db[self.plugin_tab.DPVPluginName.text()]
         info = {"name": self.plugin_tab.DPVPluginName.text(),
@@ -73,6 +85,10 @@ class PluginTabController(Controller):
             return
 
     def delete_plugin(self):
+        """
+        This method deletes the selected plugin from the database.
+        :return: none
+        """
         if self.plugin != "":
             button_reply = QtWidgets.QMessageBox.question(self.plugin_tab, 'PyQt5 message',
                                                           "Do you like to erase Plugin %s ?" % self.plugin,
@@ -99,6 +115,11 @@ class PluginTabController(Controller):
             x.exec_()
 
     def item_activated(self):
+        """
+        This method listens for selecting a plugin to display the plugin
+        formation.
+        :return: none
+        """
         if self.plugin_tab.listWidget.count() != 0:
             plugin_s = self.plugin_tab.listWidget.selectedItems()
             plugin_name = [item.text().encode("ascii") for item in plugin_s]

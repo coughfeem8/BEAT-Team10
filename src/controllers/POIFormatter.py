@@ -4,6 +4,12 @@ import re
 
 
 def format_poi(poi):
+    """
+    the function takes  a generic point of interest and will format the POI as a html table. this will allow the
+    the detailed POI view to display them in a more readable way.
+    :param poi:  data dictionary containing data of the POI
+    :return:
+    """
     html = ET.Element('html')
     head = ET.SubElement(html, 'head')
     style = ET.SubElement(head, 'style')

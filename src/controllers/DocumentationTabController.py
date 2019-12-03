@@ -46,10 +46,21 @@ class DocumentationTabController(Controller):
         pass
 
     def load_document_list(self, docs):
+        """
+        This method loads all the documentation and displays it in the list holding all the available
+        documentation.
+        :param docs: all installed documents
+        :return: none
+        """
         for doc in docs.keys():
             self.documentation_tab.doc_list.addItem(str(self.docs[doc]['name']))
 
     def get_documents(self, docs):
+        """
+        This method get the documentation from the resources folder and add them into the doc list.
+        :param docs: installed documents
+        :return: none
+        """
         root = os.getcwd()
         for doc in docs.keys():
             path = root + '/resources/docs/' + self.docs[doc]['path']
@@ -61,5 +72,9 @@ class DocumentationTabController(Controller):
             self.documentation_tab.doc_list.setCurrentRow(0)
 
     def display_doc(self):
+        """
+        This method depending on the selected document displays it into the documentation view
+        :return: none
+        """
         selected = self.documentation_tab.doc_list.currentItem().text()
         self.documentation_tab.detailed_view.setHtml(self.docs[selected.lower()]['content'])

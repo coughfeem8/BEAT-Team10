@@ -20,6 +20,7 @@ class AnalysisTabController(Controller):
         self.analysis_tab.poi_content_area_textEdit.setStyleSheet('')
         self.run = 0
 
+
     def establish_connections(self):
         self.analysis_tab.static_run_button.clicked.connect(self.static)
         self.analysis_tab.poi_comboBox.currentIndexChanged.connect(
@@ -41,18 +42,36 @@ class AnalysisTabController(Controller):
         self.analysis_tab.terminal_output_textEdit.setReadOnly(True)
         self.set_plugins()
 
+
     def set_plugins(self):
+        """
+        This method check which plugins are on the database and add them to the drop down list for changing the plugin.
+        :return: none
+        """
         self.analysis_tab.plugin_comboBox.clear()
         for pl in Plugin.get_installed_plugins():
             self.analysis_tab.plugin_comboBox.addItem(pl)
 
+
     def set_item(self, text, poi_type):
+        """
+        Crewates a list widget item with the given text.
+        :param text: name of item(poi's name)
+        :param poi_type: poi's type
+        :return: list widget item
+        """
         item = QtWidgets.QListWidgetItem(text)
         item.setCheckState(QtCore.Qt.Checked)
         item.setToolTip(poi_type)
         return item
 
+
     def static(self):
+        """
+        This method listens to the click of the static analysis button and connects with the model to preform
+        static analysis.This method also saves into the database depending on the type.
+        :return: none
+        """
         s = Singleton.get_project()
         if s == "BEAT":
             x = ErrorDialog(self.analysis_tab, "Please select a project", "Static Analysis Error")
@@ -70,13 +89,15 @@ class AnalysisTabController(Controller):
         try:
             if self.analysis_tab.poi_comboBox.currentText() == "All":
 
-                strings = model.Analysis.StaticAnalysis.static_strings(rlocal, self.analysis_tab.plugin_comboBox.currentText())
+                strings = model.Analysis.StaticAnalysis.static_strings(rlocal,
+                                                                       self.analysis_tab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     item = self.change_font(item)
                     self.analysis_tab.poi_listWidget.addItem(item)
 
-                functions = model.Analysis.StaticAnalysis.static_functions(rlocal, self.analysis_tab.plugin_comboBox.currentText())
+                functions = model.Analysis.StaticAnalysis.static_functions(rlocal,
+                                                                           self.analysis_tab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     item = self.change_font(item)
@@ -84,7 +105,8 @@ class AnalysisTabController(Controller):
 
             elif self.analysis_tab.poi_comboBox.currentText() == "Functions":
 
-                functions = model.Analysis.StaticAnalysis.static_functions(rlocal, self.analysis_tab.plugin_comboBox.currentText())
+                functions = model.Analysis.StaticAnalysis.static_functions(rlocal,
+                                                                           self.analysis_tab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
                     item = self.change_font(item)
@@ -92,7 +114,8 @@ class AnalysisTabController(Controller):
 
             elif self.analysis_tab.poi_comboBox.currentText() == "Strings":
 
-                strings = model.Analysis.StaticAnalysis.static_strings(rlocal, self.analysis_tab.plugin_comboBox.currentText())
+                strings = model.Analysis.StaticAnalysis.static_strings(rlocal,
+                                                                       self.analysis_tab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     item = self.change_font(item)
@@ -104,7 +127,15 @@ class AnalysisTabController(Controller):
         rlocal.quit()
         QtWidgets.QApplication.restoreOverrideCursor()
 
+
+
     def poi_comboBox_change(self, text):
+        """
+        This function listens for a change in the  poi window to change the current filter and updates the
+        filtered pois which are stored in the database in the list view
+        :param text: poi's type
+        :return: none
+        """
         s = Singleton.get_project()
         if s == "BEAT":
             msg = ErrorDialog(self.analysis_tab, "Please select a project first", "Static Analysis Error")
@@ -146,7 +177,14 @@ class AnalysisTabController(Controller):
                 item = self.change_font(item)
                 self.analysis_tab.poi_listWidget.addItem(item)
 
+
     def detailed_poi(self, item):
+        """
+        This method gets the information of an existing poi in the database and displays it top the detail point of
+        interest edit box.
+         :param item: current selected poi
+         :return: none
+        """
         value = DBConnection.search_by_item(item)
         if value is not None:
             del value["_id"]
@@ -154,6 +192,11 @@ class AnalysisTabController(Controller):
             self.analysis_tab.poi_content_area_textEdit.setText(format_poi(y))
 
     def open_comment(self):
+        """
+        This method opens the comment pop-up to add a comment/ or edit an exiting comment.Afterwards it updates
+        the information to the detailed point of interest in the database.
+        :return: none
+        """
         item = self.analysis_tab.poi_listWidget.currentItem()
         value = DBConnection.search_by_item(item)
         project_db = DBConnection.get_collection(Singleton.get_project())
@@ -176,7 +219,12 @@ class AnalysisTabController(Controller):
             new_font.setBold(True)
             item.setFont(new_font)
 
+
     def open_output(self):
+        """
+        Grabs the output file from the plugin and gets the selcted pois and runs the file with the pois as arguments.
+        :return: none
+        """
         try:
             plugin = Plugin.get_file(self.analysis_tab.plugin_comboBox.currentText())
             cmd = ["python3", plugin]
@@ -207,13 +255,24 @@ class AnalysisTabController(Controller):
             x = ErrorDialog(self.analysis_tab, str(e), "Error in Output")
             x.exec_()
 
+
     def terminal(self, text):
+        """
+        Display information in the terminal text edit widget.
+        :param text: text to display
+        :return: none
+        """
         if text is not "":
             last_text = self.analysis_tab.terminal_output_textEdit.toPlainText()
             self.analysis_tab.terminal_output_textEdit.setText(last_text + text + "\n")
             self.analysis_tab.terminal_output_textEdit.moveCursor(QtGui.QTextCursor.End)
 
     def dynamic(self):
+        """
+        This method asks the user for parameters, creates a list with the selected pois and  stats dynamic analysis
+        thread with the list of pois and parameters as arguments.
+         :return:
+        """
         if self.analysis_tab.poi_listWidget.count() == 0:
             x = ErrorDialog(self.analysis_tab, "Please run Static Analysis first", "Error in DYnamic Analysis")
             x.exec_()
@@ -249,8 +308,12 @@ class AnalysisTabController(Controller):
             thread.listSignal.connect(lambda x: self.return_funcitions(x))
             thread.start()
 
-    def return_funcitions(self, text):
 
+    def return_funcitions(self, text):
+        """ This method receives the information from the breakpoint and stores the information into the database.
+        :param text: information received
+        :return: none
+        """
         value = DBConnection.search_by_name(text["name"], "Functions")
         project_db = DBConnection.get_collection(Singleton.get_project())
         db_info = project_db["functions"]
@@ -265,6 +328,10 @@ class AnalysisTabController(Controller):
             db_info.update_one(index, new_value)
 
     def stop(self):
+        """
+         This method kills the running dynamic thread.
+        :return: none
+        """
         try:
             thread.terminate()
             self.run = 0
@@ -274,23 +341,34 @@ class AnalysisTabController(Controller):
             x.exec_()
 
     def input_terminal(self, text):
+        """
+        This method checks if the dynamic analysis thread is running if it's being run it passes the text as an input
+        pipe.Otherwise passes the text as a command for Radare.
+        :param text: text for argument
+        :return: none
+        """
         if self.run == 0:
             if Singleton.get_project() != "BEAT":
                 try:
                     r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
-                    self.terminal(text+' >\n')
+                    self.terminal(text + ' >\n')
                     self.terminal(r2.cmd(text))
                 except Exception as e:
                     x = ErrorDialog(self.analysis_tab, str(e), "Error")
                     x.exec_()
                 self.analysis_tab.terminal_window_lineEdit.setText("")
             else:
-                x = ErrorDialog(self.analysis_tab,"First select a project","Error")
+                x = ErrorDialog(self.analysis_tab, "First select a project", "Error")
                 x.exec_()
         elif self.run == 1:
             thread.input(text)
 
     def change_font(self, item):
+        """
+        This method checks if any poi has a comment then bolds the name of the poi.
+        :param item: item list widget to bold the name
+        :return: item list widget
+        """
         new_font = QtGui.QFont()
         if DBConnection.search_comment_by_item(item):
             new_font.setBold(True)
