@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtWidgets
 from model import Plugin
 from view.pop.AddPOIDialog import AddPOIDialog
-from view_implementation.POIFormatter import format_poi
-from view_implementation.ViewFunctions import ViewFunctions
+from view.ui_implementation.POIFormatter import format_poi
+from view.ui_implementation.ViewFunctions import ViewFunctions
 
 
 class POITabImplementation(ViewFunctions):

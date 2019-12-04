@@ -2,7 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from model.Singleton import Singleton
 from model import DBConnection, r2Connection
 from view.pop.ErrorDialog import ErrorDialog
-from view_implementation.ViewFunctions import ViewFunctions
+from view.ui_implementation.ViewFunctions import ViewFunctions
 
 
 class ProjectTabImplementation(ViewFunctions):

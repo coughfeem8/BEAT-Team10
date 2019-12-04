@@ -1,15 +1,15 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
-from view import Tab1, Tab2, Tab3, Tab4, Tab5
 from model.Singleton import Singleton
-from view_implementation import ProjectTabImplementation, AnalysisTabImplementation, POITabImplementation, PluginTabImplementation, \
-    DocumentationTabImplementation
+from view.ui_elements import Tab5, Tab4, Tab1, Tab2, Tab3
+from view.ui_implementation import AnalysisTabImplementation, ProjectTabImplementation, POITabImplementation, \
+    DocumentationTabImplementation, PluginTabImplementation
 
 
 class UIMainWindow(QtWidgets.QMainWindow):
     """Creates the UI for the main window and controls its properties"""
 
     def setup_ui(self, main_window):
-        """Sets up the ui for the main window and establishes the view_implementation and their connections for each tab"""
+        """Sets up the ui for the main window and establishes the ui_implementation and their connections for each tab"""
         self.main_window = main_window
         self.main_window.setObjectName("BEAT")
         self.main_window.resize(804, 615)
@@ -65,12 +65,14 @@ class UIMainWindow(QtWidgets.QMainWindow):
         self.project_implementation.selected_project_changed.connect(
             lambda: self.analysis_implementation.poi_comboBox_change("All"))
         self.project_implementation.selected_project_changed.connect(lambda: self.set_project_name())
-        self.project_implementation.selected_project_changed.connect(lambda: self.analysisTab.terminal_output_textEdit.clear())
+        self.project_implementation.selected_project_changed.connect(
+            lambda: self.analysisTab.terminal_output_textEdit.clear())
         self.project_implementation.project_creation_started.connect(lambda: self.disable_tabs())
         self.project_implementation.project_creation_finished.connect(lambda: self.enable_tabs())
         self.project_implementation.delete_project_signal.connect(lambda: self.analysisTab.poi_listWidget.clear())
         self.project_implementation.delete_project_signal.connect(lambda: self.set_clear_name())
-        self.project_implementation.delete_project_signal.connect(lambda: self.analysisTab.poi_content_area_textEdit.clear())
+        self.project_implementation.delete_project_signal.connect(
+            lambda: self.analysisTab.poi_content_area_textEdit.clear())
 
         self.analysis_implementation.dynamic_started.connect(lambda: self.set_running())
         self.analysis_implementation.dynamic_stopped.connect(lambda: self.set_project_name())
@@ -126,7 +128,6 @@ class UIMainWindow(QtWidgets.QMainWindow):
         """Enables all tabs once creation of a project or plugin finishes or dynamic analysis stops running"""
         for tab_index in range(self.tabWidget.count()):
             self.tabWidget.setTabEnabled(tab_index, True)
-
 
 
 if __name__ == "__main__":

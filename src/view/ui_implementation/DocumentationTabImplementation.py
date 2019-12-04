@@ -1,5 +1,5 @@
-import os, sys, re
-from view_implementation.ViewFunctions import ViewFunctions
+import os
+from view.ui_implementation.ViewFunctions import ViewFunctions
 
 """
 TODO:  
