@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtWidgets
-from model import Plugin, DBConnection
+from model.plugin import Plugin
+from model.project import DBConnection
 from view.pop.ErrorDialog import ErrorDialog
 from view.ui_implementation.ViewFunctions import ViewFunctions
 

@@ -25,7 +25,7 @@ class DocumentationTabImplementation(ViewFunctions):
                               'path': 'documentation.html'},
             'plugin': {'name': 'Plugin',
                        'path': 'plugin.html'},
-            'analysis': {'name': 'Analysis',
+            'analysis': {'name': 'analysis',
                          'path': 'analysis.html'},
             'poi': {'name': 'Poi',
                     'path': 'poi.html'},

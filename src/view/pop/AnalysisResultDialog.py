@@ -79,14 +79,14 @@ class AnalysisResultDialog(PopUpDialog.PopUpDialog):
 
         _translate = QtCore.QCoreApplication.translate
 
-        self.setWindowTitle(_translate("Dialog", "Analysis Result View"))
-        self.label.setText(_translate("Dialog", "Analysis Result Area"))
+        self.setWindowTitle(_translate("Dialog", "analysis Result View"))
+        self.label.setText(_translate("Dialog", "analysis Result Area"))
         self.label_2.setText(_translate("Dialog", "Name"))
         self.pushButton.setText(_translate("Dialog", "Delete"))
         self.label_3.setText(_translate("Dialog", "Description"))
         self.pushButton_2.setText(_translate("Dialog", "Save"))
         self.pushButton_3.setText(_translate("Dialog", "New"))
-        self.label_4.setText(_translate("Dialog", "Analysis Result A"))
-        self.label_5.setText(_translate("Dialog", "Analysis Result B"))
-        self.label_6.setText(_translate("Dialog", "Analysis Result C"))
+        self.label_4.setText(_translate("Dialog", "analysis Result A"))
+        self.label_5.setText(_translate("Dialog", "analysis Result B"))
+        self.label_6.setText(_translate("Dialog", "analysis Result C"))
         self.label_7.setText(_translate("Dialog", "..."))

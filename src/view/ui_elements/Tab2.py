@@ -122,9 +122,9 @@ class Tab2(QtWidgets.QWidget):
 
         self.plugin_label.setText(_translate("MainWindow", "Plugin"))
 
-        self.static_anal_label.setText(_translate("MainWindow", "Static Analysis"))
+        self.static_anal_label.setText(_translate("MainWindow", "Static analysis"))
         self.static_run_button.setText(_translate("MainWindow", "Run"))
-        self.dynamic_anal_label.setText(_translate("MainWindow", "Dynamic Analysis"))
+        self.dynamic_anal_label.setText(_translate("MainWindow", "Dynamic analysis"))
         self.dynamic_run_button.setText(_translate("MainWindow", "Run"))
         self.dynamic_stop_button.setText(_translate("MainWindow", "Stop"))
 

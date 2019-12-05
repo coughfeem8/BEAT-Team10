@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets
-from model import Plugin
+from model.plugin import Plugin
 from view.pop.AddPOIDialog import AddPOIDialog
 from view.ui_implementation.POIFormatter import format_poi
 from view.ui_implementation.ViewFunctions import ViewFunctions

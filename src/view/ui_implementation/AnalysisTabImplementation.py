@@ -1,9 +1,10 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
 import subprocess
-import model.Analysis.DynamicThread
-import model.Analysis.StaticAnalysis
-from model import DBConnection, Plugin
-from model.Singleton import Singleton
+import model.analysis.DynamicThread
+import model.analysis.StaticAnalysis
+from model.plugin import Plugin
+from model.project import DBConnection
+from model.project.Singleton import Singleton
 from view.pop.ErrorDialog import ErrorDialog
 from view.pop.CommentDialog import CommentDialog
 from view.ui_implementation.POIFormatter import format_poi
@@ -74,11 +75,11 @@ class AnalysisTabImplementation(ViewFunctions):
         """
         s = Singleton.get_project()
         if s == "BEAT":
-            x = ErrorDialog(self.analysis_tab, "Please select a project", "Static Analysis Error")
+            x = ErrorDialog(self.analysis_tab, "Please select a project", "Static analysis Error")
             x.exec_()
             return
         if self.analysis_tab.plugin_comboBox.count() == 0:
-            x = ErrorDialog(self.analysis_tab, "Please install a plugin", "Static Analysis Error")
+            x = ErrorDialog(self.analysis_tab, "Please install a plugin", "Static analysis Error")
             x.exec_()
             return
 
@@ -86,18 +87,18 @@ class AnalysisTabImplementation(ViewFunctions):
 
         self.analysis_tab.poi_listWidget.clear()
         print(Singleton.get_path())
-        rlocal = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
+        rlocal = model.analysis.StaticAnalysis.static_all(Singleton.get_path())
         try:
             if self.analysis_tab.poi_comboBox.currentText() == "All":
 
-                strings = model.Analysis.StaticAnalysis.static_strings(rlocal,
+                strings = model.analysis.StaticAnalysis.static_strings(rlocal,
                                                                        self.analysis_tab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
                     item = self.change_font(item)
                     self.analysis_tab.poi_listWidget.addItem(item)
 
-                functions = model.Analysis.StaticAnalysis.static_functions(rlocal,
+                functions = model.analysis.StaticAnalysis.static_functions(rlocal,
                                                                            self.analysis_tab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
@@ -106,7 +107,7 @@ class AnalysisTabImplementation(ViewFunctions):
 
             elif self.analysis_tab.poi_comboBox.currentText() == "Functions":
 
-                functions = model.Analysis.StaticAnalysis.static_functions(rlocal,
+                functions = model.analysis.StaticAnalysis.static_functions(rlocal,
                                                                            self.analysis_tab.plugin_comboBox.currentText())
                 for fc in functions:
                     item = self.set_item(fc, "Functions")
@@ -115,7 +116,7 @@ class AnalysisTabImplementation(ViewFunctions):
 
             elif self.analysis_tab.poi_comboBox.currentText() == "Strings":
 
-                strings = model.Analysis.StaticAnalysis.static_strings(rlocal,
+                strings = model.analysis.StaticAnalysis.static_strings(rlocal,
                                                                        self.analysis_tab.plugin_comboBox.currentText())
                 for st in strings:
                     item = self.set_item(st, "Strings")
@@ -123,7 +124,7 @@ class AnalysisTabImplementation(ViewFunctions):
                     self.analysis_tab.poi_listWidget.addItem(item)
 
         except Exception as e:
-            x = ErrorDialog(self.analysis_tab, str(e), "Static Analysis Error")
+            x = ErrorDialog(self.analysis_tab, str(e), "Static analysis Error")
             x.exec_()
         rlocal.quit()
         QtWidgets.QApplication.restoreOverrideCursor()
@@ -139,7 +140,7 @@ class AnalysisTabImplementation(ViewFunctions):
         """
         s = Singleton.get_project()
         if s == "BEAT":
-            msg = ErrorDialog(self.analysis_tab, "Please select a project first", "Static Analysis Error")
+            msg = ErrorDialog(self.analysis_tab, "Please select a project first", "Static analysis Error")
             msg.exec_()
             return
 
@@ -275,18 +276,18 @@ class AnalysisTabImplementation(ViewFunctions):
          :return:
         """
         if self.analysis_tab.poi_listWidget.count() == 0:
-            x = ErrorDialog(self.analysis_tab, "Please run Static Analysis first", "Error in DYnamic Analysis")
+            x = ErrorDialog(self.analysis_tab, "Please run Static analysis first", "Error in DYnamic analysis")
             x.exec_()
             return
         global input
-        input, ok_pressed = QtWidgets.QInputDialog.getText(self.analysis_tab, "Dynamic Analysis", "Args to pass:",
+        input, ok_pressed = QtWidgets.QInputDialog.getText(self.analysis_tab, "Dynamic analysis", "Args to pass:",
                                                           QtWidgets.QLineEdit.Normal, "")
 
         if ok_pressed:
             self.run += 1
             pois_checked = []
 
-            r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
+            r2 = model.analysis.StaticAnalysis.static_all(Singleton.get_path())
             self.terminal('r2 > \n')
             self.terminal(r2.cmd("doo %s" % input))
 
@@ -305,7 +306,7 @@ class AnalysisTabImplementation(ViewFunctions):
             try:
                 self.run = 1
                 self.dynamic_started.emit()
-                thread = model.Analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
+                thread = model.analysis.DynamicThread.DynamicThread(rlocal=r2, pois=sort)
                 thread.textSignal.connect(lambda x: self.terminal(x))
                 thread.listSignal.connect(lambda x: self.return_funcitions(x))
                 thread.errorSignal.connect(lambda x: self.error_thread(x))
@@ -314,7 +315,7 @@ class AnalysisTabImplementation(ViewFunctions):
                 print(e)
 
     def error_thread(self, text):
-        msg = ErrorDialog(self.analysis_tab,text,"Error in Dynamic Analysis")
+        msg = ErrorDialog(self.analysis_tab,text,"Error in Dynamic analysis")
         msg.exec_()
 
 
@@ -347,7 +348,7 @@ class AnalysisTabImplementation(ViewFunctions):
             self.run = 0
             self.dynamic_stopped.emit()
         except:
-            x = ErrorDialog(self.analysis_tab, "Run a dynamic analysis first", "Dynamic Analysis Error")
+            x = ErrorDialog(self.analysis_tab, "Run a dynamic analysis first", "Dynamic analysis Error")
             x.exec_()
 
     def input_terminal(self, text):
@@ -360,7 +361,7 @@ class AnalysisTabImplementation(ViewFunctions):
         if self.run == 0:
             if Singleton.get_project() != "BEAT":
                 try:
-                    r2 = model.Analysis.StaticAnalysis.static_all(Singleton.get_path())
+                    r2 = model.analysis.StaticAnalysis.static_all(Singleton.get_path())
                     self.terminal(text + ' >\n')
                     self.terminal(r2.cmd(text))
                 except Exception as e:

@@ -1,6 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from model.Singleton import Singleton
-from model import DBConnection, r2Connection
+from model.project.Singleton import Singleton
+from model.project import DBConnection
+from model.analysis import r2Connection
 from view.pop.ErrorDialog import ErrorDialog
 from view.ui_implementation.ViewFunctions import ViewFunctions
 

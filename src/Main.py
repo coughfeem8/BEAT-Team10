@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
-from model.Singleton import Singleton
+from model.project.Singleton import Singleton
 from view.ui_elements import Tab5, Tab4, Tab1, Tab2, Tab3
 from view.ui_implementation import AnalysisTabImplementation, ProjectTabImplementation, POITabImplementation, \
     DocumentationTabImplementation, PluginTabImplementation
