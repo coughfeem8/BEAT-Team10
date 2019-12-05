@@ -103,7 +103,7 @@ class AddPOIDialog(QtWidgets.QDialog):
                                                              "XML Files (*.xml)", options=options)
         if file_name:
             try:
-                schema = xmlschema.XMLSchema('./plugins/schema.xsd')
+                schema = xmlschema.XMLSchema('./model/plugin/schema.xsd')
                 schema.validate(file_name)
                 self.lineEdit.setText(file_name)
                 with open(file_name) as fd:
