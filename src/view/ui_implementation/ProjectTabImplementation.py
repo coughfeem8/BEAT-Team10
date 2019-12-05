@@ -111,7 +111,7 @@ class ProjectTabImplementation(ViewFunctions):
         options = QtWidgets.QFileDialog.Options()
         options |= QtWidgets.QFileDialog.DontUseNativeDialog
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self.project_tab, "Browse Binary File", "",
-                                                             "Binary Files (*)", options=options)
+                                                             "Binary Files (*.elf | *.exe | *.out)", options=options)
 
         if file_name:
             QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
